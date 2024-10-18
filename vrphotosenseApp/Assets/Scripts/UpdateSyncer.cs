@@ -24,6 +24,7 @@ public class UpdateSyncer : MonoBehaviour {
 			singleUpdateCallbacks = new List<Action>();
 			
 			GameObject empty = new GameObject("UpdateSyncer");
+			DontDestroyOnLoad(empty);
 			empty.AddComponent<UpdateSyncer>();
 		}
 	}
