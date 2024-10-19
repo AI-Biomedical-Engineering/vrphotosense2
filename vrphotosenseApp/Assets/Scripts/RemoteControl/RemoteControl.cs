@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,9 +13,11 @@ public enum Command : byte {
 }
 
 public class RemoteControl {
+	public const Int32 RECONNECT_DELAY = 4000;
 	private static String[] sceneNames = new String[] {"Flashing"};
 	
 	private Dictionary<Command, Action<byte[]>> commandActions;
+	private String wsUrl;
 	private WS ws;
 	private byte activeSceneId = 0;
 	
@@ -25,14 +28,23 @@ public class RemoteControl {
 			{Command.RESTART, msg => SceneController.active.Restart()},
 			{Command.SET_CONFIG, this.SetConfig},
 		};
-		
-		this.ws = WS.Connect(wsServerUrl);
-		this.ws.RecvCallback = this.RecvId;
-		this.ws.ClosedCallback = () => Debug.Log("WS closed");
+		this.wsUrl = wsServerUrl;
+		WSConnect();
 	}
+	private void WSConnect() {
+		this.ws = WS.Connect(this.wsUrl);
+		this.ws.RecvCallback = this.RecvId;
+		this.ws.ClosedCallback = this.WSClosed;
+	}
+	private void WSClosed() {
+		Task.Delay(RECONNECT_DELAY).ContinueWith(t => UpdateSyncer.AddSingleUpdate(this.WSConnect));
+		Debug.Log("WS closed");
+	}
+	
 	public void Close() {
 		this.ws.Close();
 	}
+	
 	private void RecvId(byte[] msg) {
 		this.ws.RecvCallback = this.RunCommand;
 		Debug.Log("ID: " + Encoding.UTF8.GetString(msg));

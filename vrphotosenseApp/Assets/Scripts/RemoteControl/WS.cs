@@ -59,8 +59,8 @@ public class WS_CS : WS {
 	
 	private void Connected(Task t) {
 		if (t.IsFaulted) {
-			this.closeStarted = true;
 			Debug.LogException(t.Exception);
+			Close();
 		}
 		else {
 			new Thread(SendThread).Start();
@@ -82,16 +82,21 @@ public class WS_CS : WS {
 		byte[] buffer = new byte[RECV_BUFFER_SIZE];
 		WebSocketReceiveResult res;
 		
-		while (this.ws.State == WebSocketState.Open && ! this.closeStarted) {
-			res = await this.ws.ReceiveAsync(buffer, CancellationToken.None);
-			
-			if (res.MessageType == WebSocketMessageType.Close)
-				Close();
-			else {
-				byte[] msg = new byte[res.Count];
-				Array.Copy(buffer, msg, res.Count);
-				this.recvQueue.Enqueue(msg);
+		try {
+			while (this.ws.State == WebSocketState.Open && ! this.closeStarted) {
+				res = await this.ws.ReceiveAsync(buffer, CancellationToken.None);
+				
+				if (res.MessageType == WebSocketMessageType.Close)
+					Close();
+				else {
+					byte[] msg = new byte[res.Count];
+					Array.Copy(buffer, msg, res.Count);
+					this.recvQueue.Enqueue(msg);
+				}
 			}
+		}
+		catch (WebSocketException) {
+			Close();
 		}
 	}
 	
@@ -106,7 +111,9 @@ public class WS_CS : WS {
 			this.cancelSendSource.Cancel();
 			this.cancelSendSource.Dispose();
 			
-			await this.ws.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "", CancellationToken.None);
+			if (this.ws.State != WebSocketState.Aborted && this.ws.State != WebSocketState.Closed)
+				await this.ws.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "", CancellationToken.None);
+			
 			UpdateSyncer.AddSingleUpdate(this.ClosedCallback);
 			UpdateSyncer.RemoveUpdate(this.NotifyRecvCallback);
 		}
