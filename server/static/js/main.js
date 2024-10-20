@@ -1,17 +1,21 @@
-import {Commands, AppApi} from "./AppApi.js"
+import {Commands, AppApi, AutoConnectAppApi} from "./AppApi.js"
 import configs from "./configs.js"
 
 const WS_PROTOCOL = window.location.protocol === "http:" ? "ws" : "wss"
 const WS_URL = `${WS_PROTOCOL}://${window.location.host}`
 
 var printText = buffer => console.log(new TextDecoder().decode(buffer))
-var api = null
+var api = new AppApi(WS_URL, id => console.log(`WS connected (${id})`), () => console.log("WS closed"))
 
 var clientIDInput = document.getElementsByName("clientID")[0]
-clientIDInput.onkeypress = e => {
-	if (e.keyCode === 13)
-		api = new AppApi(WS_URL, clientIDInput.value, e => console.log("WS closed"))
+if (new URL(window.location.href).searchParams.get("autoappid") === null) {
+	clientIDInput.onkeypress = e => {
+		if (e.keyCode === 13)
+			api.connect(clientIDInput.value)
+	}
 }
+else
+	new AutoConnectAppApi(api).autoConnect()
 
 var msgInput = document.getElementsByName("msg")[0]
 msgInput.onkeypress = e => {

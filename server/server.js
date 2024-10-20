@@ -54,6 +54,11 @@ class WSServer {
 		this.server.on("connection", this.#connected.bind(this))
 		httpServer.on("upgrade", this.#upgradeHttp.bind(this))
 	}
+	getAutoAppID() {
+		let autoID = this.newConnectionID - 1
+		let appWS = this.appConnections.get(autoID)
+		return appWS !== undefined && appWS.associatedWS === null ? autoID : 0
+	}
 	
 	#rejectConection(socket) {
 		socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n")
@@ -119,5 +124,8 @@ const app = express()
 const server = http.createServer(app)
 
 app.use("/", express.static("static"))
-new WSServer(server)
+app.get("/autoappid", (req, res) => {
+	res.send(String(wsServer.getAutoAppID()))
+})
+var wsServer = new WSServer(server)
 server.listen(addr[1], addr[0], () => console.log(`Listening on ${addr[0]}:${addr[1]}`))
