@@ -94,7 +94,7 @@ class MsgParser {
 		foreach (FieldInfo field in objType.GetFields()) {
 			ParserType parserType = GetParserType(field.FieldType);
 			
-			#if UNITY_WEBGL && ! UNITY_EDITOR
+			#if (UNITY_ANDROID || UNITY_WEBGL) && ! UNITY_EDITOR
 			field.SetValue(instance, parserType.ToObj(arr, offset));
 			#else
 			field.SetValueDirect(structRef, parserType.ToObj(arr, offset));
