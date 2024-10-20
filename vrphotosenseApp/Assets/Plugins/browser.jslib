@@ -3,6 +3,9 @@ mergeInto(LibraryManager.library, {
 	browserLog: function (text) {
 		console.log(UTF8ToString(text));
 	},
+	browserSetTimeout: function (msDelay, callbackParam, callback) {
+		setTimeout(() => Module.dynCall_vi(callback, callbackParam), msDelay)
+	},
 	wsCreate: function (addr, callbackParam, recvCallback, connectedCallback, closedCallback) {
 		if (this.websockets === undefined)
 			this.websockets = []

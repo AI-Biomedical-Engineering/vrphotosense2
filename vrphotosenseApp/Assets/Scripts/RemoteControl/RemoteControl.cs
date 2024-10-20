@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -37,7 +36,7 @@ public class RemoteControl {
 		this.ws.ClosedCallback = this.WSClosed;
 	}
 	private void WSClosed() {
-		Task.Delay(RECONNECT_DELAY).ContinueWith(t => UpdateSyncer.AddSingleUpdate(this.WSConnect));
+		Utils.Delay(RECONNECT_DELAY, () => UpdateSyncer.AddSingleUpdate(this.WSConnect));
 		Debug.Log("WS closed");
 	}
 	

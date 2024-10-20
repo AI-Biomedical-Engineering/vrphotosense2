@@ -121,31 +121,13 @@ public class WS_CS : WS {
 }
 
 public class WSBrowser : WS {
-	#if UNITY_WEBGL && ! UNITY_EDITOR
-		[DllImport("__Internal")]
-		private static extern uint wsCreate(String addr, IntPtr callbackParam,
-			Action<IntPtr, IntPtr, Int32> recvCallback,
-			Action<IntPtr> connectedCallback, Action<IntPtr> closeCallback);
-		
-		[DllImport("__Internal")]
-		private static extern void wsSend(uint wsId, byte[] msgPtr, Int32 size);
-		[DllImport("__Internal")]
-		private static extern void wsClose(uint wsId);
-	#else
-		private static uint wsCreate(String addr, IntPtr callbackParam,
-			Action<IntPtr, IntPtr, Int32> recvCallback,
-			Action<IntPtr> connectedCallback, Action<IntPtr> closeCallback) {return 0;}
-		
-		private static void wsSend(uint wsId, byte[] msgPtr, Int32 size) {}
-		private static void wsClose(uint wsId) {}
-	#endif
 	
 	private uint wsId;
 	private GCHandle handleThis;
 	
 	public WSBrowser(String addr) {
 		this.handleThis = GCHandle.Alloc(this);
-		this.wsId = wsCreate(addr, (IntPtr) this.handleThis, recvCallback, connectedCallback, closedCallback);
+		this.wsId = Utils.Browser.wsCreate(addr, (IntPtr) this.handleThis, recvCallback, connectedCallback, closedCallback);
 		UpdateSyncer.AddUpdate(this.NotifyRecvCallback);
 	}
 	~WSBrowser() {
@@ -153,7 +135,6 @@ public class WSBrowser : WS {
 	}
 	
 	public delegate void RecvCallbackType(IntPtr obj, IntPtr msgPtr, Int32 size);
-	public delegate void BasicCallbackType(IntPtr obj);
 	
 	[MonoPInvokeCallback(typeof(RecvCallbackType))]
 	private static void recvCallback(IntPtr obj, IntPtr msgPtr, Int32 size) {
@@ -161,11 +142,11 @@ public class WSBrowser : WS {
 		Marshal.Copy(msgPtr, msg, 0, size);
 		(((GCHandle) obj).Target as WSBrowser).recvQueue.Enqueue(msg);
 	}
-	[MonoPInvokeCallback(typeof(BasicCallbackType))]
+	[MonoPInvokeCallback(typeof(Utils.BasicCallbackType))]
 	private static void connectedCallback(IntPtr obj) {
 		UpdateSyncer.AddSingleUpdate((((GCHandle) obj).Target as WSBrowser).ConnectedCallback);
 	}
-	[MonoPInvokeCallback(typeof(BasicCallbackType))]
+	[MonoPInvokeCallback(typeof(Utils.BasicCallbackType))]
 	private static void closedCallback(IntPtr obj) {
 		WSBrowser wsObj = ((GCHandle) obj).Target as WSBrowser;
 		UpdateSyncer.AddSingleUpdate(wsObj.ClosedCallback);
@@ -173,9 +154,9 @@ public class WSBrowser : WS {
 	}
 	
 	public override void Send(byte[] msg) {
-		wsSend(this.wsId, msg, msg.Length);
+		Utils.Browser.wsSend(this.wsId, msg, msg.Length);
 	}
 	public override void Close() {
-		wsClose(this.wsId);
+		Utils.Browser.wsClose(this.wsId);
 	}
 }
