@@ -7,13 +7,6 @@ public class DebugCamera : MonoBehaviour {
 	private InputAction cameraAction;
 	private Vector2 rotation;
 	
-	public void Awake() {
-		bool enableDebug = Application.platform == RuntimePlatform.WindowsEditor ||
-			Application.platform == RuntimePlatform.LinuxEditor;
-			
-		this.enabled = this.enabled && enableDebug;
-	}
-	
 	public void Start() {
 		Cursor.lockState = CursorLockMode.Locked;
 		
