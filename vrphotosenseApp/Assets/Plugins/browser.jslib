@@ -1,7 +1,16 @@
 
 mergeInto(LibraryManager.library, {
 	browserLog: function (text) {
-		console.log(UTF8ToString(text));
+		console.log(UTF8ToString(text))
+	},
+	getWSUrl: function () {
+		var protocol = window.location.protocol === "http:" ? "ws" : "wss"
+		var wsUrl = `${protocol}://${window.location.host}`
+		
+		var bufferSize = lengthBytesUTF8(wsUrl) + 1
+		var buffer = _malloc(bufferSize)
+		stringToUTF8(wsUrl, buffer, bufferSize)
+		return buffer
 	},
 	browserSetTimeout: function (msDelay, callbackParam, callback) {
 		setTimeout(() => Module.dynCall_vi(callback, callbackParam), msDelay)
