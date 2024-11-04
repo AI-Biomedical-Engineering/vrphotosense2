@@ -1,6 +1,8 @@
 using UnityEngine;
 
 public class ConfigPlayer : BaseConfigPlayer {
+	public GameObject fpsCounter;
+	
 	private ResetHead resetHead;
 	private Transform centerEye;
 	
@@ -18,7 +20,7 @@ public class ConfigPlayer : BaseConfigPlayer {
 	}
 	
 	protected override void SetEnabledDebug(bool enabled) {
-		this.centerEye.GetChild(0).gameObject.SetActive(enabled);
+		this.fpsCounter.SetActive(enabled);
 	}
 	protected override void SetEnabledDebugCamera(bool enabled) {
 		enabled = enabled && ! OVRManager.isHmdPresent;

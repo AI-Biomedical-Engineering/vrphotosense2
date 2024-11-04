@@ -3,13 +3,15 @@ using UnityEngine.SpatialTracking;
 
 public class ConfigPlayer : BaseConfigPlayer {
 	
+	public GameObject fpsCounter;
+	
 	void Start() {
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = 180;
 	}
 	
 	protected override void SetEnabledDebug(bool enabled) {
-		transform.parent.GetChild(1).gameObject.SetActive(enabled);
+		this.fpsCounter.SetActive(enabled);
 	}
 	protected override void SetEnabledDebugCamera(bool enabled) {
 		GetComponent<DebugCamera>().enabled = enabled && Application.platform != RuntimePlatform.Android;

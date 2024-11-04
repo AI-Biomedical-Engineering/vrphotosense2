@@ -7,10 +7,12 @@ using AOT;
 using System.Runtime.InteropServices;
 
 public static class Utils {
+	#if ! (UNITY_EDITOR || UNITY_WEBGL)
 	#if UNITY_ANDROID
 		private static String WS_CONFIG_FILE = UnityEngine.Application.persistentDataPath + "/config.txt";
 	#else
 		private static String WS_CONFIG_FILE = "./config.txt";
+	#endif
 	#endif
 	
 	public static class Browser {

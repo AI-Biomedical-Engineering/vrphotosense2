@@ -8,7 +8,8 @@ public enum Command : byte {
 	RUN = 0,
 	STOP,
 	RESTART,
-	SET_CONFIG
+	SET_CONFIG,
+	CONTROL_CONNECTED
 }
 
 public class RemoteControl {
@@ -26,6 +27,7 @@ public class RemoteControl {
 			{Command.STOP, msg => SceneController.active.Stop()},
 			{Command.RESTART, msg => SceneController.active.Restart()},
 			{Command.SET_CONFIG, this.SetConfig},
+			{Command.CONTROL_CONNECTED, msg => this.ControlConnected()}
 		};
 		this.wsUrl = wsServerUrl;
 		WSConnect();
@@ -37,7 +39,8 @@ public class RemoteControl {
 	}
 	private void WSClosed() {
 		Utils.Delay(RECONNECT_DELAY, () => UpdateSyncer.AddSingleUpdate(this.WSConnect));
-		Debug.Log("WS closed");
+		SceneController.active.Stop();
+		MsgPanel.active.SetMsg("Not connected");
 	}
 	
 	public void Close() {
@@ -46,7 +49,11 @@ public class RemoteControl {
 	
 	private void RecvId(byte[] msg) {
 		this.ws.RecvCallback = this.RunCommand;
-		Debug.Log("ID: " + Encoding.UTF8.GetString(msg));
+		MsgPanel.active.SetMsg("ID: " + Encoding.UTF8.GetString(msg));
+	}
+	
+	private void ControlConnected() {
+		MsgPanel.active.SetColor(Color.black);
 	}
 	
 	private void RunCommand(byte[] msg) {

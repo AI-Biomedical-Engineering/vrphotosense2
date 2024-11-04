@@ -27,11 +27,13 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	}
 	
 	public override void Run() {
+		MsgPanel.active.Disable();
 		this.flash.StartFlash();
 		this.patternCoroutine = StartCoroutine(RunPattern());
 	}
 	
 	public override void Stop() {
+		MsgPanel.active.SetColor(Color.black);
 		this.flash.StopFlash();
 		StopCoroutine(this.patternCoroutine);
 	}

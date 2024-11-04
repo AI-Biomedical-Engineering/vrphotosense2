@@ -13,7 +13,8 @@ export const Commands = Object.freeze({
 	RUN: 0,
 	STOP: 1,
 	RESTART: 2,
-	SET_CONFIG: 3
+	SET_CONFIG: 3,
+	CONTROL_CONNECTED: 4
 })
 export class AppApi {
 	constructor(wsAddr, connectedCallback, closedCallback) {
@@ -22,7 +23,11 @@ export class AppApi {
 		this.closedCallback = closedCallback
 	}
 	connect(appId) {
-		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback, this.connectedCallback, this.closedCallback)
+		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback, this.connected.bind(this), this.closedCallback)
+	}
+	connected(appId) {
+		this.sendCommand(Commands.CONTROL_CONNECTED)
+		this.connectedCallback(appId)
 	}
 	
 	sendCommand(command) {
