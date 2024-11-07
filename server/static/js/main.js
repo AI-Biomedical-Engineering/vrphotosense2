@@ -1,4 +1,5 @@
 import {Commands, AppApi, AutoConnectAppApi} from "./AppApi.js"
+import {createConfigUI} from "./ConfigUI.js"
 import configs from "./configs.js"
 
 const WS_PROTOCOL = window.location.protocol === "http:" ? "ws" : "wss"
@@ -17,14 +18,10 @@ if (new URL(window.location.href).searchParams.get("autoappid") === null) {
 else
 	new AutoConnectAppApi(api).autoConnect()
 
-var msgInput = document.getElementsByName("msg")[0]
-msgInput.onkeypress = e => {
-	if (e.keyCode === 13) {
-		api.setConfig(configs.flashing, {freqs: [1, 2, 10],
-			changeTime: 4, color1: [0, 0, 0], color2: [1, 1, 1]})
-	}
-}
+var configUI = createConfigUI(document.getElementById("config"), configs.flashing)
+configUI.setValue({freqs: [1, 2, 10], changeTime: 4, color1: [0, 0, 0], color2: [1, 1, 1]})
 
 document.getElementById("start").onclick = e => api.sendCommand(Commands.START)
 document.getElementById("stop").onclick = e => api.sendCommand(Commands.STOP)
 document.getElementById("restart").onclick = e => api.sendCommand(Commands.RESTART)
+document.getElementById("set_config").onclick = e => api.setConfig(configUI.type, configUI.getValue())
