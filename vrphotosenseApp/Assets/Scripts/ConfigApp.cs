@@ -24,8 +24,5 @@ public class ConfigApp : MonoBehaviour {
 	private void AppStartup() {
 		this.WSUrl = Utils.GetWSUrl(this.WSUrl);
 		remoteControl = new RemoteControl(this.WSUrl);
-		
-		QualitySettings.vSyncCount = 0;
-		Application.targetFrameRate = 200;
 	}
 }

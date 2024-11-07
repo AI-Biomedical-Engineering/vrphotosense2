@@ -35,7 +35,9 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	public override void Stop() {
 		MsgPanel.active.SetColor(Color.black);
 		this.flash.StopFlash();
-		StopCoroutine(this.patternCoroutine);
+		
+		if (this.patternCoroutine != null)
+			StopCoroutine(this.patternCoroutine);
 	}
 	
 	private IEnumerator RunPattern() {
