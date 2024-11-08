@@ -2,7 +2,7 @@ function createUI(container, def) {
 	return new def[0](container, ...def.slice(1))
 }
 export function createConfigUI(container, def) {
-	return createUI(container, [ConfigUI, ...def])
+	return createUI(container, [ConfigUI, ...def.slice(1)])
 }
 
 export class LabeledVar {

@@ -2,7 +2,7 @@ import * as C from "./configParser.js"
 import * as UI from "./ConfigUI.js"
 
 export default {
-	flashing: [{
+	flashing: ["Flashing", {
 			freqs: [UI.LabeledVar, "Frequencies", [UI.ArrayVar, [UI.FloatVar]]],
 			changeTime: [UI.LabeledVar, "Change time", [UI.FloatVar]],
 			color1: [UI.LabeledVar, "color1", [UI.ColorVar]],

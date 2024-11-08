@@ -18,8 +18,24 @@ if (new URL(window.location.href).searchParams.get("autoappid") === null) {
 else
 	new AutoConnectAppApi(api).autoConnect()
 
-var configUI = createConfigUI(document.getElementById("config"), configs.flashing)
-configUI.setValue({freqs: [1, 2, 10], changeTime: 4, color1: [0, 0, 0], color2: [1, 1, 1]})
+var configUI = null
+var configsSelect = document.getElementById("configs_select")
+var configContainer = document.getElementById("config")
+
+for (let configName in configs) {
+	let option = document.createElement("option")
+	option.innerText = configs[configName][0]
+	option.value = configName
+	
+	configsSelect.appendChild(option)
+}
+configsSelect.onchange = e => {
+	if (configUI !== null)
+		configUI.deleteUI()
+	
+	configUI = createConfigUI(configContainer, configs[configsSelect.value])
+}
+configsSelect.onchange()
 
 document.getElementById("start").onclick = e => api.sendCommand(Commands.START)
 document.getElementById("stop").onclick = e => api.sendCommand(Commands.STOP)
