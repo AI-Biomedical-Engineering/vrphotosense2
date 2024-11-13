@@ -111,11 +111,16 @@ public class WS_CS : WS {
 			this.cancelSendSource.Cancel();
 			this.cancelSendSource.Dispose();
 			
-			if (this.ws.State != WebSocketState.Aborted && this.ws.State != WebSocketState.Closed)
+			if (this.ws.State != WebSocketState.Aborted && this.ws.State != WebSocketState.Closed &&
+				this.ws.State != WebSocketState.Connecting) {
+				
 				await this.ws.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "", CancellationToken.None);
+			}
 			
-			UpdateSyncer.AddSingleUpdate(this.ClosedCallback);
-			UpdateSyncer.RemoveUpdate(this.NotifyRecvCallback);
+			UpdateSyncer.AddSingleUpdate(() => {
+				UpdateSyncer.RemoveUpdate(this.NotifyRecvCallback);
+				this.ClosedCallback();
+			});
 		}
 	}
 }
@@ -149,8 +154,11 @@ public class WSBrowser : WS {
 	[MonoPInvokeCallback(typeof(Utils.BasicCallbackType))]
 	private static void closedCallback(IntPtr obj) {
 		WSBrowser wsObj = ((GCHandle) obj).Target as WSBrowser;
-		UpdateSyncer.AddSingleUpdate(wsObj.ClosedCallback);
-		UpdateSyncer.RemoveUpdate(wsObj.NotifyRecvCallback);
+		UpdateSyncer.AddSingleUpdate(() => {
+			UpdateSyncer.RemoveUpdate(wsObj.NotifyRecvCallback);
+			wsObj.ClosedCallback();
+		});
+		
 	}
 	
 	public override void Send(byte[] msg) {

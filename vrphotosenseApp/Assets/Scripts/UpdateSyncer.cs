@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using UnityEngine;
 
 public class UpdateSyncer : MonoBehaviour {
 	private static List<Action> updateCallbacks = null;
-	private static List<Action> singleUpdateCallbacks = null;
+	private static ConcurrentQueue<Action> singleUpdateCallbacks = null;
 	
 	public static void AddUpdate(Action updateCallback) {
 		CreateInstance();
@@ -12,7 +13,7 @@ public class UpdateSyncer : MonoBehaviour {
 	}
 	public static void AddSingleUpdate(Action updateCallback) {
 		CreateInstance();
-		singleUpdateCallbacks.Add(updateCallback);
+		singleUpdateCallbacks.Enqueue(updateCallback);
 	}
 	public static void RemoveUpdate(Action updateCallback) {
 		updateCallbacks.Remove(updateCallback);
@@ -21,7 +22,7 @@ public class UpdateSyncer : MonoBehaviour {
 	private static void CreateInstance() {
 		if (updateCallbacks == null) {
 			updateCallbacks = new List<Action>();
-			singleUpdateCallbacks = new List<Action>();
+			singleUpdateCallbacks = new ConcurrentQueue<Action>();
 			
 			GameObject empty = new GameObject("UpdateSyncer");
 			DontDestroyOnLoad(empty);
@@ -30,12 +31,13 @@ public class UpdateSyncer : MonoBehaviour {
 	}
 	
 	void Update() {
-		foreach (Action updateCallback in singleUpdateCallbacks)
-			updateCallback();
-		
 		foreach (Action updateCallback in updateCallbacks)
 			updateCallback();
 		
-		singleUpdateCallbacks.Clear();
+		Action singleUpdateCallback;
+		while (singleUpdateCallbacks.Count > 0) {
+			singleUpdateCallbacks.TryDequeue(out singleUpdateCallback);
+			singleUpdateCallback();
+		}
 	}
 }
