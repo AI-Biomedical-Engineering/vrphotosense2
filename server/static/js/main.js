@@ -6,7 +6,10 @@ const WS_PROTOCOL = window.location.protocol === "http:" ? "ws" : "wss"
 const WS_URL = `${WS_PROTOCOL}://${window.location.host}`
 
 var printText = buffer => console.log(new TextDecoder().decode(buffer))
-var api = new AppApi(WS_URL, id => console.log(`WS connected (${id})`), () => console.log("WS closed"))
+var api = new AppApi(WS_URL, id => {
+	console.log(`WS connected (${id})`)
+	document.getElementById("stream").src = `${window.location.origin}/appstream?id=${id}`
+}, () => console.log("WS closed"))
 
 var clientIDInput = document.getElementsByName("clientID")[0]
 if (new URL(window.location.href).searchParams.get("autoappid") === null) {

@@ -6,6 +6,8 @@ const WebSocket = require("ws")
 class WSRedirectConnection {
 	constructor(ws, id, isApp, closeCallback) {
 		this.associatedWS = null
+		this.streamWS = null
+		
 		this.closeCallback = closeCallback
 		this.ws = ws
 		this.id = id
@@ -34,6 +36,9 @@ class WSRedirectConnection {
 		if (this.associatedWS !== null)
 			this.associatedWS.close()
 		
+		if (this.streamWS !== null)
+			this.streamWS.close()
+		
 		this.closeCallback(this)
 	}
 	#logMessage(msgTitle) {
@@ -59,42 +64,51 @@ class WSServer {
 		let appWS = this.appConnections.get(autoID)
 		return appWS !== undefined && appWS.associatedWS === null ? autoID : 0
 	}
+	getAppWS(id) {
+		id = parseInt(id)
+		if (isNaN(id))
+			return null
+		
+		let appWS = this.appConnections.get(id)
+		return appWS !== undefined ? appWS : null
+	}
 	
 	#rejectConection(socket) {
 		socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n")
 		socket.destroy()
 	}
 	#upgradeHttp(req, socket, head) {
-		let id = url.parse(req.url, true).query.id
-		req.isApp = id === undefined
+		let queryParams = url.parse(req.url, true).query
+		req.isApp = queryParams.id === undefined
+		req.isStream = queryParams.stream !== undefined
 		
 		if (req.isApp)
 			req.id = this.newConnectionID++
+		
 		else {
-			id = parseInt(id)
-			if (id === NaN) {
+			req.appWS = this.getAppWS(queryParams.id)
+			if (req.appWS === null || (req.isStream ? req.appWS.streamWS !== null : req.appWS.associatedWS !== null)) {
 				this.#rejectConection(socket)
 				return
 			}
-			let appWS = this.appConnections.get(id)
-			if (appWS === undefined || appWS.associatedWS != null) {
-				this.#rejectConection(socket)
-				return
-			}
-			req.id = id
+			req.id = parseInt(queryParams.id)
 		}
 		this.server.handleUpgrade(req, socket, head, ws => this.server.emit("connection", ws, req))
 	}
 	#connected(ws, req) {
-		let connect = new WSRedirectConnection(ws, req.id, req.isApp, this.#wsClosed.bind(this))
-		if (req.isApp) {
-			this.appConnections.set(req.id, connect)
-			connect.sendText(req.id.toString())
-		}
+		if (req.isStream)
+			req.appWS.streamWS = ws
+		
 		else {
-			let appWS = this.appConnections.get(req.id)
-			appWS.associatedWS = connect
-			connect.associatedWS = appWS
+			let connect = new WSRedirectConnection(ws, req.id, req.isApp, this.#wsClosed.bind(this))
+			if (req.isApp) {
+				this.appConnections.set(req.id, connect)
+				connect.sendText(req.id.toString())
+			}
+			else {
+				req.appWS.associatedWS = connect
+				connect.associatedWS = req.appWS
+			}
 		}
 	}
 	
@@ -127,5 +141,42 @@ app.use("/", express.static("static"))
 app.get("/autoappid", (req, res) => {
 	res.send(String(wsServer.getAutoAppID()))
 })
+
+
+class ImgSeqStream {
+	static BOUNDARY = "123456789000000000000987654321"
+	
+	constructor(framerate, res) {
+		this.res = res
+		
+		this.res.writeHead(200, {
+			"Content-type": "multipart/x-mixed-replace;boundary=" + ImgSeqStream.BOUNDARY,
+			"Access-Control-Allow-Origin": "*",
+			"Transfer-Encoding": "chunked",
+			"X-Framerate": String(framerate)
+		})
+	}
+	close() {
+		this.res.end()
+	}
+	sendFrame(frame) {
+		this.res.write(`\r\n--${ImgSeqStream.BOUNDARY}\r\nContent-Type: image/png\r\nContent-Length: ${frame.length}\r\nX-Timestamp: 0.0\r\n\r\n`)
+		this.res.write(frame)
+	}
+}
+
+app.get("/appstream", (req, res) => {
+	let appWS = wsServer.getAppWS(req.query.id)
+	
+	if (appWS === null || appWS.streamWS === null)
+		res.status(400).send("Invalid ID")
+	
+	else {
+		let stream = new ImgSeqStream(0, res)
+		appWS.streamWS.on("message", (msg, isBinary) => stream.sendFrame(msg))
+		appWS.streamWS.on("close", code => stream.close())
+	}
+})
+
 var wsServer = new WSServer(server)
 server.listen(addr[1], addr[0], () => console.log(`Listening on ${addr[0]}:${addr[1]}`))
