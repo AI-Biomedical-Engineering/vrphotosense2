@@ -15,6 +15,12 @@ mergeInto(LibraryManager.library, {
 	browserSetTimeout: function (msDelay, callbackParam, callback) {
 		setTimeout(() => Module.dynCall_vi(callback, callbackParam), msDelay)
 	},
+	browserSetInterval: function (msDelay, callbackParam, callback) {
+		return setInterval(() => Module.dynCall_vi(callback, callbackParam), msDelay)
+	},
+	browserClearInterval: function (id) {
+		clearInterval(id)
+	},
 	wsCreate: function (addr, callbackParam, recvCallback, connectedCallback, closedCallback) {
 		if (this.websockets === undefined)
 			this.websockets = []

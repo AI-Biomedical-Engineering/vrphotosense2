@@ -20,6 +20,10 @@ public static class Utils {
 			[DllImport("__Internal")]
 			public static extern void browserSetTimeout(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback);
 			[DllImport("__Internal")]
+			public static extern uint browserSetInterval(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback);
+			[DllImport("__Internal")]
+			public static extern void browserClearInterval(uint id);
+			[DllImport("__Internal")]
 			public static extern String getWSUrl();
 			
 			[DllImport("__Internal")]
@@ -33,6 +37,8 @@ public static class Utils {
 			public static extern void wsClose(uint wsId);
 		#else
 			public static void browserSetTimeout(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback) {}
+			public static uint browserSetInterval(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback) {return 0;}
+			public static void browserClearInterval(uint id) {}
 			public static String getWSUrl() {return null;}
 			
 			public static uint wsCreate(String addr, IntPtr callbackParam,
@@ -51,6 +57,11 @@ public static class Utils {
 		((GCHandle) obj).Free();
 	}
 	
+	[MonoPInvokeCallback(typeof(BasicCallbackType))]
+	public static void CallActionCallbackNoFree(IntPtr obj) {
+		(((GCHandle) obj).Target as Action)();
+	}
+	
 	public static void Delay(uint msDelay, Action callback) {
 		#if UNITY_WEBGL && ! UNITY_EDITOR
 			Browser.browserSetTimeout(msDelay, (IntPtr) GCHandle.Alloc(callback), CallActionCallback);
@@ -58,6 +69,49 @@ public static class Utils {
 			Task.Delay((Int32) msDelay).ContinueWith(t => callback());
 		#endif
 	}
+	
+	public static IInterval Interval(uint msDelay, Action callback) {
+		#if UNITY_WEBGL && ! UNITY_EDITOR
+			return new BrowserInterval(msDelay, callback);
+		#else
+			return new CSInterval(msDelay, callback);
+		#endif
+	}
+	
+	public interface IInterval {
+		public void Cancel();
+	}
+	private class CSInterval : IInterval {
+		private bool running = true;
+		
+		public CSInterval(uint msDelay, Action callback) {
+			Task.Run(async () => {
+				await Task.Delay((int) msDelay);
+				
+				while (this.running) {
+					callback();
+					await Task.Delay((int) msDelay);
+				}
+			});
+		}
+		public void Cancel() {
+			this.running = false;
+		}
+	}
+	private class BrowserInterval : IInterval {
+		private uint id;
+		private GCHandle callbackParamHandle;
+		
+		public BrowserInterval(uint msDelay, Action callback) {
+			this.callbackParamHandle = GCHandle.Alloc(callback);
+			this.id = Browser.browserSetInterval(msDelay, (IntPtr) this.callbackParamHandle, CallActionCallbackNoFree);
+		}
+		public void Cancel() {
+			Browser.browserClearInterval(this.id);
+			this.callbackParamHandle.Free();
+		}
+	}
+	
 	public static String GetWSUrl(String defaultUrl) {
 		#if UNITY_EDITOR
 			return defaultUrl;
