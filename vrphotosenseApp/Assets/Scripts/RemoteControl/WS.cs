@@ -19,6 +19,7 @@ public abstract class WS {
 		this.recvQueue = new ConcurrentQueue<byte[]>();
 	}
 	
+	public abstract bool IsConnected();
 	public abstract void Send(byte[] msg);
 	public abstract void Close();
 	
@@ -100,6 +101,10 @@ public class WS_CS : WS {
 		}
 	}
 	
+	public override bool IsConnected() {
+		return this.ws.State == WebSocketState.Open;
+	}
+	
 	public override void Send(byte[] msg) {
 		this.sendQueue.Add(msg);
 	}
@@ -129,6 +134,7 @@ public class WSBrowser : WS {
 	
 	private uint wsId;
 	private GCHandle handleThis;
+	private bool connected = false;
 	
 	public WSBrowser(String addr) {
 		this.handleThis = GCHandle.Alloc(this);
@@ -149,7 +155,10 @@ public class WSBrowser : WS {
 	}
 	[MonoPInvokeCallback(typeof(Utils.BasicCallbackType))]
 	private static void connectedCallback(IntPtr obj) {
-		UpdateSyncer.AddSingleUpdate((((GCHandle) obj).Target as WSBrowser).ConnectedCallback);
+		WSBrowser wsObj = ((GCHandle) obj).Target as WSBrowser;
+		UpdateSyncer.AddSingleUpdate(wsObj.ConnectedCallback);
+		
+		wsObj.connected = true;
 	}
 	[MonoPInvokeCallback(typeof(Utils.BasicCallbackType))]
 	private static void closedCallback(IntPtr obj) {
@@ -159,6 +168,11 @@ public class WSBrowser : WS {
 			wsObj.ClosedCallback();
 		});
 		
+		wsObj.connected = false;
+	}
+	
+	public override bool IsConnected() {
+		return this.connected;
 	}
 	
 	public override void Send(byte[] msg) {

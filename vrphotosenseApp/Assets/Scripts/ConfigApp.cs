@@ -2,9 +2,11 @@ using System;
 using UnityEngine;
 
 public class ConfigApp : MonoBehaviour {
-	private static RemoteControl remoteControl = null;
+	public static RemoteControl remoteControl = null;
 	
 	public String WSUrl;
+	public bool streamEnabled;
+	public int streamFramerate;
 	public TrackingMode trackMode;
 	public DebugMode debugMode;
 	
@@ -13,6 +15,7 @@ public class ConfigApp : MonoBehaviour {
 			AppStartup();
 	}
 	void Start() {
+		BaseConfigPlayer.config.ConfigStream(this.streamEnabled, this.streamFramerate);
 		BaseConfigPlayer.config.SetTrackingMode(this.trackMode);
 		BaseConfigPlayer.config.SetDebugMode(this.debugMode);
 	}
@@ -23,6 +26,6 @@ public class ConfigApp : MonoBehaviour {
 	
 	private void AppStartup() {
 		this.WSUrl = Utils.GetWSUrl(this.WSUrl);
-		remoteControl = new RemoteControl(this.WSUrl);
+		remoteControl = new RemoteControl(this.WSUrl, this.streamEnabled);
 	}
 }

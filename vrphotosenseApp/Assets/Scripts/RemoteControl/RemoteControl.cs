@@ -17,11 +17,13 @@ public class RemoteControl {
 	private static String[] sceneNames = new String[] {"Flashing"};
 	
 	private Dictionary<Command, Action<byte[]>> commandActions;
-	private String wsUrl;
+	private String wsURL;
 	private WS ws;
+	private WS wsStream;
+	private bool streamEnabled;
 	private byte activeSceneId = 0;
 	
-	public RemoteControl(String wsServerUrl) {
+	public RemoteControl(String wsServerURL, bool streamEnabled) {
 		this.commandActions = new Dictionary<Command, Action<byte[]>>() {
 			{Command.RUN, msg => SceneController.active.Run()},
 			{Command.STOP, msg => SceneController.active.Stop()},
@@ -29,11 +31,12 @@ public class RemoteControl {
 			{Command.SET_CONFIG, this.SetConfig},
 			{Command.CONTROL_CONNECTED, msg => this.ControlConnected()}
 		};
-		this.wsUrl = wsServerUrl;
+		this.wsURL = wsServerURL;
+		this.streamEnabled = streamEnabled;
 		WSConnect();
 	}
 	private void WSConnect() {
-		this.ws = WS.Connect(this.wsUrl);
+		this.ws = WS.Connect(this.wsURL);
 		this.ws.RecvCallback = this.RecvId;
 		this.ws.ClosedCallback = this.WSClosed;
 	}
@@ -49,7 +52,20 @@ public class RemoteControl {
 	
 	private void RecvId(byte[] msg) {
 		this.ws.RecvCallback = this.RunCommand;
-		MsgPanel.active.SetMsg("ID: " + Encoding.UTF8.GetString(msg));
+		
+		String id = Encoding.UTF8.GetString(msg);
+		MsgPanel.active.SetMsg("ID: " + id);
+		
+		if (this.streamEnabled) {
+			UpdateSyncer.AddSingleUpdate(() => {
+				this.wsStream = WS.Connect(this.wsURL + "?id=" + id + "&stream");
+			});
+		}
+	}
+	
+	public void SendStreamFrame(byte[] img) {
+		if (this.wsStream != null && this.wsStream.IsConnected())
+			this.wsStream.Send(img);
 	}
 	
 	private void ControlConnected() {

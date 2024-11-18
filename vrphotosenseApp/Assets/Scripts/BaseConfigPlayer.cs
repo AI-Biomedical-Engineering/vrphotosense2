@@ -15,6 +15,7 @@ public enum DebugMode : byte {
 public abstract class BaseConfigPlayer : MonoBehaviour {
 	public static BaseConfigPlayer config;
 	
+	public GameObject streamCamera;
 	private TrackingMode trackMode;
 	
 	void Awake() {
@@ -22,6 +23,11 @@ public abstract class BaseConfigPlayer : MonoBehaviour {
 	}
 	void OnDestroy() {
 		config = null;
+	}
+	
+	public void ConfigStream(bool enabled, int framerate) {
+		this.streamCamera.GetComponent<VideoStream>().Framerate = framerate;
+		this.streamCamera.SetActive(enabled);
 	}
 	
 	public void SetDebugMode(DebugMode debugMode) {
