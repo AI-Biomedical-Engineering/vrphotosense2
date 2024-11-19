@@ -10,11 +10,10 @@ public class ConfigApp : MonoBehaviour {
 	public TrackingMode trackMode;
 	public DebugMode debugMode;
 	
-	void Awake() {
+	void Start() {
 		if (remoteControl == null)
 			AppStartup();
-	}
-	void Start() {
+		
 		BaseConfigPlayer.config.ConfigStream(this.streamEnabled, this.streamFramerate);
 		BaseConfigPlayer.config.SetTrackingMode(this.trackMode);
 		BaseConfigPlayer.config.SetDebugMode(this.debugMode);
@@ -25,6 +24,8 @@ public class ConfigApp : MonoBehaviour {
 	}
 	
 	private void AppStartup() {
+		MsgPanel.active.SetMsg("Not connected");
+		
 		this.WSUrl = Utils.GetWSUrl(this.WSUrl);
 		remoteControl = new RemoteControl(this.WSUrl, this.streamEnabled);
 	}
