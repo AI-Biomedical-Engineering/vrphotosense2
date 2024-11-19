@@ -7,7 +7,13 @@ public class ConfigPlayer : BaseConfigPlayer {
 	
 	void Start() {
 		QualitySettings.vSyncCount = 0;
-		Application.targetFrameRate = 180;
+		#if UNITY_WEBGL && ! UNITY_EDITOR
+			Application.targetFrameRate = -1;
+		#else
+			Application.targetFrameRate = 180;
+		#endif
+		
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 	}
 	
 	protected override void SetEnabledDebug(bool enabled) {
