@@ -133,14 +133,17 @@ if (process.argv[2] === "-h") {
 	console.log("usage:\tserver.js ip port\n\tserver.js port\n\tserver.js")
 	process.exit()
 }
-const addr = getAddr(process.argv.splice(2))
+const params = process.argv.splice(2)
+const addr = getAddr(params.filter(p => p.indexOf("--") === -1))
 const app = express()
 const server = http.createServer(app)
 
 app.use("/", express.static("static"))
-app.get("/autoappid", (req, res) => {
-	res.send(String(wsServer.getAutoAppID()))
-})
+if (params.indexOf("--noautoappid") === -1) {
+	app.get("/autoappid", (req, res) => {
+		res.send(String(wsServer.getAutoAppID()))
+	})
+}
 
 
 class ImgSeqStream {
