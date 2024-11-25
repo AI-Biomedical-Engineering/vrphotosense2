@@ -1,0 +1,64 @@
+* {
+	-webkit-user-select: none;
+}
+
+body {
+	padding: 0px;
+	margin: 0px;
+}
+
+main {
+	padding: 1em 1.5em;
+}
+
+button {
+	font-size: 0.9em;
+	background: #eee;
+	cursor: pointer;
+	
+	padding: 0.5em 1.1em;
+	border: none;
+	border-radius: 3px;
+	margin: 0px;
+	
+	transition: background 0.1s ease;
+}
+button:hover {
+	background: #d2d2d2;
+}
+button:active {
+	background: #eee;
+}
+
+
+input {
+	border: none;
+	
+	background: #eee;
+	padding: 0.6em 0.9em;
+	border-radius: 3px;
+	margin: 0.75em 0.5em;
+	outline: none;
+	
+	transition: background 0.15s ease;
+}
+input:focus {
+	background: #e2e2e2;
+}
+
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+input[type=number] {
+	-moz-appearance: textfield;
+}
+
+input::placeholder {
+	color: #888;
+	transition: color 0.15s ease;
+}
+
+input:focus::placeholder {
+	color: transparent;
+}
