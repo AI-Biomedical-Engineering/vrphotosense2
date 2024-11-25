@@ -7,7 +7,13 @@
 	<script type="module" src="js/main.js"></script>
 </head>
 <body>
-	<input type="number" step="1" name="clientID" />
+	<div id="startScreen">
+		<div>
+			<label id="startScreenMsg"></label>
+			<input type="number" step="1" name="clientID" placeholder="ID" />
+			<button id="connectBt">Connect</button>
+		</div>
+	</div>
 	<select id="configs_select"></select>
 	<div id="config"></div>
 	

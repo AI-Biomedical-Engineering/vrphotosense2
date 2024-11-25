@@ -1,5 +1,6 @@
 import {Commands, AppApi, AutoConnectAppApi} from "./AppApi.js"
 import {createConfigUI} from "./ConfigUI.js"
+import {StartScreen} from "./UI.js"
 import configs from "./configs.js"
 
 const WS_PROTOCOL = window.location.protocol === "http:" ? "ws" : "wss"
@@ -8,18 +9,27 @@ const WS_URL = `${WS_PROTOCOL}://${window.location.host}`
 var printText = buffer => console.log(new TextDecoder().decode(buffer))
 var api = new AppApi(WS_URL, id => {
 	console.log(`WS connected (${id})`)
+	startScreen.hide()
 	document.getElementById("stream").src = `${window.location.origin}/appstream?id=${id}`
 }, () => console.log("WS closed"))
 
-var clientIDInput = document.getElementsByName("clientID")[0]
+var startScreen = new StartScreen()
+
 if (new URL(window.location.href).searchParams.get("autoappid") === null) {
-	clientIDInput.onkeypress = e => {
-		if (e.keyCode === 13)
-			api.connect(clientIDInput.value)
+	api.closedCallback = () => {
+		console.log("WS closed")
+		startScreen.askForId(api.connect.bind(api))
 	}
+	startScreen.askForId(api.connect.bind(api))
 }
-else
+else {
+	startScreen.setMessage("Connecting")
+	api.closedCallback = () => {
+		console.log("WS closed")
+		startScreen.setMessage("Connecting")
+	}
 	new AutoConnectAppApi(api).autoConnect()
+}
 
 var configUI = null
 var configsSelect = document.getElementById("configs_select")
