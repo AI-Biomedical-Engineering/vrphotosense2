@@ -1,3 +1,6 @@
+import {Commands} from "./AppApi.js"
+import {createConfigUI} from "./ConfigUI.js"
+import configs from "./configs.js"
 
 class HideElemController {
 	constructor(elem) {
@@ -62,5 +65,50 @@ export class StartScreen {
 	#inputIdCallback(e) {
 		if (e.keyCode === 13)
 			this.idCallback(this.inputID.value)
+	}
+}
+
+export class ConfigsSelector {
+	constructor() {
+		this.configUI = null
+		this.configsSelect = document.getElementById("configs_select")
+		this.configContainer = document.getElementById("config")
+		
+		for (let configName in configs) {
+			let option = document.createElement("option")
+			option.innerText = configs[configName][0]
+			option.value = configName
+			
+			this.configsSelect.appendChild(option)
+		}
+		this.configsSelect.onchange = this.#changeConfig.bind(this)
+		this.#changeConfig()
+	}
+	
+	#changeConfig(e) {
+		if (this.configUI !== null)
+			this.configUI.deleteUI()
+		
+		this.configUI = createConfigUI(this.configContainer, configs[this.configsSelect.value])
+	}
+	
+	getSelected() {
+		return this.configUI
+	}
+}
+
+export class EstimControl {
+	constructor(api, configsSelector) {
+		this.api = api
+		this.configsSelector = configsSelector
+		
+		document.getElementById("start").onclick = e => api.sendCommand(Commands.START)
+		document.getElementById("stop").onclick = e => api.sendCommand(Commands.STOP)
+		document.getElementById("restart").onclick = e => api.sendCommand(Commands.RESTART)
+		document.getElementById("set_config").onclick = this.#setConfig.bind(this)
+	}
+	#setConfig(e) {
+		let configUI = this.configsSelector.getSelected()
+		this.api.setConfig(configUI.type, configUI.getValue())
 	}
 }
