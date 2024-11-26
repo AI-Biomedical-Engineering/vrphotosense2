@@ -32,9 +32,9 @@ export class StartScreen {
 		
 		this.label = document.getElementById("startScreenMsg")
 		this.inputID = document.getElementsByName("clientID")[0]
-		this.inputID.onkeypress = this.#inputIdCallback.bind(this)
+		this.inputID.onkeypress = e => {if (e.keyCode === 13) {this.#idCallback()}}
 		this.connectBt = document.getElementById("connectBt")
-		this.connectBt.onclick = e => this.idCallback(this.inputID.value)
+		this.connectBt.onclick = e => this.#idCallback()
 		
 		this.idCallback = null
 	}
@@ -47,6 +47,11 @@ export class StartScreen {
 		this.hideController.show()
 		this.inputID.style.display = withInputId ? "inline" : "none"
 		this.connectBt.style.display = withInputId ? "inline" : "none"
+		
+		if (withInputId) {
+			this.inputID.disabled = false
+			this.connectBt.disabled = false
+		}
 	}
 	
 	setMessage(msg) {
@@ -62,9 +67,11 @@ export class StartScreen {
 		this.#show(true)
 	}
 	
-	#inputIdCallback(e) {
-		if (e.keyCode === 13)
-			this.idCallback(this.inputID.value)
+	#idCallback() {
+		this.inputID.disabled = true
+		this.connectBt.disabled = true
+		
+		this.idCallback(this.inputID.value)
 	}
 }
 

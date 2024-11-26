@@ -36,3 +36,7 @@
 #startScreen button {
 	font-size: 2em;
 }
+
+#startScreen button:disabled {
+	color: inherit;
+}
