@@ -326,6 +326,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WSUrl: ws://127.0.0.1:5000
+  statusUpdateMS: 500
   streamEnabled: 1
   streamFramerate: 0
   trackMode: 0

@@ -5,6 +5,7 @@ public class ConfigApp : MonoBehaviour {
 	public static RemoteControl remoteControl = null;
 	
 	public String WSUrl;
+	public uint statusUpdateMS;
 	public bool streamEnabled;
 	public int streamFramerate;
 	public TrackingMode trackMode;
@@ -27,6 +28,6 @@ public class ConfigApp : MonoBehaviour {
 		MsgPanel.active.SetMsg("Not connected");
 		
 		this.WSUrl = Utils.GetWSUrl(this.WSUrl);
-		remoteControl = new RemoteControl(this.WSUrl, this.streamEnabled);
+		remoteControl = new RemoteControl(this.WSUrl, this.statusUpdateMS, this.streamEnabled);
 	}
 }

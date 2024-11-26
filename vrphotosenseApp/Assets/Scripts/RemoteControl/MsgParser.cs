@@ -57,7 +57,7 @@ class MsgParser {
 		}
 	}
 	private static Dictionary<Type, ParserType> types;
-	private static Action<byte[], Int32, Int32> fixEndianness;
+	public static Action<byte[], Int32, Int32> fixEndianness;
 	
 	static MsgParser() {
 		fixEndianness = BitConverter.IsLittleEndian ? Array.Reverse : (arr, offset, size) => {};

@@ -1,4 +1,4 @@
-import {AppApi, AutoConnectAppApi} from "./AppApi.js"
+import {AppMessage, AppApi, AutoConnectAppApi} from "./AppApi.js"
 import * as UI from "./UI.js"
 
 class App {
@@ -6,7 +6,8 @@ class App {
 		this.autoappid = autoappid
 		this.streamURL = streamURL
 		
-		this.api = new AppApi(wsURL, this.#wsConnected.bind(this), this.#wsClosed.bind(this))
+		this.api = new AppApi(wsURL, this.#appMessage.bind(this), this.#wsConnected.bind(this), this.#wsClosed.bind(this))
+		
 		this.startScreen = new UI.StartScreen()
 		this.configsSelector = new UI.ConfigsSelector()
 		
@@ -15,6 +16,20 @@ class App {
 			new AutoConnectAppApi(this.api).autoConnect()
 		
 		this.estimControl = new UI.EstimControl(this.api, this.configsSelector)
+		this.progress = new UI.Progress()
+		
+		this.messageActions = {
+			[AppMessage.STATUS]: this.progress.setProgress.bind(this.progress),
+			[AppMessage.STOP]: p => {},
+			[AppMessage.FINISHED]: p => {}
+		}
+	}
+	
+	#appMessage(msgID, param) {
+		if (msgID !== AppMessage.STATUS)
+			console.log(`Message: ${msgID}`)
+		
+		this.messageActions[msgID](param)
 	}
 	
 	#wsConnected(id) {

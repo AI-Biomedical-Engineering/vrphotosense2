@@ -7,6 +7,7 @@ public abstract class SceneController : MonoBehaviour {
 	public abstract void Run();
 	public abstract void Stop();
 	public abstract void Reset();
+	public abstract float GetStatus();
 	public abstract Type GetConfigType();
 	public abstract void SetConfig(System.Object newConfig);
 }
@@ -60,5 +61,6 @@ public abstract class AbstractScene<ConfigT> : SceneController {
 	
 	protected void Finished() {
 		Reset();
+		ConfigApp.remoteControl.SendMessage(AppMessage.FINISHED);
 	}
 }

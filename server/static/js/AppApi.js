@@ -16,16 +16,24 @@ export const Commands = Object.freeze({
 	SET_CONFIG: 3,
 	CONTROL_CONNECTED: 4
 })
+
+export const AppMessage = Object.freeze({
+	STATUS: 0,
+	STOP: 1,
+	FINISHED: 2
+})
+
 export class AppApi {
-	constructor(wsAddr, connectedCallback, closedCallback) {
+	constructor(wsAddr, msgCallback, connectedCallback, closedCallback) {
 		this.wsAddr = wsAddr
+		this.msgCallback = msgCallback
 		this.connectedCallback = connectedCallback
 		this.closedCallback = closedCallback
 	}
 	connect(appId) {
-		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback, this.connected.bind(this), this.closedCallback)
+		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback.bind(this), this.#connected.bind(this), this.closedCallback)
 	}
-	connected(appId) {
+	#connected(appId) {
 		this.sendCommand(Commands.CONTROL_CONNECTED)
 		this.connectedCallback(appId)
 	}
@@ -45,7 +53,10 @@ export class AppApi {
 	}
 	
 	#msgCallback(msg) {
-		console.log("Message")
+		msg = new Uint8Array(msg)
+		let param = msg[0] === AppMessage.STATUS ? new DataView(msg.buffer, 1).getFloat32(0) : undefined
+		
+		this.msgCallback(msg[0], param)
 	}
 }
 

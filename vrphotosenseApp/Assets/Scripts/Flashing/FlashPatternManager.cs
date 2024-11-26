@@ -19,6 +19,11 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 		ResetEstim();
 		UpdateConfig();
 	}
+	
+	public override float GetStatus() {
+		return this.freqPos / (float) this.config.freqs.Length;
+	}
+	
 	protected override void UpdateConfig() {
 		this.flash.Color1 = this.config.color1;
 		this.flash.Color2 = this.config.color2;

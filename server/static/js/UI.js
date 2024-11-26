@@ -112,3 +112,12 @@ export class EstimControl {
 		this.api.setConfig(configUI.type, configUI.getValue())
 	}
 }
+
+export class Progress {
+	constructor() {
+		this.progress = document.getElementsByTagName("progress")[0]
+	}
+	setProgress(percent) {
+		this.progress.value = percent
+	}
+}
