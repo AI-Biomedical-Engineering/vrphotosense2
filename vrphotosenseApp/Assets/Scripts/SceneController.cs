@@ -6,7 +6,7 @@ public abstract class SceneController : MonoBehaviour {
 	
 	public abstract void Run();
 	public abstract void Stop();
-	public abstract void Restart();
+	public abstract void Reset();
 	public abstract Type GetConfigType();
 	public abstract void SetConfig(System.Object newConfig);
 }
@@ -14,6 +14,7 @@ public abstract class SceneController : MonoBehaviour {
 public abstract class AbstractScene<ConfigT> : SceneController {
 	[SerializeField]
 	protected ConfigT config;
+	private bool estimRunning = false;
 	
 	void Awake() {
 		active = this;
@@ -31,5 +32,33 @@ public abstract class AbstractScene<ConfigT> : SceneController {
 		return typeof(ConfigT);
 	}
 	
-	public override void Restart() {}
+	protected abstract void RunEstim();
+	public override void Run() {
+		if (! this.estimRunning) {
+			this.estimRunning = true;
+			
+			MsgPanel.active.Disable();
+			RunEstim();
+		}
+	}
+	
+	protected abstract void StopEstim();
+	public override void Stop() {
+		if (this.estimRunning) {
+			this.estimRunning = false;
+			
+			MsgPanel.active.SetColor(Color.black);
+			StopEstim();
+		}
+	}
+	
+	protected abstract void ResetEstim();
+	public override void Reset() {
+		Stop();
+		ResetEstim();
+	}
+	
+	protected void Finished() {
+		Reset();
+	}
 }

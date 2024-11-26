@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public enum Command : byte {
 	RUN = 0,
 	STOP,
-	RESTART,
+	RESET,
 	SET_CONFIG,
 	CONTROL_CONNECTED
 }
@@ -27,7 +27,7 @@ public class RemoteControl {
 		this.commandActions = new Dictionary<Command, Action<byte[]>>() {
 			{Command.RUN, msg => SceneController.active.Run()},
 			{Command.STOP, msg => SceneController.active.Stop()},
-			{Command.RESTART, msg => SceneController.active.Restart()},
+			{Command.RESET, msg => SceneController.active.Reset()},
 			{Command.SET_CONFIG, this.SetConfig},
 			{Command.CONTROL_CONNECTED, msg => this.ControlConnected()}
 		};

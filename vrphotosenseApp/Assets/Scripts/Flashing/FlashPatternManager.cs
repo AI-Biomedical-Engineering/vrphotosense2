@@ -16,36 +16,39 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	
 	void Start() {
 		this.flash = GetComponent<Flash>();
-		this.freqPos = 0;
+		ResetEstim();
 		UpdateConfig();
 	}
 	protected override void UpdateConfig() {
 		this.flash.Color1 = this.config.color1;
 		this.flash.Color2 = this.config.color2;
 		
-		this.flash.Freq = this.config.freqs[this.freqPos];
+		if (this.config.freqs.Length > this.freqPos)
+			this.flash.Freq = this.config.freqs[this.freqPos];
 	}
 	
-	public override void Run() {
-		MsgPanel.active.Disable();
-		this.flash.StartFlash();
+	protected override void RunEstim() {
 		this.patternCoroutine = StartCoroutine(RunPattern());
 	}
 	
-	public override void Stop() {
-		MsgPanel.active.SetColor(Color.black);
+	protected override void StopEstim() {
 		this.flash.StopFlash();
-		
-		if (this.patternCoroutine != null)
-			StopCoroutine(this.patternCoroutine);
+		StopCoroutine(this.patternCoroutine);
+	}
+	
+	protected override void ResetEstim() {
+		this.freqPos = 0;
 	}
 	
 	private IEnumerator RunPattern() {
+		this.flash.Freq = this.config.freqs[this.freqPos];
+		this.flash.StartFlash();
+		
 		while (this.freqPos < this.config.freqs.Length) {
-			this.flash.Freq = this.config.freqs[this.freqPos++];
+			this.flash.Freq = this.config.freqs[this.freqPos];
 			yield return new WaitForSeconds(this.config.changeTime);
+			this.freqPos++;
 		}
-		this.flash.StopFlash();
-		this.freqPos = 0;
+		Finished();
 	}
 }

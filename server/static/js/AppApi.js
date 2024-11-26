@@ -12,7 +12,7 @@ function createWSClient(addr, id, msgCallback, connectedCallback, closedCallback
 export const Commands = Object.freeze({
 	RUN: 0,
 	STOP: 1,
-	RESTART: 2,
+	RESET: 2,
 	SET_CONFIG: 3,
 	CONTROL_CONNECTED: 4
 })

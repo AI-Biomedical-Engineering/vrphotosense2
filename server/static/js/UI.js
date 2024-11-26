@@ -104,7 +104,7 @@ export class EstimControl {
 		
 		document.getElementById("start").onclick = e => api.sendCommand(Commands.START)
 		document.getElementById("stop").onclick = e => api.sendCommand(Commands.STOP)
-		document.getElementById("restart").onclick = e => api.sendCommand(Commands.RESTART)
+		document.getElementById("reset").onclick = e => api.sendCommand(Commands.RESET)
 		document.getElementById("set_config").onclick = this.#setConfig.bind(this)
 	}
 	#setConfig(e) {
