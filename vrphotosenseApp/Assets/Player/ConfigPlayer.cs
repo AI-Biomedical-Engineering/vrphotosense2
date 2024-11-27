@@ -13,6 +13,10 @@ public class ConfigPlayer : BaseConfigPlayer {
 			Application.targetFrameRate = 180;
 		#endif
 		
+		#if ! UNITY_EDITOR
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = false;
+		#endif
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 	}
 	

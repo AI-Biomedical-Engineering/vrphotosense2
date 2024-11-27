@@ -14,7 +14,7 @@ public class VideoStream : MonoBehaviour {
 	private IFrameSender frameSender;
 	
 	void Awake() {
-		this.renderTexture = new RenderTexture(this.width, this.width * Screen.height / Screen.width,
+		this.renderTexture = new RenderTexture(this.width, this.width * 9 / 16,
 			24, RenderTextureFormat.ARGB32);
 		
 		GetComponent<Camera>().targetTexture = this.renderTexture;
