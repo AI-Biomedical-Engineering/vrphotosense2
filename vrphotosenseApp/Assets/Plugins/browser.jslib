@@ -21,6 +21,18 @@ mergeInto(LibraryManager.library, {
 	browserClearInterval: function (id) {
 		clearInterval(id)
 	},
+	browserFetch: function (url, callbackParam, responseCallback, errorCallback) {
+		fetch(UTF8ToString(url)).then(res => {
+			res.blob().then(blob => blob.arrayBuffer().then(data => {
+				
+				var buffer = _malloc(data.byteLength)
+				HEAPU8.set(new Uint8Array(data), buffer)
+				
+				Module.dynCall_viiii(responseCallback, callbackParam, res.status, buffer, data.byteLength)
+				_free(buffer)
+			}))
+		}).catch(e => Module.dynCall_vi(errorCallback, callbackParam))
+	},
 	wsCreate: function (addr, callbackParam, recvCallback, connectedCallback, closedCallback) {
 		if (this.websockets === undefined)
 			this.websockets = []

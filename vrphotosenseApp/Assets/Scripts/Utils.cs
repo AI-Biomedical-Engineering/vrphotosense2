@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using AOT;
@@ -24,6 +25,9 @@ public static class Utils {
 			[DllImport("__Internal")]
 			public static extern void browserClearInterval(uint id);
 			[DllImport("__Internal")]
+			public static extern void browserFetch(String url, IntPtr callbackParam,
+				Action<IntPtr, uint, IntPtr, Int32> responseCallback, Action<IntPtr> errorCallback);
+			[DllImport("__Internal")]
 			public static extern String getWSUrl();
 			
 			[DllImport("__Internal")]
@@ -39,6 +43,8 @@ public static class Utils {
 			public static void browserSetTimeout(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback) {}
 			public static uint browserSetInterval(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback) {return 0;}
 			public static void browserClearInterval(uint id) {}
+			public static void browserFetch(String url, IntPtr callbackParam,
+				Action<IntPtr, uint, IntPtr, Int32> responseCallback, Action<IntPtr> errorCallback) {}
 			public static String getWSUrl() {return null;}
 			
 			public static uint wsCreate(String addr, IntPtr callbackParam,
@@ -109,6 +115,60 @@ public static class Utils {
 		public void Cancel() {
 			Browser.browserClearInterval(this.id);
 			this.callbackParamHandle.Free();
+		}
+	}
+	
+	public static void Fetch(String url, Action<String, uint, byte[]> responseCallback, Action<String> errorCallback) {
+		#if UNITY_WEBGL && ! UNITY_EDITOR
+			new BrowserFetch(url, responseCallback, errorCallback);
+		#else
+			HttpClient httpClient = new HttpClient();
+			HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, url);
+			
+			httpClient.SendAsync(msg).ContinueWith(async t => {
+				if (t.IsFaulted) {
+					errorCallback(url);
+					httpClient.Dispose();
+				}
+				else {
+					byte[] responseArray = await t.Result.Content.ReadAsByteArrayAsync();
+					UpdateSyncer.AddSingleUpdate(() => {
+						responseCallback(url, (uint) t.Result.StatusCode, responseArray);
+						httpClient.Dispose();
+					});
+				}
+			});
+		#endif
+	}
+	private class BrowserFetch {
+		private delegate void ResponseCallbackType(IntPtr obj, uint status, IntPtr msgPtr, Int32 size);
+		
+		private String url;
+		private Action<String, uint, byte[]> responseCallback;
+		private Action<String> errorCallback;
+		
+		public BrowserFetch(String url, Action<String, uint, byte[]> responseCallback, Action<String> errorCallback) {
+			this.url = url;
+			this.responseCallback = responseCallback;
+			this.errorCallback = errorCallback;
+			
+			Browser.browserFetch(url, (IntPtr) GCHandle.Alloc(this), CallResponseActionCallback, CallErrorActionCallback);
+		}
+		
+		[MonoPInvokeCallback(typeof(ResponseCallbackType))]
+		private static void CallResponseActionCallback(IntPtr obj, uint status, IntPtr msgPtr, Int32 size) {
+			byte[] msg = new byte[size];
+			Marshal.Copy(msgPtr, msg, 0, size);
+			
+			BrowserFetch browserFetch = ((GCHandle) obj).Target as BrowserFetch;
+			browserFetch.responseCallback(browserFetch.url, status, msg);
+			((GCHandle) obj).Free();
+		}
+		[MonoPInvokeCallback(typeof(BasicCallbackType))]
+		private static void CallErrorActionCallback(IntPtr obj) {
+			BrowserFetch browserFetch = ((GCHandle) obj).Target as BrowserFetch;
+			browserFetch.errorCallback(browserFetch.url);
+			((GCHandle) obj).Free();
 		}
 	}
 	
