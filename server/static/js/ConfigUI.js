@@ -9,6 +9,8 @@ export class LabeledVar {
 	constructor(container, name, varConfig) {
 		this.divLabel = document.createElement("div")
 		this.divValue = document.createElement("div")
+		this.divLabel.classList.add("configElem")
+		this.divValue.classList.add("configValue")
 		
 		this.label = document.createElement("label")
 		this.label.innerText = name
@@ -108,6 +110,9 @@ export class ArrayVar {
 		this.elemConfig = elemConfig
 		this.elemUIs = []
 		
+		this.elemsDiv = document.createElement("div")
+		this.elemsDiv.classList.add("configElemArray")
+		
 		this.addBt = document.createElement("button")
 		this.addBt.innerText = "+"
 		this.addBt.onclick = this.#addValue.bind(this)
@@ -118,6 +123,7 @@ export class ArrayVar {
 		
 		this.container.appendChild(this.addBt)
 		this.container.appendChild(this.deleteBt)
+		this.container.appendChild(this.elemsDiv)
 	}
 	deleteUI() {
 		for (let elemUI of this.elemUIs)
@@ -126,10 +132,11 @@ export class ArrayVar {
 		this.elemUIs.length = 0 //Clear array
 		this.addBt.remove()
 		this.deleteBt.remove()
+		this.elemsDiv.remove()
 	}
 	
 	#addValue() {
-		this.elemUIs.push(createUI(this.container, this.elemConfig))
+		this.elemUIs.push(createUI(this.elemsDiv, this.elemConfig))
 	}
 	#deleteValue() {
 		if (this.elemUIs.length > 0)

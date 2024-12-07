@@ -1,0 +1,50 @@
+:root {
+	--eyeWidth: 150px;
+	--streamWidth: 400px;
+	--maxStimWidth: calc(100vw - var(--xMargin) * 2);
+}
+
+#stimScreen {
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+}
+
+#topBar {
+	display: flex;
+	
+	padding: 0px;
+	margin: 0px 0px 1em;
+}
+#topBar > button:last-child {
+	margin-left: auto;
+}
+
+#eyes {
+	display: flex;
+	justify-content: center;
+	column-gap: 1em;
+}
+.eye {
+	width: min(var(--eyeWidth), calc((var(--maxStimWidth) - 6px - 1em) / 2));
+	aspect-ratio: 1 / 1;
+}
+#stream {
+	width: min(var(--streamWidth), calc(var(--maxStimWidth) - 6px));
+	aspect-ratio: 16 / 9;
+	
+	margin: 0.5em auto 1em;
+}
+
+#stimScreen progress {
+	width: 90%;
+	margin: 0px 5%;
+}
+
+#stimControls {
+	display: flex;
+	justify-content: center;
+	column-gap: 0.5em;
+	
+	margin: 0.8em 0px;
+}

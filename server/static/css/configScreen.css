@@ -1,0 +1,41 @@
+#configScreen {
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+}
+
+#config {
+	flex-grow: 2;
+}
+
+.configElem {
+	padding: 0.7em 0em;
+}
+.configElem:not(:last-child)::after {
+	border-style: solid;
+	border-color: #aaa;
+	border-width: 1px 0px 0px;
+	
+	content: "";
+	position: relative;
+	display: block;
+	top: 0.4em;
+	left: 0px;
+	z-index: -1;
+	
+	width: 80%;
+}
+.configElem > label {
+	margin-bottom: 0.5em;
+	display: block;
+}
+.configValue {
+	margin-left: 1em;
+}
+
+.configElemArray {
+	display: grid;
+}
+.configElemArray > * {
+	margin: 0.4em auto 0px 0px;
+}

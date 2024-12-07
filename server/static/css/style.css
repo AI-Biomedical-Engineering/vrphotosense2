@@ -1,3 +1,7 @@
+:root {
+	--xMargin: 1.1em;
+}
+
 * {
 	-webkit-user-select: none;
 }
@@ -5,10 +9,25 @@
 body {
 	padding: 0px;
 	margin: 0px;
+	
+	height: 100vh;
 }
 
 main {
-	padding: 1em 1.5em;
+	display: grid;
+	grid-template-columns: max-content auto;
+	column-gap: 1.5em;
+	row-gap: 1.5em;
+	
+	padding: 0.8em var(--xMargin);
+	height: calc(100% - 1.6em);
+}
+
+body.vertical main {
+	height: auto;
+	
+	grid-template-columns: auto;
+	grid-template-rows: auto auto;
 }
 
 button {
@@ -29,7 +48,16 @@ button:hover {
 button:active {
 	background: #eee;
 }
+button.selected {
+	color: white;
+	background: #366ede;
+}
 
+
+progress {
+	height: 16px;
+	min-height: 16px;
+}
 
 input {
 	border: none;
@@ -37,7 +65,7 @@ input {
 	background: #eee;
 	padding: 0.6em 0.9em;
 	border-radius: 3px;
-	margin: 0.75em 0.5em;
+	margin: 0px;
 	outline: none;
 	
 	transition: background 0.15s ease;
@@ -61,4 +89,14 @@ input::placeholder {
 
 input:focus::placeholder {
 	color: transparent;
+}
+
+::-webkit-scrollbar {
+	background: #aaa;
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #666;
 }

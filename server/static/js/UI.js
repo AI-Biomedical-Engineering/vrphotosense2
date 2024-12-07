@@ -26,8 +26,7 @@ class HideElemController {
 
 export class StartScreen {
 	constructor() {
-		this.startScreenDiv = document.getElementById("startScreen")
-		this.hideController = new HideElemController(this.startScreenDiv)
+		this.hideController = new HideElemController(document.getElementById("startScreen"))
 		this.hide()
 		
 		this.label = document.getElementById("startScreenMsg")
@@ -75,6 +74,49 @@ export class StartScreen {
 	}
 }
 
+export class ConfigScreen {
+	constructor(stimScreen, enabledCallback) {
+		this.stimScreen = stimScreen
+		this.enabledCallback = enabledCallback
+		
+		this.screenDiv = document.getElementById("configScreen")
+		this.configEditorBt = document.getElementById("configEditorBt")
+		this.configEditorBt.onclick = this.#toggleEnabled.bind(this)
+		this.hide()
+		
+		this.verticalEnabled = false
+		window.onresize = this.#updateVerticalMode.bind(this)
+		this.#updateVerticalMode()
+	}
+	#updateVerticalMode() {
+		if (this.verticalEnabled !== (window.innerWidth - this.stimScreen.getMinWidth()) < 600) {
+			this.verticalEnabled = ! this.verticalEnabled
+			
+			if (this.verticalEnabled)
+				document.body.classList.add("vertical")
+			else
+				document.body.classList.remove("vertical")
+		}
+	}
+	
+	#toggleEnabled() {
+		if (this.screenDiv.style.display === "none")
+			this.show()
+		else
+			this.hide()
+	}
+	hide() {
+		this.screenDiv.style.display = "none"
+		this.configEditorBt.classList.remove("selected")
+		this.enabledCallback(false)
+	}
+	show() {
+		this.screenDiv.style.display = "flex"
+		this.configEditorBt.classList.add("selected")
+		this.enabledCallback(true)
+	}
+}
+
 export class ConfigsSelector {
 	constructor() {
 		this.configUI = null
@@ -104,19 +146,28 @@ export class ConfigsSelector {
 	}
 }
 
-export class EstimControl {
-	constructor(api, configsSelector) {
+export class StimScreen {
+	constructor(api) {
+		this.stimControl = new StimControl(api)
+		this.progress = new Progress()
+		this.setProgress = this.progress.setProgress.bind(this.progress)
+		
+		this.stream = document.getElementById("stream")
+		this.eye = document.getElementsByClassName("eye")[0]
+	}
+	
+	getMinWidth() {
+		return Math.max(this.stream.clientWidth, this.eye.clientWidth * 2)
+	}
+}
+
+export class StimControl {
+	constructor(api) {
 		this.api = api
-		this.configsSelector = configsSelector
 		
 		document.getElementById("start").onclick = e => api.sendCommand(Commands.START)
 		document.getElementById("stop").onclick = e => api.sendCommand(Commands.STOP)
 		document.getElementById("reset").onclick = e => api.sendCommand(Commands.RESET)
-		document.getElementById("set_config").onclick = this.#setConfig.bind(this)
-	}
-	#setConfig(e) {
-		let configUI = this.configsSelector.getSelected()
-		this.api.setConfig(configUI.type, configUI.getValue())
 	}
 }
 

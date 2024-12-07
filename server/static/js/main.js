@@ -15,11 +15,11 @@ class App {
 		if (this.autoappid)
 			new AutoConnectAppApi(this.api).autoConnect()
 		
-		this.estimControl = new UI.EstimControl(this.api, this.configsSelector)
-		this.progress = new UI.Progress()
+		this.stimScreen = new UI.StimScreen(this.api)
+		new UI.ConfigScreen(this.stimScreen, enabled => {})
 		
 		this.messageActions = {
-			[AppMessage.STATUS]: this.progress.setProgress.bind(this.progress),
+			[AppMessage.STATUS]: this.stimScreen.setProgress.bind(this.stimScreen),
 			[AppMessage.STOP]: p => {},
 			[AppMessage.FINISHED]: p => {}
 		}
