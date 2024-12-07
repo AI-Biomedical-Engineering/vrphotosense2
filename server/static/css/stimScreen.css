@@ -48,3 +48,11 @@
 	
 	margin: 0.8em 0px;
 }
+
+#stimControls > button {
+	padding: 0.7em;
+}
+#stimControls > button > img {
+	display: block;
+	height: 3em;
+}

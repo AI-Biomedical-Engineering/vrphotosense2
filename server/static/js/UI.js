@@ -164,10 +164,32 @@ export class StimScreen {
 export class StimControl {
 	constructor(api) {
 		this.api = api
+		this.playing = false
 		
-		document.getElementById("start").onclick = e => api.sendCommand(Commands.START)
-		document.getElementById("stop").onclick = e => api.sendCommand(Commands.STOP)
-		document.getElementById("reset").onclick = e => api.sendCommand(Commands.RESET)
+		this.playImg = document.getElementById("playImg")
+		this.pauseImg = document.getElementById("pauseImg")
+		this.#updatePlayPauseBt()
+		
+		document.getElementById("playPause").onclick = this.#togglePlay.bind(this)
+		document.getElementById("stop").onclick = this.#stop.bind(this)
+	}
+	
+	#togglePlay() {
+		this.playing = ! this.playing
+		
+		this.api.sendCommand(this.playing ? Commands.START : Commands.STOP)
+		this.#updatePlayPauseBt()
+	}
+	#stop() {
+		this.api.sendCommand(Commands.RESET)
+		
+		this.playing = false
+		this.#updatePlayPauseBt()
+	}
+	
+	#updatePlayPauseBt() {
+		this.playImg.style.display = this.playing ? "none" : ""
+		this.pauseImg.style.display = this.playing ? "" : "none"
 	}
 }
 

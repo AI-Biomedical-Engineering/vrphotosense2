@@ -91,6 +91,10 @@ input:focus::placeholder {
 	color: transparent;
 }
 
+img.xflipped {
+	transform: scaleX(-1);
+}
+
 ::-webkit-scrollbar {
 	background: #aaa;
 	width: 6px;
