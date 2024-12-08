@@ -151,6 +151,7 @@ export class StimScreen {
 		this.stimControl = new StimControl(api)
 		this.progress = new Progress()
 		this.setProgress = this.progress.setProgress.bind(this.progress)
+		this.setEnabled = this.stimControl.setEnabled.bind(this.stimControl)
 		
 		this.stream = document.getElementById("stream")
 		this.eye = document.getElementsByClassName("eye")[0]
@@ -165,6 +166,8 @@ export class StimControl {
 	constructor(api) {
 		this.api = api
 		this.playing = false
+		this.skipPrev = () => console.log("Prev")
+		this.skipNext = () => console.log("Next")
 		
 		this.playImg = document.getElementById("playImg")
 		this.pauseImg = document.getElementById("pauseImg")
@@ -172,6 +175,11 @@ export class StimControl {
 		
 		document.getElementById("playPause").onclick = this.#togglePlay.bind(this)
 		document.getElementById("stop").onclick = this.#stop.bind(this)
+		document.getElementById("skipPrev").onclick = this.skipPrev.bind(this)
+		document.getElementById("skipNext").onclick = this.skipNext.bind(this)
+	}
+	setEnabled(enabled) {
+		window.onkeydown = enabled ? this.#keyPress.bind(this) : null
 	}
 	
 	#togglePlay() {
@@ -190,6 +198,27 @@ export class StimControl {
 	#updatePlayPauseBt() {
 		this.playImg.style.display = this.playing ? "none" : ""
 		this.pauseImg.style.display = this.playing ? "" : "none"
+	}
+	
+	#keyPress(e) {
+		if (document.activeElement.tagName === "INPUT")
+			return
+		
+		switch (e.keyCode) {
+		case 32: //Space
+			this.#togglePlay()
+			e.preventDefault()
+			break
+		case 80: //P
+			this.#stop()
+			break
+		case 37: //Arrow left
+			this.skipPrev()
+			break
+		case 39: //Arrow right
+			this.skipNext()
+			break
+		}
 	}
 }
 

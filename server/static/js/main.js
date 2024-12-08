@@ -11,12 +11,12 @@ class App {
 		this.startScreen = new UI.StartScreen()
 		this.configsSelector = new UI.ConfigsSelector()
 		
+		this.stimScreen = new UI.StimScreen(this.api)
+		new UI.ConfigScreen(this.stimScreen, enabled => {})
+		
 		this.#enableStartScreen()
 		if (this.autoappid)
 			new AutoConnectAppApi(this.api).autoConnect()
-		
-		this.stimScreen = new UI.StimScreen(this.api)
-		new UI.ConfigScreen(this.stimScreen, enabled => {})
 		
 		this.messageActions = {
 			[AppMessage.STATUS]: this.stimScreen.setProgress.bind(this.stimScreen),
@@ -34,6 +34,8 @@ class App {
 	
 	#wsConnected(id) {
 		console.log(`WS connected (${id})`)
+		
+		this.stimScreen.setEnabled(true)
 		this.startScreen.hide()
 		document.getElementById("stream").src = this.streamURL + `?id=${id}`
 	}
@@ -42,6 +44,8 @@ class App {
 		this.#enableStartScreen()
 	}
 	#enableStartScreen() {
+		this.stimScreen.setEnabled(false)
+		
 		if (this.autoappid)
 			this.startScreen.setMessage("Connecting")
 		else
