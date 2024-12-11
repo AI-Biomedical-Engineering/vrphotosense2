@@ -20,7 +20,7 @@ public enum AppMessage : byte {
 
 public class RemoteControl {
 	public const Int32 RECONNECT_DELAY = 4000;
-	private static String[] sceneNames = new String[] {"Flashing"};
+	private static String[] sceneNames = new String[] {"Flashing", "Image", "Video"};
 	
 	private Dictionary<Command, Action<byte[]>> commandActions;
 	private String wsURL;
@@ -97,7 +97,7 @@ public class RemoteControl {
 	
 	private void ControlConnected() {
 		this.statusInterval = Utils.Interval(this.statusUpdateMS,
-			() => this.SendStatus(SceneController.active.GetStatus()));
+			() => UpdateSyncer.AddSingleUpdate(() => this.SendStatus(SceneController.active.GetStatus())));
 		
 		MsgPanel.active.SetColor(Color.black);
 	}
