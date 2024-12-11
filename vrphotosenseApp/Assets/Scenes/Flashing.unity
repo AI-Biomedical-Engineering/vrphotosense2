@@ -325,10 +325,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb1a59de35ada1f794a32687b52d79d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WSUrl: ws://127.0.0.1:5000
-  statusUpdateMS: 500
-  streamEnabled: 1
-  streamFramerate: 0
   trackMode: 0
   debugMode: 2
 --- !u!4 &1763296385
