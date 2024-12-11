@@ -20,8 +20,8 @@ class App {
 		
 		this.messageActions = {
 			[AppMessage.STATUS]: this.stimScreen.setProgress.bind(this.stimScreen),
-			[AppMessage.STOP]: p => {},
-			[AppMessage.FINISHED]: p => {}
+			[AppMessage.STOP]: this.stimScreen.paused.bind(this.stimScreen),
+			[AppMessage.FINISHED]: this.stimScreen.paused.bind(this.stimScreen)
 		}
 	}
 	
@@ -41,6 +41,7 @@ class App {
 	}
 	#wsClosed() {
 		console.log("WS closed")
+		this.stimScreen.paused()
 		this.#enableStartScreen()
 	}
 	#enableStartScreen() {

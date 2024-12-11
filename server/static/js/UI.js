@@ -152,6 +152,7 @@ export class StimScreen {
 		this.progress = new Progress()
 		this.setProgress = this.progress.setProgress.bind(this.progress)
 		this.setEnabled = this.stimControl.setEnabled.bind(this.stimControl)
+		this.paused = this.stimControl.paused.bind(this.stimControl)
 		
 		this.stream = document.getElementById("stream")
 		this.eye = document.getElementsByClassName("eye")[0]
@@ -180,6 +181,10 @@ export class StimControl {
 	}
 	setEnabled(enabled) {
 		window.onkeydown = enabled ? this.#keyPress.bind(this) : null
+	}
+	paused() {
+		this.playing = false
+		this.#updatePlayPauseBt()
 	}
 	
 	#togglePlay() {
