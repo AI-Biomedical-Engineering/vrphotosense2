@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections;
 using UnityEngine;
 
@@ -8,8 +9,9 @@ public class ImageConfig : BaseMediaStimConfig {
 }
 
 public class ImageStim : BaseMediaStim<ImageConfig> {
-	protected Texture2D tex;
+	public SVGRenderer svgRenderer;
 	
+	private Texture2D tex;
 	private float remainingTime;
 	private float lastStartTime;
 	private Coroutine imageCoroutine = null;
@@ -26,6 +28,13 @@ public class ImageStim : BaseMediaStim<ImageConfig> {
 		if (status > 250)
 			Debug.Log("Error (" + status + ") while fetching " + url);
 		
+		else if (contentType.Contains("svg")) {
+			this.svgRenderer.RenderSVG(Encoding.UTF8.GetString(data), 3000, tex => {
+				tex.anisoLevel = 7;
+				tex.Apply(true);
+				ShowTexture(tex);
+			});
+		}
 		else {
 			ImageConversion.LoadImage(this.tex, data);
 			this.tex.Apply(true);
