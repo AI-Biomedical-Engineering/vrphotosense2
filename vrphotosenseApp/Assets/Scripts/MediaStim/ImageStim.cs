@@ -22,7 +22,7 @@ public class ImageStim : BaseMediaStim<ImageConfig> {
 		Utils.Fetch(url, this.RecvedImg, url => Debug.Log("Connection failed: " + url));
 	}
 	
-	private void RecvedImg(String url, uint status, byte[] data) {
+	private void RecvedImg(String url, uint status, String contentType, byte[] data) {
 		if (status > 250)
 			Debug.Log("Error (" + status + ") while fetching " + url);
 		

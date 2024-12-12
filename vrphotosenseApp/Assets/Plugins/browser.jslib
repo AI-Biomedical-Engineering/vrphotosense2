@@ -24,12 +24,18 @@ mergeInto(LibraryManager.library, {
 	browserFetch: function (url, callbackParam, responseCallback, errorCallback) {
 		fetch(UTF8ToString(url)).then(res => {
 			res.blob().then(blob => blob.arrayBuffer().then(data => {
+				var contentType = res.headers.get("Content-Type")
+				
+				var bufferSize = lengthBytesUTF8(contentType) + 1
+				var contentTypeBuff = _malloc(bufferSize)
+				stringToUTF8(contentType, contentTypeBuff, bufferSize)
 				
 				var buffer = _malloc(data.byteLength)
 				HEAPU8.set(new Uint8Array(data), buffer)
 				
-				Module.dynCall_viiii(responseCallback, callbackParam, res.status, buffer, data.byteLength)
+				Module.dynCall_viiiii(responseCallback, callbackParam, res.status, contentTypeBuff, buffer, data.byteLength)
 				_free(buffer)
+				_free(contentTypeBuff)
 			}))
 		}).catch(e => Module.dynCall_vi(errorCallback, callbackParam))
 	},
