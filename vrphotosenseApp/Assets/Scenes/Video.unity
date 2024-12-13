@@ -225,6 +225,11 @@ MonoBehaviour:
     offsetPos: {x: 0, y: 0}
     scale: {x: 1, y: 1}
     rot: 0
+    waveShape: 0
+    freq: 0
+    oscilPos: {x: 0, y: 0}
+    oscilScale: {x: 1, y: 1}
+    oscilRot: 0
     playbackSpeed: 1
 --- !u!328 &675576953
 VideoPlayer:

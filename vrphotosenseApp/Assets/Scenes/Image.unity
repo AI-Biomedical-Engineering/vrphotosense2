@@ -307,6 +307,11 @@ MonoBehaviour:
     offsetPos: {x: 0, y: 0}
     scale: {x: 1, y: 1}
     rot: 0
+    waveShape: 0
+    freq: 0
+    oscilPos: {x: 0, y: 0}
+    oscilScale: {x: 1, y: 1}
+    oscilRot: 0
     duration: 10
   svgRenderer: {fileID: 1241636833}
 --- !u!1 &864764025
