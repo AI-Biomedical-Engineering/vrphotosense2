@@ -4,13 +4,15 @@ using UnityEngine;
 public class Flash : MonoBehaviour {
 	public Color Color1 { get; set; }
 	public Color Color2 { get; set; }
-	public float Freq { set {this.period = 1 / (value * 2);} }
+	public float Color2Time { get; set; }
+	public float Freq { set {this.period = 1 / value;} }
 	
 	private float period;
 	private Material material;
 	private bool flashing;
-	private bool state;
+	private bool color2Active;
 	
+	private float tChangeColor2;
 	private float tChange;
 	
 	public void Awake() {
@@ -23,25 +25,31 @@ public class Flash : MonoBehaviour {
 			throw new InvalidOperationException("Flashing is already active");
 		
 		this.flashing = true;
-		this.state = false;
+		this.color2Active = false;
 		
-		ToggleColor();
-		this.tChange = Time.time + this.period;
+		this.tChange = Time.time;
+		Update();
 	}
 	
 	public void StopFlash() {
 		this.flashing = false;
 	}
 	
-	public void Update() {
-		if (this.flashing && Time.time > this.tChange) {
-			ToggleColor();
-			this.tChange += this.period;
+	void Update() {
+		if (this.flashing) {
+			if (this.color2Active && Time.time >= this.tChangeColor2)
+				SetColor(false);
+			
+			if (Time.time >= this.tChange) {
+				this.tChangeColor2 = this.tChange + this.Color2Time;
+				this.tChange += this.period;
+				SetColor(true);
+			}
 		}
 	}
 	
-	private void ToggleColor() {
-		this.state = ! this.state;
-		this.material.SetColor("_Color", this.state ? this.Color1 : this.Color2);
+	private void SetColor(bool enableColor2) {
+		this.color2Active = enableColor2;
+		this.material.SetColor("_Color", enableColor2 ? this.Color2 : this.Color1);
 	}
 }

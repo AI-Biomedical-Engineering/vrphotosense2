@@ -5,6 +5,7 @@ using UnityEngine;
 public class FlashingConfig {
 	public float[] freqs;
 	public float changeTime;
+	public float color2Time;
 	public Color color1;
 	public Color color2;
 }
@@ -27,6 +28,7 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	protected override void UpdateConfig() {
 		this.flash.Color1 = this.config.color1;
 		this.flash.Color2 = this.config.color2;
+		this.flash.Color2Time = this.config.color2Time;
 		
 		if (this.config.freqs.Length > this.freqPos)
 			this.flash.Freq = this.config.freqs[this.freqPos];
