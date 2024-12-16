@@ -67,11 +67,11 @@ public abstract class BaseMediaStim<T> : AbstractScene<T> where T : BaseMediaSti
 	
 	protected void ShowTexture(Texture tex) {
 		if (tex.height > tex.width)
-			this.correctedScale = new Vector2(tex.height / (float) tex.width, 1);
+			this.correctedScale = new Vector2(tex.width / (float) tex.height, 1);
 		else
-			this.correctedScale = new Vector2(1, tex.width / (float) tex.height);
+			this.correctedScale = new Vector2(1, tex.height / (float) tex.width);
 		
-		this.correctedScale *= this.config.scale;
+		this.correctedScale *= this.config.scale * BaseConfigPlayer.config.TextureScaling;
 		SetTextureParams(tex);
 		this.mat.SetTexture("_MainTex", tex);
 	}
@@ -85,7 +85,9 @@ public abstract class BaseMediaStim<T> : AbstractScene<T> where T : BaseMediaSti
 	}
 	
 	private void SetTextureTransform(float oscilOffset) {
-		this.mat.SetVector("_Offset", this.config.offsetPos + this.config.oscilPos * (oscilOffset * 2 - 1));
+		Vector2 pos = this.config.offsetPos + this.config.oscilPos * (oscilOffset * 2 - 1);
+		this.mat.SetVector("_Offset", pos * BaseConfigPlayer.config.TextureScaling);
+		
 		this.mat.SetFloat("_Rot", (this.config.rot + this.config.oscilRot * oscilOffset) * (float) Math.PI / 180);
 		this.mat.SetVector("_Scale", this.correctedScale * (1 - oscilOffset) +
 			this.correctedScale * this.config.oscilScale * oscilOffset);

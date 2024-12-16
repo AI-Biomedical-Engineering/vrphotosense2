@@ -1,6 +1,8 @@
 using UnityEngine;
 
 public class ConfigPlayer : BaseConfigPlayer {
+	public override float TextureScaling { get {return 0.34f;} }
+	
 	public GameObject fpsCounter;
 	
 	private ResetHead resetHead;

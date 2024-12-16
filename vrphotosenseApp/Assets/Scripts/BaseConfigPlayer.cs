@@ -14,6 +14,7 @@ public enum DebugMode : byte {
 
 public abstract class BaseConfigPlayer : MonoBehaviour {
 	public static BaseConfigPlayer config;
+	public abstract float TextureScaling { get; }
 	
 	public GameObject streamCamera;
 	private TrackingMode trackMode;

@@ -31,9 +31,9 @@ Shader "Unlit/CenteredTexture" {
 				v2f o;
 				o.vertex = UnityObjectToClipPos(vertex);
 				
-				o.uv = (uv + _Offset - float2(0.5, 0.5));
+				o.uv = (uv - _Offset - float2(0.5, 0.5));
 				o.uv = mul(o.uv, rotMatrix);
-				o.uv = (o.uv * _Scale) + float2(0.5, 0.5);
+				o.uv = (o.uv / _Scale) + float2(0.5, 0.5);
 				return o;
 			}
 			
