@@ -1,11 +1,18 @@
 export const boolVar = {size: value => 1, toBytes: (view, value) => view.setUint8(0, value ? 1 : 0)}
+export const byteVar = {size: value => 1, toBytes: (view, value) => view.setUint8(0, value)}
 export const intVar = {size: value => 4, toBytes: (view, value) => view.setInt32(0, value)}
 export const floatVar = {size: value => 4, toBytes: (view, value) => view.setFloat32(0, value)}
+export const vector2Var = {size: value => 8, toBytes: (view, value) => {
+	view.setFloat32(0, value[0])
+	view.setFloat32(4, value[1])
+}}
 export const colorVar = {size: value => 12, toBytes: (view, value) => {
 	view.setFloat32(0, value[0])
 	view.setFloat32(4, value[1])
 	view.setFloat32(8, value[2])
 }}
+export const enumVar = byteVar
+
 export class ArrayVar {
 	constructor(elemsType) {
 		this.elemsType = elemsType
@@ -24,6 +31,16 @@ export class ArrayVar {
 		}
 	}
 }
+
+class StringVar extends ArrayVar {
+	constructor() {
+		super(byteVar)
+	}
+	toBytes(view, str) {
+		return super.toBytes(view, [...str].map(ch => ch.charCodeAt(0)))
+	}
+}
+export const stringVar = new StringVar()
 
 export class Config {
 	constructor(id, vars) {

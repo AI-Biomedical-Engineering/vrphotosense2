@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,6 +27,20 @@ class MsgParser {
 		}
 	}
 	
+	private class EnumType : ParserType {
+		private Type type;
+		
+		public EnumType(Type type) {
+			this.type = type;
+		}
+		public Int32 GetSize(byte[] arr, Int32 offset) {
+			return 1;
+		}
+		public System.Object ToObj(byte[] arr, Int32 offset) {
+			return Enum.ToObject(this.type, arr[offset]);
+		}
+	}
+	
 	private class ArrayType : ParserType {
 		private Type elemsType;
 		
@@ -43,7 +58,7 @@ class MsgParser {
 		public Int32 GetSize(byte[] arr, Int32 offset) {
 			return GetElementsCount(arr, offset) * GetParserType(this.elemsType).GetSize(arr, offset + 4) + 4;
 		}
-		public System.Object ToObj(byte[] arr, Int32 offset) {
+		public virtual System.Object ToObj(byte[] arr, Int32 offset) {
 			Array array = Array.CreateInstance(this.elemsType, GetElementsCount(arr, offset));
 			offset += 4;
 			ParserType elemParserType = GetParserType(this.elemsType);
@@ -56,6 +71,14 @@ class MsgParser {
 			return array;
 		}
 	}
+	private class StringType : ArrayType {
+		public StringType() : base(typeof(byte)) {}
+		
+		public override System.Object ToObj(byte[] arr, Int32 offset) {
+			return Encoding.UTF8.GetString((byte[]) base.ToObj(arr, offset));
+		}
+	}
+	
 	private static Dictionary<Type, ParserType> types;
 	public static Action<byte[], Int32, Int32> fixEndianness;
 	
@@ -64,6 +87,7 @@ class MsgParser {
 		
 		types = new Dictionary<Type, ParserType>() {
 			{typeof(bool), new GenericType(1, (arr, offset) => arr[offset] != 0)},
+			{typeof(byte), new GenericType(1, (arr, offset) => arr[offset])},
 			{typeof(int), new GenericType(4, (arr, offset) => {
 				fixEndianness(arr, offset, 4);
 				return BitConverter.ToInt32(arr, offset);
@@ -71,6 +95,13 @@ class MsgParser {
 			{typeof(float), new GenericType(4, (arr, offset) => {
 				fixEndianness(arr, offset, 4);
 				return BitConverter.ToSingle(arr, offset);
+			})},
+			{typeof(Vector2), new GenericType(8, (arr, offset) => {
+				fixEndianness(arr, offset, 4);
+				fixEndianness(arr, offset + 4, 4);
+				
+				return new Vector2(BitConverter.ToSingle(arr, offset),
+					BitConverter.ToSingle(arr, offset + 4));
 			})},
 			{typeof(Color), new GenericType(12, (arr, offset) => {
 				fixEndianness(arr, offset, 4);
@@ -81,10 +112,11 @@ class MsgParser {
 					BitConverter.ToSingle(arr, offset + 4),
 					BitConverter.ToSingle(arr, offset + 8), 0);
 			})},
+			{typeof(String), new StringType()}
 		};
 	}
 	private static ParserType GetParserType(Type t) {
-		return t.IsArray ? new ArrayType(t.GetElementType()) : types[t];
+		return t.IsArray ? new ArrayType(t.GetElementType()) : (t.IsEnum ? new EnumType(t) : types[t]);
 	}
 	
 	public static System.Object ByteArrayToObj(byte[] arr, Int32 offset, Type objType) {
