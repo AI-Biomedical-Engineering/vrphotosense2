@@ -20,8 +20,9 @@ class App {
 		
 		this.messageActions = {
 			[AppMessage.STATUS]: this.stimScreen.setProgress.bind(this.stimScreen),
-			[AppMessage.STOP]: this.stimScreen.paused.bind(this.stimScreen),
-			[AppMessage.FINISHED]: this.stimScreen.paused.bind(this.stimScreen)
+			[AppMessage.PAUSED]: this.stimScreen.paused.bind(this.stimScreen),
+			[AppMessage.FINISHED]: this.stimScreen.paused.bind(this.stimScreen),
+			[AppMessage.EM_STOP]: this.stimScreen.paused.bind(this.stimScreen)
 		}
 	}
 	

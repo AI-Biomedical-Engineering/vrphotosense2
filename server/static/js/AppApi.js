@@ -19,8 +19,9 @@ export const Commands = Object.freeze({
 
 export const AppMessage = Object.freeze({
 	STATUS: 0,
-	STOP: 1,
-	FINISHED: 2
+	PAUSED: 1,
+	FINISHED: 2,
+	EM_STOP: 3
 })
 
 export class AppApi {

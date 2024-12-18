@@ -14,8 +14,9 @@ public enum Command : byte {
 
 public enum AppMessage : byte {
 	STATUS = 0,
-	STOP,
-	FINISHED
+	PAUSED,
+	FINISHED,
+	EM_STOP
 }
 
 public class RemoteControl {
@@ -29,6 +30,7 @@ public class RemoteControl {
 	private uint statusUpdateMS;
 	private bool streamEnabled;
 	private byte activeSceneId = 0;
+	private byte[] pendingConfigMsg = null;
 	private Utils.IInterval statusInterval = null;
 	
 	public RemoteControl(String wsServerURL, uint statusUpdateMS, bool streamEnabled) {
@@ -112,10 +114,9 @@ public class RemoteControl {
 		byte configId = msg[1];
 		
 		if (configId != this.activeSceneId) {
-			AsyncOperation loadSceneOp = SceneManager.LoadSceneAsync(sceneNames[configId]);
-			loadSceneOp.completed += op => SetSceneConfig(msg);
-			
 			this.activeSceneId = configId;
+			this.pendingConfigMsg = msg;
+			SceneManager.LoadSceneAsync(sceneNames[configId]);
 		}
 		else
 			SetSceneConfig(msg);
@@ -123,5 +124,15 @@ public class RemoteControl {
 	private void SetSceneConfig(byte[] msg) {
 		SceneController scene = SceneController.active;
 		scene.SetConfig(MsgParser.ByteArrayToObj(msg, 2, scene.GetConfigType()));
+	}
+	
+	public void LoadedScene() {
+		if (this.pendingConfigMsg != null) {
+			SendMessage(AppMessage.PAUSED);
+			SetSceneConfig(this.pendingConfigMsg);
+			
+			this.pendingConfigMsg = null;
+		}
+		MsgPanel.active.SetColor(Color.black);
 	}
 }

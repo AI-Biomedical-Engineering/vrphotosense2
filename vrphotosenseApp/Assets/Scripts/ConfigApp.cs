@@ -16,8 +16,13 @@ public class ConfigApp : MonoBehaviour {
 	public DebugMode debugMode;
 	
 	void Start() {
-		if (remoteControl == null)
+		bool startup = remoteControl == null;
+		if (startup)
 			AppStartup();
+		
+		remoteControl.LoadedScene();
+		if (startup)
+			MsgPanel.active.SetMsg("Not connected");
 		
 		BaseConfigPlayer.config.ConfigStream(config.streamEnabled, config.streamFramerate);
 		BaseConfigPlayer.config.SetTrackingMode(this.trackMode);
@@ -29,8 +34,6 @@ public class ConfigApp : MonoBehaviour {
 	}
 	
 	private void AppStartup() {
-		MsgPanel.active.SetMsg("Not connected");
-		
 		WSUrl = Utils.GetWSUrl(WSUrl);
 		remoteControl = new RemoteControl(WSUrl, config.statusUpdateMS, config.streamEnabled);
 	}
