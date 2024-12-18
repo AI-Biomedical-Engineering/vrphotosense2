@@ -79,6 +79,37 @@ export class FloatVar extends InputVarUI {
 	}
 }
 
+export class StringVar extends InputVarUI {
+	constructor(container, defaultVal = "") {
+		super(container, defaultVal, {type: "text"})
+	}
+}
+
+export class Vector2Var {
+	constructor(container, defaultVal = [0, 0]) {
+		this.div = document.createElement("div")
+		
+		this.xVar = new FloatVar(this.div, defaultVal[0])
+		this.yVar = new FloatVar(this.div, defaultVal[1])
+		
+		container.appendChild(this.div)
+	}
+	deleteUI() {
+		this.xVar.deleteUI()
+		this.yVar.deleteUI()
+		
+		this.div.remove()
+	}
+	
+	getValue() {
+		return [this.xVar.getValue(), this.yVar.getValue()]
+	}
+	setValue(val) {
+		this.xVar.setValue(val[0])
+		this.xVar.setValue(val[1])
+	}
+}
+
 export class ColorVar {
 	constructor(container, defaultVal = [0, 0, 0]) {
 		this.div = document.createElement("div")
@@ -101,6 +132,36 @@ export class ColorVar {
 	setValue(val) {
 		for (let i = 0; i < this.components.length; i++)
 			this.components[i].setValue(val[i])
+	}
+}
+
+export class EnumVar {
+	constructor(container, optionNames, defaultVal = 0) {
+		this.select = document.createElement("select")
+		
+		let i = 0
+		for (let optionName of optionNames) {
+			let option = document.createElement("option")
+			option.innerText = optionName
+			option.value = i++
+			
+			this.select.appendChild(option)
+		}
+		this.setValue(defaultVal)
+		container.appendChild(this.select)
+	}
+	deleteUI() {
+		for (let option of this.select.children)
+			option.remove()
+		
+		this.select.remove()
+	}
+	
+	getValue() {
+		return parseInt(this.select.value)
+	}
+	setValue(val) {
+		this.select.value = val.toString()
 	}
 }
 
