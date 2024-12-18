@@ -11,12 +11,12 @@ public class ImageConfig : BaseMediaStimConfig {
 public class ImageStim : BaseMediaStim<ImageConfig> {
 	public SVGRenderer svgRenderer;
 	
+	private CustomTimer timer;
 	private Texture2D tex;
-	private float remainingTime;
-	private float lastStartTime;
 	private Coroutine imageCoroutine = null;
 	
 	protected override void Init() {
+		this.timer = new CustomTimer();
 		this.tex = new Texture2D(1, 1, TextureFormat.ARGB32, true);
 		this.tex.anisoLevel = 7;
 	}
@@ -42,27 +42,36 @@ public class ImageStim : BaseMediaStim<ImageConfig> {
 		}
 	}
 	
+	protected override void UpdateConfig() {
+		base.UpdateConfig();
+		this.config.duration = Math.Max(this.config.duration, 0.001f);
+		
+		if (this.imageCoroutine != null) {
+			StopEstim();
+			RunEstim();
+		}
+	}
+	
 	protected override void RunEstim() {
-		this.lastStartTime = Time.time;
 		this.imageCoroutine = StartCoroutine(RunImage());
+		this.timer.Start();
 	}
 	
 	protected override void StopEstim() {
 		StopCoroutine(this.imageCoroutine);
 		this.imageCoroutine = null;
-		this.remainingTime -= Time.time - this.lastStartTime;
+		this.timer.Stop();
 	}
 	protected override void ResetEstim() {
-		this.remainingTime = this.config.duration;
+		this.timer.Reset();
 	}
 	
 	public override float GetStatus() {
-		float remaining = this.remainingTime - (this.imageCoroutine != null ? Time.time - this.lastStartTime : 0);
-		return 1 - (remaining / this.config.duration);
+		return this.timer.ActiveTime / this.config.duration;
 	}
 	
 	private IEnumerator RunImage() {
-		yield return new WaitForSeconds(this.remainingTime);
+		yield return new WaitForSeconds(this.config.duration - this.timer.ActiveTime);
 		Finished();
 	}
 }

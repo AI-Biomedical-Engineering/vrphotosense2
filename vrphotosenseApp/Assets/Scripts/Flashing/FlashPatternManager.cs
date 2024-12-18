@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -11,49 +12,65 @@ public class FlashingConfig {
 }
 
 public class FlashPatternManager : AbstractScene<FlashingConfig> {
+	private CustomTimer timer;
 	private Flash flash;
 	private int freqPos;
-	private Coroutine patternCoroutine;
+	private Coroutine patternCoroutine = null;
 	
 	void Start() {
+		this.timer = new CustomTimer();
 		this.flash = GetComponent<Flash>();
+		
 		ResetEstim();
 		UpdateConfig();
 	}
 	
 	public override float GetStatus() {
-		return this.freqPos / (float) this.config.freqs.Length;
+		return (this.freqPos + this.timer.ActiveTime / this.config.changeTime) / this.config.freqs.Length;
 	}
 	
 	protected override void UpdateConfig() {
 		this.flash.Color1 = this.config.color1;
 		this.flash.Color2 = this.config.color2;
 		this.flash.Color2Time = this.config.color2Time;
+		this.config.changeTime = Math.Max(this.config.changeTime, 0.001f);
 		
-		if (this.config.freqs.Length > this.freqPos)
-			this.flash.Freq = this.config.freqs[this.freqPos];
+		if (this.config.freqs.Length == 0) {
+			this.config.freqs = new float[] {1};
+			this.config.changeTime = 0.001f;
+		}
+		if (this.patternCoroutine != null) {
+			StopCoroutine(this.patternCoroutine);
+			this.patternCoroutine = StartCoroutine(RunPattern());
+		}
 	}
 	
 	protected override void RunEstim() {
+		this.flash.Freq = this.config.freqs[this.freqPos];
+		this.flash.StartFlash();
 		this.patternCoroutine = StartCoroutine(RunPattern());
+		this.timer.Start();
 	}
 	
 	protected override void StopEstim() {
 		this.flash.StopFlash();
 		StopCoroutine(this.patternCoroutine);
+		this.patternCoroutine = null;
+		this.timer.Stop();
 	}
 	
 	protected override void ResetEstim() {
 		this.freqPos = 0;
+		this.timer.Reset();
 	}
 	
 	private IEnumerator RunPattern() {
-		this.flash.Freq = this.config.freqs[this.freqPos];
-		this.flash.StartFlash();
 		
 		while (this.freqPos < this.config.freqs.Length) {
 			this.flash.Freq = this.config.freqs[this.freqPos];
-			yield return new WaitForSeconds(this.config.changeTime);
+			yield return new WaitForSeconds(this.config.changeTime - this.timer.ActiveTime);
+			
+			this.timer.Reset();
 			this.freqPos++;
 		}
 		Finished();

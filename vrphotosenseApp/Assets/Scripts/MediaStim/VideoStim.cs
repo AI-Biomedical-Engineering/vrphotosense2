@@ -17,9 +17,14 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 	}
 	
 	protected override void LoadMedia(String url) {
+		bool resume = this.videoPlayer.isPlaying;
 		this.videoPlayer.sendFrameReadyEvents = true;
 		this.videoPlayer.url = url;
-		this.videoPlayer.Prepare();
+		
+		if (resume)
+			this.videoPlayer.Play();
+		else
+			this.videoPlayer.Prepare();
 	}
 	private void FrameReadyEvent(VideoPlayer source, long frame) {
 		this.videoPlayer.sendFrameReadyEvents = false;
@@ -48,6 +53,7 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 	}
 	
 	public override float GetStatus() {
-		return (float) (this.videoPlayer.time / this.videoPlayer.length);
+		return this.videoPlayer.length == 0 ? 0 :
+			(float) (this.videoPlayer.time / this.videoPlayer.length);
 	}
 }
