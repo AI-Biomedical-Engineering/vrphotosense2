@@ -29,7 +29,8 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 	private void FrameReadyEvent(VideoPlayer source, long frame) {
 		this.videoPlayer.sendFrameReadyEvents = false;
 		
-		RenderTexture renderTexture = new RenderTexture((int) this.videoPlayer.width, (int) this.videoPlayer.height, 24);
+		RenderTexture renderTexture = new RenderTexture((int) this.videoPlayer.width, (int) this.videoPlayer.height,
+			24, RenderTextureFormat.ARGB32);
 		this.videoPlayer.targetTexture = renderTexture;
 		ShowTexture(renderTexture);
 	}
