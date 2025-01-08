@@ -9,7 +9,8 @@ class App {
 		this.api = new AppApi(wsURL, this.#appMessage.bind(this), this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
 		this.startScreen = new UI.StartScreen()
-		this.configsSelector = new UI.ConfigsSelector()
+		this.configTypeSelector = new UI.ConfigTypeSelector()
+		this.configSelector = new UI.ConfigSelector(name => console.log(`Selected config ${name}`))
 		
 		this.stimScreen = new UI.StimScreen(this.api)
 		new UI.ConfigScreen(this.stimScreen, enabled => {})
