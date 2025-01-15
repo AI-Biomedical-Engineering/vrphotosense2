@@ -15,18 +15,19 @@ class HideElemController {
 	
 	hide() {
 		this.hiding = true
-		this.elem.style.opacity = "0%"
+		this.elem.classList.remove("visible")
 	}
 	show() {
 		this.hiding = false
 		this.elem.style.display = "block"
-		requestAnimationFrame(() => requestAnimationFrame(() => this.elem.style.opacity = "100%"))
+		requestAnimationFrame(() => requestAnimationFrame(() => this.elem.classList.add("visible")))
 	}
 }
 
 class ButtonsSelector {
-	constructor(container, selectedCallback) {
+	constructor(container, selectedCallback, selectOnSelected = false) {
 		this.selectedCallback = selectedCallback
+		this.selectOnSelected = selectOnSelected
 		this.selected = null
 		this.buttons = {}
 		
@@ -44,7 +45,7 @@ class ButtonsSelector {
 	select(btName, callCallback = true) {
 		let bt = this.buttons[btName]
 		
-		if (bt !== undefined && bt !== this.selected) {
+		if (bt !== undefined && (bt !== this.selected || this.selectOnSelected)) {
 			if (callCallback)
 				this.selectedCallback(btName)
 			
@@ -60,10 +61,49 @@ class ButtonsSelector {
 	}
 }
 
+class Dialog {
+	constructor(container) {
+		this.cancelArea = document.createElement("div")
+		this.cancelArea.onmousedown = this.closeDialog.bind(this)
+		this.cancelArea.id = "dialogCancelArea"
+		
+		document.body.appendChild(this.cancelArea)
+		
+		this.hideController = new HideElemController(container)
+		this.hideController.show()
+	}
+	
+	closeDialog() {
+		this.cancelArea.remove()
+		this.hideController.hide()
+	}
+}
+
+class InputDialog extends Dialog {
+	constructor(container, callback, initialValue) {
+		super(container)
+		this.callback = callback
+		this.dialogInput = container.querySelector(".dialogInput")
+		
+		this.dialogInput.value = initialValue
+		requestAnimationFrame(() => {
+			this.dialogInput.focus()
+			this.dialogInput.select()
+		})
+		this.dialogInput.onkeypress = this.#confirmCallback.bind(this)
+	}
+	
+	#confirmCallback(e) {
+		if (e.keyCode === 13) {
+			if (this.callback(this.dialogInput.value))
+				this.closeDialog()
+		}
+	}
+}
+
 export class StartScreen {
 	constructor() {
 		this.hideController = new HideElemController(document.getElementById("startScreen"))
-		this.hide()
 		
 		this.label = document.getElementById("startScreenMsg")
 		this.inputID = document.getElementsByName("clientID")[0]
@@ -111,6 +151,87 @@ export class StartScreen {
 }
 
 export class ConfigScreen {
+	constructor(api, configStorage, stimScreen, enabledCallback, savedConfigCallback) {
+		this.configUI = null
+		this.selectedConfigName = null
+		
+		this.configStorage = configStorage
+		this.savedConfigCallback = savedConfigCallback
+		this.configTypeSelector = new ConfigTypeSelector(this.#changeConfigType.bind(this))
+		
+		this.configContainer = document.getElementById("config")
+		this.saveBt = document.getElementById("saveBt")
+		
+		this.saveBt.disabled = true
+		this.saveBt.onclick = e => this.#saveConfig(this.selectedConfigName)
+		document.getElementById("saveAsBt").onclick = e => new InputDialog(
+			document.getElementById("saveAsNameDialog"), this.#saveAsCallback.bind(this), this.selectedConfigName)
+		document.getElementById("uploadBt").onclick = e => api.setConfig(configs[this.configUI.type.id][2], this.configUI.getValue())
+		
+		this.#setConfigType(configs[0][2].id)
+		new ConfigScreenLayout(stimScreen, enabledCallback)
+	}
+	
+	#changeConfigType(type) {
+		if (this.configUI !== null)
+			this.configUI.deleteUI()
+		
+		this.configUI = createConfigUI(this.configContainer, configs[type])
+	}
+	#setConfigType(type) {
+		this.configTypeSelector.setConfigType(type)
+		this.#changeConfigType(type)
+	}
+	
+	#saveAsCallback(name) {
+		if (name.length > 0) {
+			this.#saveConfig(name)
+			return true
+		}
+		else
+			return false
+	}
+	#saveConfig(name) {
+		this.configStorage.saveConfig(name, this.configUI.type.id, this.configUI.getValue())
+		this.savedConfigCallback(name)
+		this.selectedConfigName = name
+		this.saveBt.disabled = false
+	}
+	
+	setConfig(config) {
+		if (this.configTypeSelector.getConfigType() !== config.type)
+			this.#setConfigType(config.type)
+		
+		this.configUI.setValue(config.config)
+		this.selectedConfigName = config.name
+		this.saveBt.disabled = false
+	}
+}
+
+class ConfigTypeSelector {
+	constructor(selectedCallback) {
+		let container = document.getElementById("configTypeSelector")
+		for (let bt of Array.from(container.children))
+			bt.remove()
+		
+		for (let config of configs) {
+			let bt = document.createElement("button")
+			bt.innerText = config[0]
+			bt.name = config[2].id.toString()
+			
+			container.appendChild(bt)
+		}
+		this.selector = new ButtonsSelector(container, id => selectedCallback(parseInt(id)))
+	}
+	setConfigType(type) {
+		this.selector.setSelected(type.toString())
+	}
+	getConfigType() {
+		return parseInt(this.selector.selected)
+	}
+}
+
+class ConfigScreenLayout {
 	constructor(stimScreen, enabledCallback) {
 		this.stimScreen = stimScreen
 		this.enabledCallback = enabledCallback
@@ -153,35 +274,6 @@ export class ConfigScreen {
 	}
 }
 
-export class ConfigTypeSelector {
-	constructor() {
-		this.configUI = null
-		this.configsSelect = document.getElementById("configTypeSelector")
-		this.configContainer = document.getElementById("config")
-		
-		for (let configName in configs) {
-			let option = document.createElement("option")
-			option.innerText = configs[configName][0]
-			option.value = configName
-			
-			this.configsSelect.appendChild(option)
-		}
-		this.configsSelect.onchange = this.#changeConfig.bind(this)
-		this.#changeConfig()
-	}
-	
-	#changeConfig(e) {
-		if (this.configUI !== null)
-			this.configUI.deleteUI()
-		
-		this.configUI = createConfigUI(this.configContainer, configs[this.configsSelect.value])
-	}
-	
-	getSelected() {
-		return this.configUI
-	}
-}
-
 export class StimScreen {
 	constructor(api) {
 		this.stimControl = new StimControl(api)
@@ -190,6 +282,7 @@ export class StimScreen {
 		this.setProgress = this.progress.setProgress.bind(this.progress)
 		this.setEnabled = this.stimControl.setEnabled.bind(this.stimControl)
 		this.paused = this.stimControl.paused.bind(this.stimControl)
+		this.stop = this.stimControl.stop.bind(this.stimControl)
 		
 		this.stream = document.getElementById("stream")
 		this.eye = document.getElementsByClassName("eye")[0]
@@ -212,7 +305,7 @@ export class StimControl {
 		this.#updatePlayPauseBt()
 		
 		document.getElementById("playPause").onclick = this.#togglePlay.bind(this)
-		document.getElementById("stop").onclick = this.#stop.bind(this)
+		document.getElementById("stop").onclick = this.stop.bind(this)
 		document.getElementById("skipPrev").onclick = this.skipPrev.bind(this)
 		document.getElementById("skipNext").onclick = this.skipNext.bind(this)
 	}
@@ -230,7 +323,7 @@ export class StimControl {
 		this.api.sendCommand(this.playing ? Commands.START : Commands.STOP)
 		this.#updatePlayPauseBt()
 	}
-	#stop() {
+	stop() {
 		this.api.sendCommand(Commands.RESET)
 		
 		this.playing = false
@@ -252,7 +345,7 @@ export class StimControl {
 			e.preventDefault()
 			break
 		case 80: //P
-			this.#stop()
+			this.stop()
 			break
 		case 37: //Arrow left
 			this.skipPrev()
@@ -264,7 +357,7 @@ export class StimControl {
 	}
 }
 
-export class Progress {
+class Progress {
 	constructor() {
 		this.progress = document.getElementsByTagName("progress")[0]
 	}
@@ -278,6 +371,7 @@ export class ConfigSelector {
 		this.selectedCallback = selectedCallback
 		this.configsContainer = document.getElementById("configNames")
 		this.configsDef = []
+		this.configSelector = null
 		this.selectedConfig = null
 		this.selectedType = -1
 		
@@ -302,8 +396,8 @@ export class ConfigSelector {
 				this.configsContainer.appendChild(configBt)
 			}
 		}
-		let configSelector = new ButtonsSelector(this.configsContainer, this.#selectedConfig.bind(this))
-		configSelector.setSelected(this.selectedConfig)
+		this.configSelector = new ButtonsSelector(this.configsContainer, this.#selectedConfig.bind(this), true)
+		this.configSelector.setSelected(this.selectedConfig)
 	}
 	deselect() {
 		this.selectedType = -1
@@ -311,6 +405,15 @@ export class ConfigSelector {
 		this.configGroupsSelector.deselect()
 		
 		this.#updateConfigNames()
+	}
+	setSelectedConfig(configName) {
+		let config = this.configsDef.find(conf => conf.name === configName)
+		this.selectedConfig = configName
+		
+		if (config.uiType !== this.selectedType)
+			this.configGroupsSelector.select(config.uiType.toString())
+		else
+			this.configSelector.setSelected(configName)
 	}
 	
 	#selectedConfigType(id) {

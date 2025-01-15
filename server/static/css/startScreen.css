@@ -6,7 +6,12 @@
 	
 	backdrop-filter: blur(3px) brightness(0.4);
 	transition: opacity 0.15s ease;
+	opacity: 0%;
 	z-index: 1;
+}
+
+#startScreen.visible {
+	opacity: 100%;
 }
 
 #startScreen > div {

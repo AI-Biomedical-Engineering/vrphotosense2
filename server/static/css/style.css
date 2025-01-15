@@ -1,5 +1,6 @@
 :root {
 	--xMargin: 1.1em;
+	--selectorLinesColor: #d6d6d6;
 }
 
 * {
@@ -95,12 +96,54 @@ img.xflipped {
 	transform: scaleX(-1);
 }
 
+div:has(>.dialog) {
+	position: relative;
+}
+.dialog {
+	background: white;
+	transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+	opacity: 0%;
+	
+	position: absolute;
+	top: calc(100% + 7px);
+	display: none;
+	padding: 1em;
+	border-radius: 6px;
+	filter: drop-shadow(0px 0px 10px rgba(90, 90, 90, 0.1)) drop-shadow(0px 0px 5px rgba(90, 90, 90, 0.2));
+	
+	z-index: 1;
+}
+.dialog.visible {
+	opacity: 100%;
+	transform: translateY(10px);
+}
+.dialog::before {
+	content: "";
+	background: white;
+	
+	position: absolute;
+	top: -8px;
+	width: 16px;
+	height: 16px;
+	transform: rotate(45deg);
+	
+	z-index: -1;
+}
+#dialogCancelArea {
+	opacity: 0%;
+	
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+}
+
 ::-webkit-scrollbar {
 	background: #aaa;
 	width: 6px;
 	height: 6px;
 }
-
 ::-webkit-scrollbar-thumb {
 	background: #666;
 }

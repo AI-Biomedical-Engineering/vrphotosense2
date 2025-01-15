@@ -1,8 +1,9 @@
 import * as C from "./configParser.js"
 import * as UI from "./ConfigUI.js"
 
-export default {
-	flashing: ["Flashing", {
+export default [
+	[
+		"Flashing", {
 			freqs: [UI.LabeledVar, "Frequencies", [UI.ArrayVar, [UI.FloatVar]]],
 			changeTime: [UI.LabeledVar, "Change time", [UI.FloatVar]],
 			color2Time: [UI.LabeledVar, "Color 2 time", [UI.FloatVar]],
@@ -16,8 +17,8 @@ export default {
 			color1: C.colorVar,
 			color2: C.colorVar
 		})
-	],
-	image: ["Image", {
+	], [
+		"Image", {
 			duration: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]],
 			
 			url: [UI.LabeledVar, "URL", [UI.StringVar]],
@@ -46,8 +47,8 @@ export default {
 			oscilScale: C.vector2Var,
 			oscilRot: C.floatVar
 		})
-	],
-	video: ["Video", {
+	], [
+		"Video", {
 			playbackSpeed: [UI.LabeledVar, "Speed", [UI.FloatVar, 1]],
 			
 			url: [UI.LabeledVar, "URL", [UI.StringVar]],
@@ -77,4 +78,4 @@ export default {
 			oscilRot: C.floatVar
 		})
 	]
-}
+]

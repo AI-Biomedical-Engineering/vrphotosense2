@@ -1,5 +1,60 @@
 import {AppMessage, AppApi, AutoConnectAppApi} from "./AppApi.js"
+import {ConfigStorage} from "./ConfigStorage.js"
 import * as UI from "./UI.js"
+import configs from "./configs.js"
+
+class ConfigsManager {
+	constructor(api, stimScreen) {
+		this.api = api
+		this.stimScreen = stimScreen
+		
+		this.selectedConfig = null
+		this.configEnabled = false
+		this.configStorage = new ConfigStorage()
+		
+		this.configSelector = new UI.ConfigSelector(this.#selectedConfig.bind(this))
+		this.#reloadConfigNames(null)
+		this.configScreen = new UI.ConfigScreen(this.api, this.configStorage, this.stimScreen,
+			this.#changeConfigModeCallback.bind(this), this.#reloadConfigNames.bind(this))
+	}
+	
+	#sendSelectedConfig() {
+		this.api.setConfig(configs[this.selectedConfig.type][2], this.selectedConfig.config)
+	}
+	#setSelectedConfig(name) {
+		this.selectedConfig = this.configStorage.getConfig(name)
+		this.selectedConfig.name = name
+	}
+	
+	#selectedConfig(name) {
+		this.stimScreen.stop()
+		this.#setSelectedConfig(name)
+		this.#sendSelectedConfig()
+		
+		if (this.configEnabled)
+			this.configScreen.setConfig(this.selectedConfig)
+	}
+	
+	#reloadConfigNames(selectedConfigName) {
+		this.configSelector.loadConfigs(this.configStorage.getConfigNames())
+		
+		if (selectedConfigName !== null) {
+			this.#setSelectedConfig(selectedConfigName)
+			this.configSelector.setSelectedConfig(selectedConfigName)
+		}
+	}
+	
+	#changeConfigModeCallback(enabled) {
+		this.configEnabled = enabled
+		
+		if (this.selectedConfig !== null) {
+			if (enabled)
+				this.configScreen.setConfig(this.selectedConfig)
+			else
+				this.#sendSelectedConfig()
+		}
+	}
+}
 
 class App {
 	constructor(autoappid, wsURL, streamURL) {
@@ -9,11 +64,8 @@ class App {
 		this.api = new AppApi(wsURL, this.#appMessage.bind(this), this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
 		this.startScreen = new UI.StartScreen()
-		this.configTypeSelector = new UI.ConfigTypeSelector()
-		this.configSelector = new UI.ConfigSelector(name => console.log(`Selected config ${name}`))
-		
 		this.stimScreen = new UI.StimScreen(this.api)
-		new UI.ConfigScreen(this.stimScreen, enabled => {})
+		new ConfigsManager(this.api, this.stimScreen)
 		
 		this.#enableStartScreen()
 		if (this.autoappid)

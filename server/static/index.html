@@ -12,7 +12,7 @@
 	<script type="module" src="js/main.js"></script>
 </head>
 <body>
-	<div id="startScreen">
+	<div id="startScreen" class="visible">
 		<div>
 			<label id="startScreenMsg"></label>
 			<input type="number" step="1" name="clientID" placeholder="ID" />
@@ -44,7 +44,7 @@
 			
 			<div id="configSelector">
 				<div id="configGroups">
-					<button name="0">Flash</button>
+					<button name="0">Flashing</button>
 					<button name="1">Static Image</button>
 					<button name="10">Oscilating Image</button>
 					<button name="2">Video</button>
@@ -55,7 +55,17 @@
 		</div>
 		
 		<div id="configScreen">
-			<select id="configTypeSelector"></select>
+			<div id="configControls">
+				<button id="uploadBt">Upload</button>
+				<button id="saveBt">Save</button>
+				<div>
+					<button id="saveAsBt">Save as...</button>
+					<div id="saveAsNameDialog" class="dialog">
+						<input class="dialogInput" type="text" />
+					</div>
+				</div>
+			</div>
+			<div id="configTypeSelector"></div>
 			<div id="config"></div>
 		</div>
 	</main>
