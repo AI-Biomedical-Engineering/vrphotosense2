@@ -6,7 +6,9 @@ export class ConfigScreen {
 	constructor(api, configStorage, stimScreen, enabledCallback, savedConfigCallback) {
 		this.configUI = null
 		this.selectedConfigName = null
+		this.saveAsDialog = null
 		
+		this.api = api
 		this.configStorage = configStorage
 		this.savedConfigCallback = savedConfigCallback
 		this.configTypeSelector = new ConfigTypeSelector(this.#changeConfigType.bind(this))
@@ -16,12 +18,12 @@ export class ConfigScreen {
 		
 		this.saveBt.disabled = true
 		this.saveBt.onclick = e => this.#saveConfig(this.selectedConfigName)
-		document.getElementById("saveAsBt").onclick = e => new InputDialog(
-			document.getElementById("saveAsNameDialog"), this.#saveAsCallback.bind(this), this.selectedConfigName)
-		document.getElementById("uploadBt").onclick = e => api.setConfig(configs[this.configUI.type.id][2], this.configUI.getValue())
+		document.getElementById("saveAsBt").onclick = this.#showSaveAsDialog.bind(this)
+		document.getElementById("uploadBt").onclick = this.#uploadConfig.bind(this)
+		window.addEventListener("keydown", this.#keyPress.bind(this))
 		
 		this.#setConfigType(configs[0][2].id)
-		new ConfigScreenLayout(stimScreen, enabledCallback)
+		this.screenLayout = new ConfigScreenLayout(stimScreen, enabledCallback)
 	}
 	
 	#changeConfigType(type) {
@@ -34,10 +36,28 @@ export class ConfigScreen {
 		this.configTypeSelector.setConfigType(type)
 		this.#changeConfigType(type)
 	}
+	setConfig(config) {
+		if (this.configTypeSelector.getConfigType() !== config.type)
+			this.#setConfigType(config.type)
+		
+		this.configUI.setValue(config.config)
+		this.selectedConfigName = config.name
+		this.saveBt.disabled = false
+	}
 	
+	#showSaveAsDialog() {
+		if (this.saveAsDialog === null) {
+			this.saveAsDialog = new InputDialog(document.getElementById("saveAsNameDialog"),
+				this.#closedSaveAsDialog.bind(this), this.#saveAsCallback.bind(this),
+				this.selectedConfigName)
+		}
+	}
+	#closedSaveAsDialog() {
+		this.saveAsDialog = null
+	}
 	#saveAsCallback(name) {
-		if (name.length > 0) {
-			this.#saveConfig(name)
+		if (name.trim().length > 0) {
+			this.#saveConfig(name.trim())
 			return true
 		}
 		else
@@ -50,13 +70,36 @@ export class ConfigScreen {
 		this.saveBt.disabled = false
 	}
 	
-	setConfig(config) {
-		if (this.configTypeSelector.getConfigType() !== config.type)
-			this.#setConfigType(config.type)
+	#uploadConfig() {
+		this.api.setConfig(configs[this.configUI.type.id][2], this.configUI.getValue())
+	}
+	
+	#keyPress(e) {
+		if (e.keyCode === 83 && e.ctrlKey) //Ctrl + S
+			e.preventDefault()
 		
-		this.configUI.setValue(config.config)
-		this.selectedConfigName = config.name
-		this.saveBt.disabled = false
+		if (! this.screenLayout.enabled)
+			return
+		
+		switch (e.keyCode) {
+		case 83: //S
+			if (e.ctrlKey) {
+				if (e.shiftKey)
+					this.#showSaveAsDialog()
+				
+				else if (! this.saveBt.disabled)
+					this.#saveConfig(this.selectedConfigName)
+			}
+			break
+		case 27: //Esc
+			if (this.saveAsDialog !== null)
+				this.saveAsDialog.closeDialog()
+			break
+		case 85: //U
+			if (document.activeElement.tagName !== "INPUT")
+				this.#uploadConfig()
+			break
+		}
 	}
 }
 
@@ -117,11 +160,13 @@ class ConfigScreenLayout {
 	hide() {
 		this.screenDiv.style.display = "none"
 		this.configEditorBt.classList.remove("selected")
+		this.enabled = false
 		this.enabledCallback(false)
 	}
 	show() {
 		this.screenDiv.style.display = "flex"
 		this.configEditorBt.classList.add("selected")
+		this.enabled = true
 		this.enabledCallback(true)
 	}
 }

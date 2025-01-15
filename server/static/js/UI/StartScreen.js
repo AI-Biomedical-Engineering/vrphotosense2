@@ -6,7 +6,7 @@ export class StartScreen {
 		
 		this.label = document.getElementById("startScreenMsg")
 		this.inputID = document.getElementsByName("clientID")[0]
-		this.inputID.onkeypress = e => {if (e.keyCode === 13) {this.#idCallback()}}
+		this.inputID.onkeydown = e => {if (e.keyCode === 13) {this.#idCallback()}}
 		this.connectBt = document.getElementById("connectBt")
 		this.connectBt.onclick = e => this.#idCallback()
 		

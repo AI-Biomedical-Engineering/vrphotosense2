@@ -23,6 +23,7 @@ export class StimScreen {
 class StimControl {
 	constructor(api) {
 		this.api = api
+		this.enabled = false
 		this.playing = false
 		this.skipPrev = () => console.log("Prev")
 		this.skipNext = () => console.log("Next")
@@ -35,9 +36,11 @@ class StimControl {
 		document.getElementById("stop").onclick = this.stop.bind(this)
 		document.getElementById("skipPrev").onclick = this.skipPrev.bind(this)
 		document.getElementById("skipNext").onclick = this.skipNext.bind(this)
+		
+		window.addEventListener("keydown", this.#keyPress.bind(this))
 	}
 	setEnabled(enabled) {
-		window.onkeydown = enabled ? this.#keyPress.bind(this) : null
+		this.enabled = enabled
 	}
 	paused() {
 		this.playing = false
@@ -63,7 +66,7 @@ class StimControl {
 	}
 	
 	#keyPress(e) {
-		if (document.activeElement.tagName === "INPUT")
+		if (! this.enabled || document.activeElement.tagName === "INPUT")
 			return
 		
 		switch (e.keyCode) {

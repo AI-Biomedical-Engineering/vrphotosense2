@@ -58,7 +58,8 @@ export class ButtonsSelector {
 }
 
 class Dialog {
-	constructor(container) {
+	constructor(container, closeCallback) {
+		this.closeCallback = closeCallback
 		this.cancelArea = document.createElement("div")
 		this.cancelArea.onmousedown = this.closeDialog.bind(this)
 		this.cancelArea.id = "dialogCancelArea"
@@ -72,12 +73,13 @@ class Dialog {
 	closeDialog() {
 		this.cancelArea.remove()
 		this.hideController.hide()
+		this.closeCallback()
 	}
 }
 
 export class InputDialog extends Dialog {
-	constructor(container, callback, initialValue) {
-		super(container)
+	constructor(container, closeCallback, callback, initialValue) {
+		super(container, closeCallback)
 		this.callback = callback
 		this.dialogInput = container.querySelector(".dialogInput")
 		
@@ -86,13 +88,11 @@ export class InputDialog extends Dialog {
 			this.dialogInput.focus()
 			this.dialogInput.select()
 		})
-		this.dialogInput.onkeypress = this.#confirmCallback.bind(this)
+		this.dialogInput.onkeydown = this.#confirmCallback.bind(this)
 	}
 	
 	#confirmCallback(e) {
-		if (e.keyCode === 13) {
-			if (this.callback(this.dialogInput.value))
-				this.closeDialog()
-		}
+		if (e.keyCode === 13 && this.callback(this.dialogInput.value))
+			this.closeDialog()
 	}
 }
