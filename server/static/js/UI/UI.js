@@ -1,3 +1,8 @@
+export function isTextInputActive() {
+	return document.activeElement.tagName === "INPUT" &&
+		(document.activeElement.type === "text" || document.activeElement.type === "number")
+}
+
 export class HideElemController {
 	constructor(elem) {
 		this.elem = elem

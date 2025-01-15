@@ -110,28 +110,22 @@ export class Vector2Var {
 	}
 }
 
-export class ColorVar {
+export class ColorVar extends InputVarUI {
 	constructor(container, defaultVal = [0, 0, 0]) {
-		this.div = document.createElement("div")
-		
-		this.components = [new FloatVar(this.div, defaultVal[0]),
-			new FloatVar(this.div, defaultVal[1]), new FloatVar(this.div, defaultVal[2])]
-		
-		container.appendChild(this.div)
-	}
-	deleteUI() {
-		for (let component of this.components)
-			component.deleteUI()
-		
-		this.div.remove()
-	}
-	
-	getValue() {
-		return this.components.map(component => component.getValue())
+		super(container, defaultVal, {type: "color"}, ColorVar.#htmlToColor)
 	}
 	setValue(val) {
-		for (let i = 0; i < this.components.length; i++)
-			this.components[i].setValue(val[i])
+		super.setValue(`#${ColorVar.#intToHex2(val[0])}${ColorVar.#intToHex2(val[1])}${ColorVar.#intToHex2(val[2])}`)
+	}
+	
+	static #intToHex2(val) {
+		val = val.toString(16)
+		return val.length < 2 ? `0${val}` : val
+	}
+	static #htmlToColor(htmlColor) {
+		return [parseInt(htmlColor.slice(1, 3), 16),
+			parseInt(htmlColor.slice(3, 5), 16),
+			parseInt(htmlColor.slice(5, 7), 16)]
 	}
 }
 

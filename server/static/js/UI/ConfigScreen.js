@@ -1,4 +1,4 @@
-import {ButtonsSelector, InputDialog} from "./UI.js"
+import {ButtonsSelector, InputDialog, isTextInputActive} from "./UI.js"
 import {createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 
@@ -96,7 +96,7 @@ export class ConfigScreen {
 				this.saveAsDialog.closeDialog()
 			break
 		case 85: //U
-			if (document.activeElement.tagName !== "INPUT")
+			if (! isTextInputActive())
 				this.#uploadConfig()
 			break
 		}

@@ -6,10 +6,10 @@ export const vector2Var = {size: value => 8, toBytes: (view, value) => {
 	view.setFloat32(0, value[0])
 	view.setFloat32(4, value[1])
 }}
-export const colorVar = {size: value => 12, toBytes: (view, value) => {
-	view.setFloat32(0, value[0])
-	view.setFloat32(4, value[1])
-	view.setFloat32(8, value[2])
+export const colorVar = {size: value => 3, toBytes: (view, value) => {
+	view.setUint8(0, value[0])
+	view.setUint8(1, value[1])
+	view.setUint8(2, value[2])
 }}
 export const enumVar = byteVar
 

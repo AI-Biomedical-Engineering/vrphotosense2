@@ -1,4 +1,4 @@
-import {ButtonsSelector} from "./UI.js"
+import {ButtonsSelector, isTextInputActive} from "./UI.js"
 import {Commands} from "../AppApi.js"
 
 export class StimScreen {
@@ -66,7 +66,7 @@ class StimControl {
 	}
 	
 	#keyPress(e) {
-		if (! this.enabled || document.activeElement.tagName === "INPUT")
+		if (! this.enabled || isTextInputActive())
 			return
 		
 		switch (e.keyCode) {

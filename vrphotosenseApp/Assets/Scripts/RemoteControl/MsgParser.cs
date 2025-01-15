@@ -103,14 +103,8 @@ class MsgParser {
 				return new Vector2(BitConverter.ToSingle(arr, offset),
 					BitConverter.ToSingle(arr, offset + 4));
 			})},
-			{typeof(Color), new GenericType(12, (arr, offset) => {
-				fixEndianness(arr, offset, 4);
-				fixEndianness(arr, offset + 4, 4);
-				fixEndianness(arr, offset + 8, 4);
-				
-				return new Color(BitConverter.ToSingle(arr, offset),
-					BitConverter.ToSingle(arr, offset + 4),
-					BitConverter.ToSingle(arr, offset + 8), 0);
+			{typeof(Color), new GenericType(3, (arr, offset) => {
+				return new Color(arr[offset] / 255.0f, arr[offset + 1] / 255.0f, arr[offset + 2] / 255.0f);
 			})},
 			{typeof(String), new StringType()}
 		};
