@@ -1,6 +1,9 @@
 import {AppMessage, AppApi, AutoConnectAppApi} from "./AppApi.js"
 import {ConfigStorage} from "./ConfigStorage.js"
-import * as UI from "./UI.js"
+
+import {StartScreen} from "./UI/StartScreen.js"
+import {StimScreen, ConfigSelector} from "./UI/StimScreen.js"
+import {ConfigScreen} from "./UI/ConfigScreen.js"
 import configs from "./configs.js"
 
 class ConfigsManager {
@@ -12,9 +15,9 @@ class ConfigsManager {
 		this.configEnabled = false
 		this.configStorage = new ConfigStorage()
 		
-		this.configSelector = new UI.ConfigSelector(this.#selectedConfig.bind(this))
+		this.configSelector = new ConfigSelector(this.#selectedConfig.bind(this))
 		this.#reloadConfigNames(null)
-		this.configScreen = new UI.ConfigScreen(this.api, this.configStorage, this.stimScreen,
+		this.configScreen = new ConfigScreen(this.api, this.configStorage, this.stimScreen,
 			this.#changeConfigModeCallback.bind(this), this.#reloadConfigNames.bind(this))
 	}
 	
@@ -63,8 +66,8 @@ class App {
 		
 		this.api = new AppApi(wsURL, this.#appMessage.bind(this), this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
-		this.startScreen = new UI.StartScreen()
-		this.stimScreen = new UI.StimScreen(this.api)
+		this.startScreen = new StartScreen()
+		this.stimScreen = new StimScreen(this.api)
 		new ConfigsManager(this.api, this.stimScreen)
 		
 		this.#enableStartScreen()

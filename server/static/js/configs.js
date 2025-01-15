@@ -1,5 +1,5 @@
 import * as C from "./configParser.js"
-import * as UI from "./ConfigUI.js"
+import * as UI from "./UI/ConfigUI.js"
 
 export default [
 	[
