@@ -37,6 +37,7 @@ export class StartScreen {
 		this.idCallback = callback
 		this.label.innerText = "App to connect to:"
 		this.inputID.value = ""
+		requestAnimationFrame(() => this.inputID.focus())
 		
 		this.#show(true)
 	}

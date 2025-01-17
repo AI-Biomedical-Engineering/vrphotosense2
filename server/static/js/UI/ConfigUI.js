@@ -1,12 +1,12 @@
-function createUI(container, def) {
-	return new def[0](container, ...def.slice(1))
+function createUI(container, updateCalback, def) {
+	return new def[0](container, updateCalback, ...def.slice(1))
 }
-export function createConfigUI(container, def) {
-	return createUI(container, [ConfigUI, ...def.slice(1)])
+export function createConfigUI(container, updateCalback, def) {
+	return createUI(container, updateCalback, [ConfigUI, ...def.slice(1)])
 }
 
 export class LabeledVar {
-	constructor(container, name, varConfig) {
+	constructor(container, updateCalback, name, varConfig) {
 		this.divLabel = document.createElement("div")
 		this.divValue = document.createElement("div")
 		this.divLabel.classList.add("configElem")
@@ -17,7 +17,7 @@ export class LabeledVar {
 		
 		this.divLabel.appendChild(this.label)
 		this.divLabel.appendChild(this.divValue)
-		this.varUI = createUI(this.divValue, varConfig)
+		this.varUI = createUI(this.divValue, updateCalback, varConfig)
 		container.appendChild(this.divLabel)
 		
 		this.getValue = this.varUI.getValue.bind(this.varUI)
@@ -32,11 +32,12 @@ export class LabeledVar {
 }
 
 class InputVarUI {
-	constructor(container, defaultVal, inputParams, valueConverter = val => val) {
+	constructor(container, updateCalback, defaultVal, inputParams, valueConverter = val => val) {
 		this.valueConverter = valueConverter
 		
 		this.input = document.createElement("input")
 		this.setValue(defaultVal)
+		this.input.onchange = updateCalback
 		
 		for (let paramName in inputParams)
 			this.input.setAttribute(paramName, inputParams[paramName])
@@ -56,8 +57,8 @@ class InputVarUI {
 }
 
 export class BoolVar extends InputVarUI {
-	constructor(container, defaultVal = false) {
-		super(container, defaultVal, {type: "checkbox"})
+	constructor(container, updateCalback, defaultVal = false) {
+		super(container, updateCalback, defaultVal, {type: "checkbox"})
 	}
 	getValue() {
 		return this.input.checked
@@ -68,29 +69,29 @@ export class BoolVar extends InputVarUI {
 }
 
 export class IntVar extends InputVarUI {
-	constructor(container, defaultVal = 0) {
-		super(container, defaultVal, {type: "number"}, parseInt)
+	constructor(container, updateCalback, defaultVal = 0) {
+		super(container, updateCalback, defaultVal, {type: "number"}, parseInt)
 	}
 }
 
 export class FloatVar extends InputVarUI {
-	constructor(container, defaultVal = 0) {
-		super(container, defaultVal, {type: "number"}, parseFloat)
+	constructor(container, updateCalback, defaultVal = 0) {
+		super(container, updateCalback, defaultVal, {type: "number"}, parseFloat)
 	}
 }
 
 export class StringVar extends InputVarUI {
-	constructor(container, defaultVal = "") {
-		super(container, defaultVal, {type: "text"})
+	constructor(container, updateCalback, defaultVal = "") {
+		super(container, updateCalback, defaultVal, {type: "text"})
 	}
 }
 
 export class Vector2Var {
-	constructor(container, defaultVal = [0, 0]) {
+	constructor(container, updateCalback, defaultVal = [0, 0]) {
 		this.div = document.createElement("div")
 		
-		this.xVar = new FloatVar(this.div, defaultVal[0])
-		this.yVar = new FloatVar(this.div, defaultVal[1])
+		this.xVar = new FloatVar(this.div, updateCalback, defaultVal[0])
+		this.yVar = new FloatVar(this.div, updateCalback, defaultVal[1])
 		
 		container.appendChild(this.div)
 	}
@@ -111,8 +112,8 @@ export class Vector2Var {
 }
 
 export class ColorVar extends InputVarUI {
-	constructor(container, defaultVal = [0, 0, 0]) {
-		super(container, defaultVal, {type: "color"}, ColorVar.#htmlToColor)
+	constructor(container, updateCalback, defaultVal = [0, 0, 0]) {
+		super(container, updateCalback, defaultVal, {type: "color"}, ColorVar.#htmlToColor)
 	}
 	setValue(val) {
 		super.setValue(`#${ColorVar.#intToHex2(val[0])}${ColorVar.#intToHex2(val[1])}${ColorVar.#intToHex2(val[2])}`)
@@ -130,7 +131,7 @@ export class ColorVar extends InputVarUI {
 }
 
 export class EnumVar {
-	constructor(container, optionNames, defaultVal = 0) {
+	constructor(container, updateCalback, optionNames, defaultVal = 0) {
 		this.select = document.createElement("select")
 		
 		let i = 0
@@ -142,6 +143,7 @@ export class EnumVar {
 			this.select.appendChild(option)
 		}
 		this.setValue(defaultVal)
+		this.select.onchange = updateCalback
 		container.appendChild(this.select)
 	}
 	deleteUI() {
@@ -160,8 +162,9 @@ export class EnumVar {
 }
 
 export class ArrayVar {
-	constructor(container, elemConfig) {
+	constructor(container, updateCalback, elemConfig) {
 		this.container = container
+		this.updateCalback = updateCalback
 		this.elemConfig = elemConfig
 		this.elemUIs = []
 		
@@ -170,11 +173,17 @@ export class ArrayVar {
 		
 		this.addBt = document.createElement("button")
 		this.addBt.innerText = "+"
-		this.addBt.onclick = this.#addValue.bind(this)
+		this.addBt.onclick = e => {
+			this.#addValue()
+			this.updateCalback()
+		}
 		
 		this.deleteBt = document.createElement("button")
 		this.deleteBt.innerText = "-"
-		this.deleteBt.onclick = this.#deleteValue.bind(this)
+		this.deleteBt.onclick = e => {
+			this.#deleteValue()
+			this.updateCalback()
+		}
 		
 		this.container.appendChild(this.addBt)
 		this.container.appendChild(this.deleteBt)
@@ -191,7 +200,7 @@ export class ArrayVar {
 	}
 	
 	#addValue() {
-		this.elemUIs.push(createUI(this.elemsDiv, this.elemConfig))
+		this.elemUIs.push(createUI(this.elemsDiv, this.updateCalback, this.elemConfig))
 	}
 	#deleteValue() {
 		if (this.elemUIs.length > 0)
@@ -214,12 +223,12 @@ export class ArrayVar {
 }
 
 export class ConfigUI {
-	constructor(container, config, type) {
+	constructor(container, updateCalback, config, type) {
 		this.type = type
 		this.vars = {}
 		
 		for (let varName in config)
-			this.vars[varName] = createUI(container, config[varName])
+			this.vars[varName] = createUI(container, updateCalback, config[varName])
 	}
 	deleteUI() {
 		for (let varName in this.vars)

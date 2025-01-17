@@ -15,11 +15,11 @@ export class ConfigScreen {
 		
 		this.configContainer = document.getElementById("config")
 		this.saveBt = document.getElementById("saveBt")
+		this.uploadBt = document.getElementById("uploadBt")
 		
-		this.saveBt.disabled = true
 		this.saveBt.onclick = e => this.#saveConfig(this.selectedConfigName)
+		this.uploadBt.onclick = this.#uploadConfig.bind(this)
 		document.getElementById("saveAsBt").onclick = this.#showSaveAsDialog.bind(this)
-		document.getElementById("uploadBt").onclick = this.#uploadConfig.bind(this)
 		window.addEventListener("keydown", this.#keyPress.bind(this))
 		
 		this.#setConfigType(configs[0][2].id)
@@ -30,11 +30,18 @@ export class ConfigScreen {
 		if (this.configUI !== null)
 			this.configUI.deleteUI()
 		
-		this.configUI = createConfigUI(this.configContainer, configs[type])
+		this.configUI = createConfigUI(this.configContainer,
+			this.#changedConfig.bind(this), configs[type])
+		
+		this.#changedConfig()
 	}
 	#setConfigType(type) {
 		this.configTypeSelector.setConfigType(type)
 		this.#changeConfigType(type)
+	}
+	#changedConfig() {
+		this.saveBt.disabled = this.selectedConfigName === null
+		this.uploadBt.disabled = false
 	}
 	setConfig(config) {
 		if (this.configTypeSelector.getConfigType() !== config.type)
@@ -42,7 +49,9 @@ export class ConfigScreen {
 		
 		this.configUI.setValue(config.config)
 		this.selectedConfigName = config.name
-		this.saveBt.disabled = false
+		
+		this.saveBt.disabled = true
+		this.uploadBt.disabled = true
 	}
 	
 	#showSaveAsDialog() {
@@ -67,11 +76,12 @@ export class ConfigScreen {
 		this.configStorage.saveConfig(name, this.configUI.type.id, this.configUI.getValue())
 		this.savedConfigCallback(name)
 		this.selectedConfigName = name
-		this.saveBt.disabled = false
+		this.saveBt.disabled = true
 	}
 	
 	#uploadConfig() {
 		this.api.setConfig(configs[this.configUI.type.id][2], this.configUI.getValue())
+		this.uploadBt.disabled = true
 	}
 	
 	#keyPress(e) {
@@ -82,6 +92,10 @@ export class ConfigScreen {
 			return
 		
 		switch (e.keyCode) {
+		case 13: //Enter
+			if (isTextInputActive())
+				document.activeElement.blur()
+			break
 		case 83: //S
 			if (e.ctrlKey) {
 				if (e.shiftKey)
@@ -96,7 +110,7 @@ export class ConfigScreen {
 				this.saveAsDialog.closeDialog()
 			break
 		case 85: //U
-			if (! isTextInputActive())
+			if (! (isTextInputActive() || this.uploadBt.disabled))
 				this.#uploadConfig()
 			break
 		}
