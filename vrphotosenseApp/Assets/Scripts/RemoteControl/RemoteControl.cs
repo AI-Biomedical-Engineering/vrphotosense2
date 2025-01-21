@@ -8,6 +8,8 @@ public enum Command : byte {
 	RUN = 0,
 	STOP,
 	RESET,
+	SKIP_NEXT,
+	SKIP_PREV,	
 	SET_CONFIG,
 	CONTROL_CONNECTED
 }
@@ -38,6 +40,8 @@ public class RemoteControl {
 			{Command.RUN, msg => SceneController.active.Run()},
 			{Command.STOP, msg => SceneController.active.Stop()},
 			{Command.RESET, msg => SceneController.active.Reset()},
+			{Command.SKIP_NEXT, msg => SceneController.active.SkipNext()},
+			{Command.SKIP_PREV, msg => SceneController.active.SkipPrev()},
 			{Command.SET_CONFIG, this.SetConfig},
 			{Command.CONTROL_CONNECTED, msg => this.ControlConnected()}
 		};

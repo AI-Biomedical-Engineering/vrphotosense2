@@ -39,6 +39,10 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 			this.config.freqs = new float[] {1};
 			this.config.changeTime = 0.001f;
 		}
+		RestartCoroutine();
+	}
+	
+	private void RestartCoroutine() {
 		if (this.patternCoroutine != null) {
 			StopCoroutine(this.patternCoroutine);
 			this.patternCoroutine = StartCoroutine(RunPattern());
@@ -57,6 +61,24 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 		StopCoroutine(this.patternCoroutine);
 		this.patternCoroutine = null;
 		this.timer.Stop();
+	}
+	
+	protected override void SkipNextStim() {
+		if (this.freqPos < this.config.freqs.Length - 1) {
+			this.freqPos++;
+			this.timer.Reset();
+			
+			RestartCoroutine();
+		}
+		else
+			Finished();
+	}
+	protected override void SkipPrevStim() {
+		if (this.freqPos > 0 && this.timer.ActiveTime < 0.4f)
+			this.freqPos--;
+		
+		this.timer.Reset();
+		RestartCoroutine();
 	}
 	
 	protected override void ResetEstim() {

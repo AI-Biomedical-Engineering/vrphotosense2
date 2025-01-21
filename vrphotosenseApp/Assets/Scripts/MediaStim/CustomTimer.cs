@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class CustomTimer {
@@ -22,5 +23,12 @@ public class CustomTimer {
 	public void Reset() {
 		this.accumActiveTime = 0;
 		this.lastStartTime = Time.time;
+	}
+	public void AddTime(float time) {
+		if (this.active) { //Move all the time to accumActiveTime
+			Stop();
+			Start();
+		}
+		this.accumActiveTime = Math.Max(this.accumActiveTime + time, 0);
 	}
 }

@@ -25,8 +25,8 @@ class StimControl {
 		this.api = api
 		this.enabled = false
 		this.playing = false
-		this.skipPrev = () => console.log("Prev")
-		this.skipNext = () => console.log("Next")
+		this.skipPrev = () => this.api.sendCommand(Commands.SKIP_PREV)
+		this.skipNext = () => this.api.sendCommand(Commands.SKIP_NEXT)
 		
 		this.playImg = document.getElementById("playImg")
 		this.pauseImg = document.getElementById("pauseImg")

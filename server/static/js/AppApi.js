@@ -13,8 +13,10 @@ export const Commands = Object.freeze({
 	RUN: 0,
 	STOP: 1,
 	RESET: 2,
-	SET_CONFIG: 3,
-	CONTROL_CONNECTED: 4
+	SKIP_NEXT: 3,
+	SKIP_PREV: 4,
+	SET_CONFIG: 5,
+	CONTROL_CONNECTED: 6
 })
 
 export const AppMessage = Object.freeze({

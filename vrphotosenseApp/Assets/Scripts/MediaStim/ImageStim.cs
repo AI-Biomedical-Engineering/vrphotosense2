@@ -45,7 +45,10 @@ public class ImageStim : BaseMediaStim<ImageConfig> {
 	protected override void UpdateConfig() {
 		base.UpdateConfig();
 		this.config.duration = Math.Max(this.config.duration, 0.001f);
-		
+		RestartCoroutine();
+	}
+	
+	private void RestartCoroutine() {
 		if (this.imageCoroutine != null) {
 			StopEstim();
 			RunEstim();
@@ -64,6 +67,18 @@ public class ImageStim : BaseMediaStim<ImageConfig> {
 	}
 	protected override void ResetEstim() {
 		this.timer.Reset();
+	}
+	
+	protected override void SkipNextStim() {
+		this.timer.AddTime(5);
+		if (this.timer.ActiveTime < this.config.duration)
+			RestartCoroutine();
+		else
+			Finished();
+	}
+	protected override void SkipPrevStim() {
+		this.timer.AddTime(-5);
+		RestartCoroutine();
 	}
 	
 	public override float GetStatus() {

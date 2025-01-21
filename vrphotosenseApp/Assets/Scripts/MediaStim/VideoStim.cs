@@ -53,6 +53,16 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 		this.videoPlayer.Prepare();
 	}
 	
+	protected override void SkipNextStim() {
+		if (this.videoPlayer.time + 5 < this.videoPlayer.length)
+			this.videoPlayer.time += 5;
+		else
+			Finished();
+	}
+	protected override void SkipPrevStim() {
+		this.videoPlayer.time -= 5;
+	}
+	
 	public override float GetStatus() {
 		return this.videoPlayer.length == 0 ? 0 :
 			(float) (this.videoPlayer.time / this.videoPlayer.length);
