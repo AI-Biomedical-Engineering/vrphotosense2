@@ -22,7 +22,7 @@ public class Flash : MonoBehaviour {
 	
 	public void StartFlash() {
 		if (this.flashing)
-			throw new InvalidOperationException("Flashing is already active");
+			return;
 		
 		this.flashing = true;
 		this.color2Active = false;

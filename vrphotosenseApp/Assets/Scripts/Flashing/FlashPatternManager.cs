@@ -5,7 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class FlashingConfig {
 	public float[] freqs;
-	public float changeTime;
+	public float stimTime;
+	public float restTime;
 	public float color2Time;
 	public Color color1;
 	public Color color2;
@@ -15,6 +16,7 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	private CustomTimer timer;
 	private Flash flash;
 	private int freqPos;
+	private bool resting = false;
 	private Coroutine patternCoroutine = null;
 	
 	void Start() {
@@ -26,18 +28,20 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	}
 	
 	public override float GetStatus() {
-		return (this.freqPos + this.timer.ActiveTime / this.config.changeTime) / this.config.freqs.Length;
+		float percentCurFreq = ((this.resting ? this.config.stimTime : 0) + this.timer.ActiveTime) /
+			(this.config.stimTime + this.config.restTime);
+		return (this.freqPos + percentCurFreq) / this.config.freqs.Length;
 	}
 	
 	protected override void UpdateConfig() {
 		this.flash.Color1 = this.config.color1;
 		this.flash.Color2 = this.config.color2;
 		this.flash.Color2Time = this.config.color2Time;
-		this.config.changeTime = Math.Max(this.config.changeTime, 0.001f);
+		this.config.stimTime = Math.Max(this.config.stimTime, 0.001f);
 		
 		if (this.config.freqs.Length == 0) {
 			this.config.freqs = new float[] {1};
-			this.config.changeTime = 0.001f;
+			this.config.stimTime = 0.001f;
 		}
 		RestartCoroutine();
 	}
@@ -50,8 +54,6 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	}
 	
 	protected override void RunEstim() {
-		this.flash.Freq = this.config.freqs[this.freqPos];
-		this.flash.StartFlash();
 		this.patternCoroutine = StartCoroutine(RunPattern());
 		this.timer.Start();
 	}
@@ -64,8 +66,11 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 	}
 	
 	protected override void SkipNextStim() {
-		if (this.freqPos < this.config.freqs.Length - 1) {
-			this.freqPos++;
+		if (this.freqPos < this.config.freqs.Length - 1 || ! this.resting) {
+			if (this.resting)
+				this.freqPos++;
+			
+			this.resting = ! this.resting;
 			this.timer.Reset();
 			
 			RestartCoroutine();
@@ -74,26 +79,42 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 			Finished();
 	}
 	protected override void SkipPrevStim() {
-		if (this.freqPos > 0 && this.timer.ActiveTime < 0.4f)
-			this.freqPos--;
 		
+		if ((this.freqPos > 0 || this.resting) && this.timer.ActiveTime < 0.4f) {
+			if (! this.resting)
+				this.freqPos--;
+			
+			this.resting = ! this.resting;
+		}
 		this.timer.Reset();
 		RestartCoroutine();
 	}
 	
 	protected override void ResetEstim() {
 		this.freqPos = 0;
+		this.resting = false;
 		this.timer.Reset();
 	}
 	
 	private IEnumerator RunPattern() {
 		
 		while (this.freqPos < this.config.freqs.Length) {
-			this.flash.Freq = this.config.freqs[this.freqPos];
-			yield return new WaitForSeconds(this.config.changeTime - this.timer.ActiveTime);
-			
+			if (this.resting) {
+				this.flash.StopFlash();
+				MsgPanel.active.SetColor(Color.black);
+				
+				yield return new WaitForSeconds(this.config.restTime - this.timer.ActiveTime);
+				this.freqPos++;
+			}
+			else {
+				this.flash.Freq = this.config.freqs[this.freqPos];
+				this.flash.StartFlash();
+				MsgPanel.active.Disable();
+				
+				yield return new WaitForSeconds(this.config.stimTime - this.timer.ActiveTime);
+			}
 			this.timer.Reset();
-			this.freqPos++;
+			this.resting = ! this.resting;
 		}
 		Finished();
 	}

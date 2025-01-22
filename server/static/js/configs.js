@@ -5,14 +5,16 @@ export default [
 	[
 		"Flashing", {
 			freqs: [UI.LabeledVar, "Frequencies", [UI.ArrayVar, [UI.FloatVar]]],
-			changeTime: [UI.LabeledVar, "Change time", [UI.FloatVar]],
+			stimTime: [UI.LabeledVar, "Stimulating time", [UI.FloatVar]],
+			restTime: [UI.LabeledVar, "Resting time", [UI.FloatVar]],
 			color2Time: [UI.LabeledVar, "Color 2 time", [UI.FloatVar]],
 			color1: [UI.LabeledVar, "color1", [UI.ColorVar]],
 			color2: [UI.LabeledVar, "color2", [UI.ColorVar]]
 		},
 		new C.Config(0, {
 			freqs: new C.ArrayVar(C.floatVar),
-			changeTime: C.floatVar,
+			stimTime: C.floatVar,
+			restTime: C.floatVar,
 			color2Time: C.floatVar,
 			color1: C.colorVar,
 			color2: C.colorVar
