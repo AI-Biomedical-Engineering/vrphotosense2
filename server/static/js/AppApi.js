@@ -15,8 +15,10 @@ export const Commands = Object.freeze({
 	RESET: 2,
 	SKIP_NEXT: 3,
 	SKIP_PREV: 4,
-	SET_CONFIG: 5,
-	CONTROL_CONNECTED: 6
+	ENABLE_LOOP: 5,
+	DISABLE_LOOP: 6,
+	SET_CONFIG: 7,
+	CONTROL_CONNECTED: 8
 })
 
 export const AppMessage = Object.freeze({

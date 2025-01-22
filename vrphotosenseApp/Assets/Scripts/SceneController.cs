@@ -9,6 +9,7 @@ public enum StimState : byte {
 
 public abstract class SceneController : MonoBehaviour {
 	public static SceneController active;
+	public static bool loopEnabled = false;
 	
 	public abstract void Run();
 	public abstract void Stop();
@@ -80,7 +81,11 @@ public abstract class AbstractScene<ConfigT> : SceneController {
 	
 	protected void Finished() {
 		Reset();
-		ConfigApp.remoteControl.SendMessage(AppMessage.FINISHED);
 		this.stimState = StimState.NONE;
+		
+		if (SceneController.loopEnabled)
+			Run();
+		else
+			ConfigApp.remoteControl.SendMessage(AppMessage.FINISHED);
 	}
 }

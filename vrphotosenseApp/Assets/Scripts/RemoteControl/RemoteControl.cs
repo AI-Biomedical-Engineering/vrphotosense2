@@ -9,7 +9,9 @@ public enum Command : byte {
 	STOP,
 	RESET,
 	SKIP_NEXT,
-	SKIP_PREV,	
+	SKIP_PREV,
+	ENABLE_LOOP,
+	DISABLE_LOOP,
 	SET_CONFIG,
 	CONTROL_CONNECTED
 }
@@ -42,6 +44,8 @@ public class RemoteControl {
 			{Command.RESET, msg => SceneController.active.Reset()},
 			{Command.SKIP_NEXT, msg => SceneController.active.SkipNext()},
 			{Command.SKIP_PREV, msg => SceneController.active.SkipPrev()},
+			{Command.ENABLE_LOOP, msg => SceneController.loopEnabled = true},
+			{Command.DISABLE_LOOP, msg => SceneController.loopEnabled = false},
 			{Command.SET_CONFIG, this.SetConfig},
 			{Command.CONTROL_CONNECTED, msg => this.ControlConnected()}
 		};
@@ -63,6 +67,7 @@ public class RemoteControl {
 		
 		Utils.Delay(RECONNECT_DELAY, () => UpdateSyncer.AddSingleUpdate(this.WSConnect));
 		SceneController.active.Stop();
+		SceneController.loopEnabled = false;
 		MsgPanel.active.SetMsg("Not connected");
 	}
 	

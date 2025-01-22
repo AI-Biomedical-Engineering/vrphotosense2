@@ -10,6 +10,7 @@ export class StimScreen {
 		this.setEnabled = this.stimControl.setEnabled.bind(this.stimControl)
 		this.paused = this.stimControl.paused.bind(this.stimControl)
 		this.stop = this.stimControl.stop.bind(this.stimControl)
+		this.setLoopMode = this.stimControl.setLoopMode.bind(this.stimControl)
 		
 		this.stream = document.getElementById("stream")
 		this.eye = document.getElementsByClassName("eye")[0]
@@ -25,6 +26,7 @@ class StimControl {
 		this.api = api
 		this.enabled = false
 		this.playing = false
+		this.loopEnabled = false
 		this.skipPrev = () => this.api.sendCommand(Commands.SKIP_PREV)
 		this.skipNext = () => this.api.sendCommand(Commands.SKIP_NEXT)
 		
@@ -36,6 +38,8 @@ class StimControl {
 		document.getElementById("stop").onclick = this.stop.bind(this)
 		document.getElementById("skipPrev").onclick = this.skipPrev.bind(this)
 		document.getElementById("skipNext").onclick = this.skipNext.bind(this)
+		this.loopBt = document.getElementById("loopMode")
+		this.loopBt.onclick = this.#toggleLoopMode.bind(this)
 		
 		window.addEventListener("keydown", this.#keyPress.bind(this))
 	}
@@ -60,6 +64,20 @@ class StimControl {
 		this.#updatePlayPauseBt()
 	}
 	
+	setLoopMode(loopEnabled) {
+		this.loopEnabled = loopEnabled
+		
+		if (this.loopEnabled)
+			this.loopBt.classList.add("selected")
+		else
+			this.loopBt.classList.remove("selected")
+	}
+	
+	#toggleLoopMode() {
+		this.setLoopMode(! this.loopEnabled)
+		this.api.sendCommand(this.loopEnabled ? Commands.ENABLE_LOOP : Commands.DISABLE_LOOP)
+	}
+	
 	#updatePlayPauseBt() {
 		this.playImg.style.display = this.playing ? "none" : ""
 		this.pauseImg.style.display = this.playing ? "" : "none"
@@ -76,6 +94,9 @@ class StimControl {
 			break
 		case 80: //P
 			this.stop()
+			break
+		case 76: //L
+			this.#toggleLoopMode()
 			break
 		case 37: //Arrow left
 			this.skipPrev()

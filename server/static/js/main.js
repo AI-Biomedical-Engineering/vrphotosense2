@@ -99,6 +99,7 @@ class App {
 	#wsClosed() {
 		console.log("WS closed")
 		this.stimScreen.paused()
+		this.stimScreen.setLoopMode(false)
 		this.#enableStartScreen()
 	}
 	#enableStartScreen() {
