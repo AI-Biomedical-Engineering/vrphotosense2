@@ -54,15 +54,15 @@ class WSServer {
 	constructor(httpServer) {
 		this.appConnections = new Map()
 		this.newConnectionID = 1
+		this.lastConnectedID = -1
 		this.server = new WebSocket.Server({noServer: true, clientTracking: true})
 		
 		this.server.on("connection", this.#connected.bind(this))
 		httpServer.on("upgrade", this.#upgradeHttp.bind(this))
 	}
 	getAutoAppID() {
-		let autoID = this.newConnectionID - 1
-		let appWS = this.appConnections.get(autoID)
-		return appWS !== undefined && appWS.associatedWS === null ? autoID : 0
+		let appWS = this.appConnections.get(this.lastConnectedID)
+		return appWS !== undefined && appWS.associatedWS === null ? this.lastConnectedID : 0
 	}
 	getAppWS(id) {
 		id = parseInt(id)
@@ -79,12 +79,17 @@ class WSServer {
 	}
 	#upgradeHttp(req, socket, head) {
 		let queryParams = url.parse(req.url, true).query
-		req.isApp = queryParams.id === undefined
+		req.isApp = queryParams.app !== undefined
+		req.autoID = queryParams.id === undefined
 		req.isStream = queryParams.stream !== undefined
 		
-		if (req.isApp)
-			req.id = this.newConnectionID++
-		
+		if (req.isApp) {
+			req.id = req.autoID ? this.newConnectionID++ : parseInt(queryParams.id)
+			if (this.getAppWS(req.id) !== null) {
+				this.#rejectConection(socket)
+				return
+			}
+		}
 		else {
 			req.appWS = this.getAppWS(queryParams.id)
 			if (req.appWS === null || (req.isStream ? req.appWS.streamWS !== null : req.appWS.associatedWS !== null)) {
@@ -103,7 +108,8 @@ class WSServer {
 			let connect = new WSRedirectConnection(ws, req.id, req.isApp, this.#wsClosed.bind(this))
 			if (req.isApp) {
 				this.appConnections.set(req.id, connect)
-				connect.sendText(req.id.toString())
+				this.lastConnectedID = req.id
+				connect.sendText(req.autoID ? req.id.toString() : "OK")
 			}
 			else {
 				req.appWS.associatedWS = connect

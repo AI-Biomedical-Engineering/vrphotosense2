@@ -8,11 +8,13 @@ using AOT;
 using System.Runtime.InteropServices;
 
 public static class Utils {
-	#if ! (UNITY_EDITOR || UNITY_WEBGL)
+	#if ! UNITY_EDITOR
 	#if UNITY_ANDROID
-		private static String WS_CONFIG_FILE = UnityEngine.Application.persistentDataPath + "/config.txt";
+		private static String WS_CONFIG_FILE = UnityEngine.Application.persistentDataPath + "/config.json";
+	#elif UNITY_WEBGL
+		private static String WS_CONFIG_FILE = "appConfig";
 	#else
-		private static String WS_CONFIG_FILE = "./config.txt";
+		private static String WS_CONFIG_FILE = "./config.json";
 	#endif
 	#endif
 	
@@ -24,6 +26,10 @@ public static class Utils {
 			public static extern uint browserSetInterval(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback);
 			[DllImport("__Internal")]
 			public static extern void browserClearInterval(uint id);
+			[DllImport("__Internal")]
+			public static extern String localStorageGetItem(String itemName);
+			[DllImport("__Internal")]
+			public static extern void localStorageSetItem(String itemName, String value);
 			[DllImport("__Internal")]
 			public static extern void browserFetch(String url, IntPtr callbackParam,
 				Action<IntPtr, uint, IntPtr, IntPtr, Int32> responseCallback, Action<IntPtr> errorCallback);
@@ -43,6 +49,8 @@ public static class Utils {
 			public static void browserSetTimeout(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback) {}
 			public static uint browserSetInterval(uint msDelay, IntPtr callbackParam, Action<IntPtr> callback) {return 0;}
 			public static void browserClearInterval(uint id) {}
+			public static String localStorageGetItem(String itemName) {return null;}
+			public static void localStorageSetItem(String itemName, String value) {}
 			public static void browserFetch(String url, IntPtr callbackParam,
 				Action<IntPtr, uint, IntPtr, IntPtr, Int32> responseCallback, Action<IntPtr> errorCallback) {}
 			public static String getWSUrl() {return null;}
@@ -176,20 +184,21 @@ public static class Utils {
 		}
 	}
 	
-	public static String GetWSUrl(String defaultUrl) {
+	public static String LoadConfig() {
 		#if UNITY_EDITOR
-			return defaultUrl;
-		
+			return null;
 		#elif UNITY_WEBGL
-			return Browser.getWSUrl();
-		
+			return Browser.localStorageGetItem(WS_CONFIG_FILE);
 		#else
-			if (File.Exists(WS_CONFIG_FILE))
-				return File.ReadAllText(WS_CONFIG_FILE, Encoding.UTF8);
-			else {
-				File.WriteAllText(WS_CONFIG_FILE, defaultUrl, Encoding.UTF8);
-				return defaultUrl;
-			}
+			return File.Exists(WS_CONFIG_FILE) ? File.ReadAllText(WS_CONFIG_FILE, Encoding.UTF8) : null;
+		#endif
+	}
+	public static void SaveConfig(String config) {
+		#if UNITY_EDITOR
+		#elif UNITY_WEBGL
+			Browser.localStorageSetItem(WS_CONFIG_FILE, config);
+		#else
+			File.WriteAllText(WS_CONFIG_FILE, config, Encoding.UTF8);
 		#endif
 	}
 }

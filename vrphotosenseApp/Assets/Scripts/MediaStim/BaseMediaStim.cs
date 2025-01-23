@@ -59,8 +59,8 @@ public abstract class BaseMediaStim<T> : AbstractScene<T> where T : BaseMediaSti
 	
 	private String ConfigUrlToAbsolute(String url) {
 		if (url[0] == '/') {
-			bool https = ConfigApp.WSUrl.Substring(0, 3) == "wss:";
-			url = (https ? "https://" : "http://") + ConfigApp.WSUrl.Substring(https ? 6 : 5) + url;
+			bool https = ConfigApp.config.wsUrl.Substring(0, 3) == "wss:";
+			url = (https ? "https://" : "http://") + ConfigApp.config.wsUrl.Substring(https ? 6 : 5) + url;
 		}
 		return url;
 	}

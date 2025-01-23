@@ -21,6 +21,19 @@ mergeInto(LibraryManager.library, {
 	browserClearInterval: function (id) {
 		clearInterval(id)
 	},
+	localStorageGetItem: function (itemName) {
+		var item = localStorage.getItem(UTF8ToString(itemName))
+		if (item === null)
+			return null
+		
+		var bufferSize = lengthBytesUTF8(item) + 1
+		var buffer = _malloc(bufferSize)
+		stringToUTF8(item, buffer, bufferSize)
+		return buffer
+	},
+	localStorageSetItem: function (itemName, value) {
+		localStorage.setItem(UTF8ToString(itemName), UTF8ToString(value))
+	},
 	browserFetch: function (url, callbackParam, responseCallback, errorCallback) {
 		fetch(UTF8ToString(url)).then(res => {
 			res.blob().then(blob => blob.arrayBuffer().then(data => {

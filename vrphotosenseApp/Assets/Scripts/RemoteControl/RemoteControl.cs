@@ -28,16 +28,15 @@ public class RemoteControl {
 	private static String[] sceneNames = new String[] {"Flashing", "Image", "Video"};
 	
 	private Dictionary<Command, Action<byte[]>> commandActions;
-	private String wsURL;
+	private Action<String> updateIdCallback;
+	private AppConfig config;
 	private WS ws;
 	private WS wsStream;
-	private uint statusUpdateMS;
-	private bool streamEnabled;
 	private byte activeSceneId = 0;
 	private byte[] pendingConfigMsg = null;
 	private Utils.IInterval statusInterval = null;
 	
-	public RemoteControl(String wsServerURL, uint statusUpdateMS, bool streamEnabled) {
+	public RemoteControl(AppConfig config, Action<String> updateIdCallback) {
 		this.commandActions = new Dictionary<Command, Action<byte[]>>() {
 			{Command.RUN, msg => SceneController.active.Run()},
 			{Command.STOP, msg => SceneController.active.Stop()},
@@ -49,13 +48,13 @@ public class RemoteControl {
 			{Command.SET_CONFIG, this.SetConfig},
 			{Command.CONTROL_CONNECTED, msg => this.ControlConnected()}
 		};
-		this.wsURL = wsServerURL;
-		this.statusUpdateMS = statusUpdateMS;
-		this.streamEnabled = streamEnabled;
+		this.config = config;
+		this.updateIdCallback = updateIdCallback;
 		WSConnect();
 	}
 	private void WSConnect() {
-		this.ws = WS.Connect(this.wsURL);
+		this.ws = WS.Connect(this.config.wsUrl + "?app" +
+			(this.config.appId != null ? "&id=" + this.config.appId : ""));
 		this.ws.RecvCallback = this.RecvId;
 		this.ws.ClosedCallback = this.WSClosed;
 	}
@@ -79,11 +78,18 @@ public class RemoteControl {
 		this.ws.RecvCallback = this.RunCommand;
 		
 		String id = Encoding.UTF8.GetString(msg);
-		MsgPanel.active.SetMsg("ID: " + id);
+		if (this.config.appId == null)
+			updateIdCallback(id);
 		
-		if (this.streamEnabled) {
+		else if (id != "OK") {
+			this.Close();
+			return;
+		}
+		MsgPanel.active.SetMsg("ID: " + this.config.appId);
+		
+		if (this.config.streamEnabled) {
 			UpdateSyncer.AddSingleUpdate(() => {
-				this.wsStream = WS.Connect(this.wsURL + "?id=" + id + "&stream");
+				this.wsStream = WS.Connect(this.config.wsUrl + "?id=" + this.config.appId + "&stream");
 			});
 		}
 	}
@@ -107,7 +113,7 @@ public class RemoteControl {
 	}
 	
 	private void ControlConnected() {
-		this.statusInterval = Utils.Interval(this.statusUpdateMS,
+		this.statusInterval = Utils.Interval(this.config.statusUpdateMS,
 			() => UpdateSyncer.AddSingleUpdate(() => this.SendStatus(SceneController.active.GetStatus())));
 		
 		MsgPanel.active.SetColor(Color.black);
