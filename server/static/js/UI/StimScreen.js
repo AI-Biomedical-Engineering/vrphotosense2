@@ -1,5 +1,5 @@
 import {ButtonsSelector, isTextInputActive} from "./UI.js"
-import {Commands} from "../AppApi.js"
+import {Command} from "../AppApi.js"
 
 export class StimScreen {
 	constructor(api) {
@@ -27,8 +27,8 @@ class StimControl {
 		this.enabled = false
 		this.playing = false
 		this.loopEnabled = false
-		this.skipPrev = () => this.api.sendCommand(Commands.SKIP_PREV)
-		this.skipNext = () => this.api.sendCommand(Commands.SKIP_NEXT)
+		this.skipPrev = () => this.api.sendCommand(Command.SKIP_PREV)
+		this.skipNext = () => this.api.sendCommand(Command.SKIP_NEXT)
 		
 		this.playImg = document.getElementById("playImg")
 		this.pauseImg = document.getElementById("pauseImg")
@@ -54,11 +54,11 @@ class StimControl {
 	#togglePlay() {
 		this.playing = ! this.playing
 		
-		this.api.sendCommand(this.playing ? Commands.START : Commands.STOP)
+		this.api.sendCommand(this.playing ? Command.START : Command.STOP)
 		this.#updatePlayPauseBt()
 	}
 	stop() {
-		this.api.sendCommand(Commands.RESET)
+		this.api.sendCommand(Command.RESET)
 		
 		this.playing = false
 		this.#updatePlayPauseBt()
@@ -75,7 +75,7 @@ class StimControl {
 	
 	#toggleLoopMode() {
 		this.setLoopMode(! this.loopEnabled)
-		this.api.sendCommand(this.loopEnabled ? Commands.ENABLE_LOOP : Commands.DISABLE_LOOP)
+		this.api.sendCommand(this.loopEnabled ? Command.ENABLE_LOOP : Command.DISABLE_LOOP)
 	}
 	
 	#updatePlayPauseBt() {

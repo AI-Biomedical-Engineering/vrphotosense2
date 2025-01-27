@@ -9,7 +9,7 @@ function createWSClient(addr, id, msgCallback, connectedCallback, closedCallback
 	return ws
 }
 
-export const Commands = Object.freeze({
+export const Command = Object.freeze({
 	RUN: 0,
 	STOP: 1,
 	RESET: 2,
@@ -43,7 +43,7 @@ export class AppApi {
 		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback.bind(this), this.#connected.bind(this), this.closedCallback)
 	}
 	#connected(appId) {
-		this.sendCommand(Commands.CONTROL_CONNECTED)
+		this.sendCommand(Command.CONTROL_CONNECTED)
 		this.connectedCallback(appId)
 	}
 	close() {
@@ -51,14 +51,14 @@ export class AppApi {
 	}
 	
 	sendCommand(command) {
-		if (command === Commands.SET_CONFIG)
+		if (command === Command.SET_CONFIG)
 			throw new Error("To send SET_CONFIG command call 'setConfig' method")
 		
 		this.ws.send(new Uint8Array([command]))
 	}
 	setConfig(configType, config) {
 		let configSerialized = new Uint8Array(configType.size(config) + 1) //Extra byte for command type
-		configSerialized[0] = Commands.SET_CONFIG
+		configSerialized[0] = Command.SET_CONFIG
 		configType.toBytes(new DataView(configSerialized.buffer, 1), config)
 		
 		this.ws.send(configSerialized)
