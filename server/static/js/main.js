@@ -59,20 +59,33 @@ class ConfigsManager {
 	}
 }
 
+const AppMode = Object.freeze({
+	AUTO_APPID: 0,
+	SAVED_APPID: 1,
+	MANUAL_APPID: 2
+})
 class App {
 	constructor(autoappid, wsURL, streamURL) {
-		this.autoappid = autoappid
 		this.streamURL = streamURL
-		
 		this.api = new AppApi(wsURL, this.#appMessage.bind(this), this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
 		this.startScreen = new StartScreen()
 		this.stimScreen = new StimScreen(this.api)
 		new ConfigsManager(this.api, this.stimScreen)
 		
+		let savedAppId = localStorage.getItem("appId")
+		if (autoappid) {
+			this.connectMode = AppMode.AUTO_APPID
+			savedAppId = null
+		}
+		else
+			this.connectMode = savedAppId !== null ? AppMode.SAVED_APPID : AppMode.MANUAL_APPID
+		
+		this.autoConnectApp = new AutoConnectAppApi(this.api, savedAppId)
 		this.#enableStartScreen()
-		if (this.autoappid)
-			new AutoConnectAppApi(this.api).autoConnect()
+		
+		if (this.connectMode !== AppMode.MANUAL_APPID)
+			this.autoConnectApp.autoConnect()
 		
 		this.messageActions = {
 			[AppMessage.STATUS]: this.stimScreen.setProgress.bind(this.stimScreen),
@@ -105,10 +118,33 @@ class App {
 	#enableStartScreen() {
 		this.stimScreen.setEnabled(false)
 		
-		if (this.autoappid)
-			this.startScreen.setMessage("Connecting")
+		switch (this.connectMode) {
+		case AppMode.AUTO_APPID:
+			this.startScreen.setMessage("Auto connecting")
+			break
+		case AppMode.SAVED_APPID:
+			this.startScreen.setMessage(`Connecting to: ${this.autoConnectApp.id}`)
+			break
+		case AppMode.MANUAL_APPID:
+			this.startScreen.askForId(this.#setSavedId.bind(this))
+			break
+		}
+	}
+	#setSavedId(id) {
+		this.connectMode = AppMode.SAVED_APPID
+		
+		localStorage.setItem("appId", id)
+		this.autoConnectApp.id = id
+		this.autoConnectApp.autoConnect()
+	}
+	disconnect() {
+		this.connectMode = AppMode.MANUAL_APPID
+		this.autoConnectApp.disable()
+		
+		if (this.api.isConnected)
+			this.api.close()
 		else
-			this.startScreen.askForId(this.api.connect.bind(this.api))
+			this.#enableStartScreen()
 	}
 }
 

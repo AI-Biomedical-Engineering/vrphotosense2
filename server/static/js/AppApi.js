@@ -34,6 +34,10 @@ export class AppApi {
 		this.msgCallback = msgCallback
 		this.connectedCallback = connectedCallback
 		this.closedCallback = closedCallback
+		this.ws = null
+	}
+	get isConnected() {
+		return this.ws !== null && this.ws.readyState === WebSocket.OPEN
 	}
 	connect(appId) {
 		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback.bind(this), this.#connected.bind(this), this.closedCallback)
@@ -41,6 +45,9 @@ export class AppApi {
 	#connected(appId) {
 		this.sendCommand(Commands.CONTROL_CONNECTED)
 		this.connectedCallback(appId)
+	}
+	close() {
+		this.ws.close()
 	}
 	
 	sendCommand(command) {
@@ -68,8 +75,11 @@ export class AppApi {
 const RECONNECT_DELAY = 4000
 
 export class AutoConnectAppApi {
-	constructor(appApi) {
+	constructor(appApi, id) {
 		this.appApi = appApi
+		this.id = id
+		this.enabled = false
+		this.timeoutId = null
 		this.originalClosedCallback = this.appApi.closedCallback
 		this.appApi.closedCallback = this.#closedCallback.bind(this)
 		
@@ -77,10 +87,20 @@ export class AutoConnectAppApi {
 		url.protocol = url.protocol === "wss:" ? "https:" : "http:"
 		this.autoAppUrl = `${url.origin}/autoappid`
 	}
+	disable() {
+		this.enabled = false
+		clearTimeout(this.timeoutId)
+	}
 	autoConnect() {
-		fetch(this.autoAppUrl)
-			.then(resp => resp.text().then(this.#receivedID.bind(this)))
-			.catch(this.#closedCallback.bind(this))
+		this.enabled = true
+		
+		if (this.id === null) {
+			fetch(this.autoAppUrl)
+				.then(resp => resp.text().then(this.#receivedID.bind(this)))
+				.catch(this.#closedCallback.bind(this))
+		}
+		else
+			this.appApi.connect(this.id)
 	}
 	
 	#receivedID(appId) {
@@ -90,7 +110,9 @@ export class AutoConnectAppApi {
 			this.#closedCallback()
 	}
 	#closedCallback() {
-		setTimeout(this.autoConnect.bind(this), RECONNECT_DELAY)
+		if (this.enabled)
+			this.timeoutId = setTimeout(this.autoConnect.bind(this), RECONNECT_DELAY)
+		
 		this.originalClosedCallback()
 	}
 }
