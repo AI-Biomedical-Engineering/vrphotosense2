@@ -126,8 +126,16 @@ export class ConfigSelector {
 		this.selectedConfig = null
 		this.selectedType = -1
 		
+		let configTypes = {
+			"0": "Flashing",
+			"1": "Static Pattern",
+			"10": "Dynamic Pattern",
+			"2": "Video",
+			"3": "Real life scenario",
+		}
 		this.configGroupsSelector = new ButtonsSelector(
-			document.getElementById("configGroups"), this.#selectedConfigType.bind(this))
+			document.getElementById("configGroups"), this.#selectedConfigType.bind(this),
+			["0", "1", "10", "2", "3"], (bt, id) => bt.innerText = configTypes[id])
 	}
 	
 	loadConfigs(configsDef) {
@@ -135,19 +143,12 @@ export class ConfigSelector {
 		this.#updateConfigNames()
 	}
 	#updateConfigNames() {
-		for (let configBt of Array.from(this.configsContainer.children))
-			configBt.remove()
+		if (this.configSelector !== null)
+			this.configSelector.deleteUI()
 		
-		for (let configDef of this.configsDef) {
-			if (configDef.uiType === this.selectedType) {
-				let configBt = document.createElement("button")
-				configBt.innerText = configDef.name
-				configBt.name = configDef.name
-				
-				this.configsContainer.appendChild(configBt)
-			}
-		}
-		this.configSelector = new ButtonsSelector(this.configsContainer, this.#selectedConfig.bind(this), true)
+		this.configSelector = new ButtonsSelector(this.configsContainer, this.#selectedConfig.bind(this),
+			this.configsDef.filter(config => config.uiType === this.selectedType).map(config => config.name),
+			(bt, id) => bt.innerText = id, true)
 		this.configSelector.setSelected(this.selectedConfig)
 	}
 	deselect() {

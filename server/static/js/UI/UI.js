@@ -26,17 +26,29 @@ export class HideElemController {
 }
 
 export class ButtonsSelector {
-	constructor(container, selectedCallback, selectOnSelected = false) {
+	constructor(container, selectedCallback, selectValues, configBtCallback,
+			selectOnSelected = false) {
+		
 		this.selectedCallback = selectedCallback
 		this.selectOnSelected = selectOnSelected
 		this.selected = null
 		this.buttons = {}
 		
-		for (let bt of container.children) {
-			this.buttons[bt.name] = bt
+		for (let selectVal of selectValues) {
+			let bt = document.createElement("button")
+			bt.name = selectVal
 			bt.onmousedown = e => this.select(e.target.name)
+			configBtCallback(bt, selectVal)
+			
+			this.buttons[selectVal] = bt
+			container.appendChild(bt)
 		}
 	}
+	deleteUI() {
+		for (let btName in this.buttons)
+			this.buttons[btName].remove()
+	}
+	
 	deselect() {
 		if (this.selected !== null) {
 			this.selected.classList.remove("selected")

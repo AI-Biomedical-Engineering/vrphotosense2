@@ -1,3 +1,5 @@
+import {ButtonsSelector} from "./UI.js"
+
 function createUI(container, updateCalback, def) {
 	return new def[0](container, updateCalback, ...def.slice(1))
 }
@@ -107,7 +109,7 @@ export class Vector2Var {
 	}
 	setValue(val) {
 		this.xVar.setValue(val[0])
-		this.xVar.setValue(val[1])
+		this.yVar.setValue(val[1])
 	}
 }
 
@@ -219,6 +221,47 @@ export class ArrayVar {
 		
 		for (let i = 0; i < this.elemUIs.length; i++)
 			this.elemUIs[i].setValue(val[i])
+	}
+}
+
+export class MultiModeVar {
+	constructor(container, updateCalback, varsModes) {
+		this.updateCalback = updateCalback
+		this.varsModesParams = varsModes.map(varMode => varMode.params)
+		this.activeVar = null
+		
+		this.selectorContainer = document.createElement("div")
+		this.activeVarContainer = document.createElement("div")
+		container.appendChild(this.selectorContainer)
+		container.appendChild(this.activeVarContainer)
+		
+		this.typeSelector = new ButtonsSelector(this.selectorContainer, this.#setType.bind(this),
+			Array.from(Array(varsModes.length).keys()).map(String),
+			(bt, id) => bt.innerText = varsModes[parseInt(id)].name)
+		
+		this.typeSelector.select("0")
+	}
+	#setType(type) {
+		if (this.activeVar !== null)
+			this.activeVar.deleteUI()
+		
+		this.activeVar = createUI(this.activeVarContainer, this.updateCalback,
+			this.varsModesParams[parseInt(type)])
+	}
+	
+	deleteUI() {
+		this.activeVar.deleteUI()
+		this.typeSelector.deleteUI()
+		
+		this.activeVarContainer.remove()
+		this.selectorContainer.remove()
+	}
+	
+	getValue() {
+		return this.activeVar.getValue()
+	}
+	setValue(val) {
+		this.activeVar.setValue(val)
 	}
 }
 

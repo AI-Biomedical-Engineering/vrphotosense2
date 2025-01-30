@@ -119,18 +119,10 @@ export class ConfigScreen {
 
 class ConfigTypeSelector {
 	constructor(selectedCallback) {
-		let container = document.getElementById("configTypeSelector")
-		for (let bt of Array.from(container.children))
-			bt.remove()
-		
-		for (let config of configs) {
-			let bt = document.createElement("button")
-			bt.innerText = config[0]
-			bt.name = config[2].id.toString()
-			
-			container.appendChild(bt)
-		}
-		this.selector = new ButtonsSelector(container, id => selectedCallback(parseInt(id)))
+		this.selector = new ButtonsSelector(document.getElementById("configTypeSelector"),
+			id => selectedCallback(parseInt(id)),
+			configs.map(config => config[2].id.toString()),
+			(bt, id) => bt.innerText = configs[parseInt(id)][0])
 	}
 	setConfigType(type) {
 		this.selector.setSelected(type.toString())
