@@ -11,7 +11,8 @@ public class SVGRenderer : MonoBehaviour {
 	private RenderTexture renderTexture;
 	private Camera svgCamera;
 	
-	private Action<Texture2D> callback;
+	private Action callback;
+	private Texture2D texture;
 	
 	void Awake() {
 		this.spriteRenderer = GetComponent<SpriteRenderer>();
@@ -19,8 +20,9 @@ public class SVGRenderer : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
 	
-	public void RenderSVG(String svg, int width, Action<Texture2D> callback) {
+	public void RenderSVG(String svg, int width, Texture2D texture, Action callback) {
 		this.callback = callback;
+		this.texture = texture;
 		
 		this.spriteRenderer.sprite = LoadSvg(svg);
 		Vector3 svgSize = this.spriteRenderer.bounds.size;
@@ -36,13 +38,13 @@ public class SVGRenderer : MonoBehaviour {
 	
 	private IEnumerator CaptureSVGRender() {
 		yield return new WaitForEndOfFrame();
-		Texture2D texture = new Texture2D(this.renderTexture.width, this.renderTexture.height, TextureFormat.ARGB32, true);
+		this.texture.Reinitialize(this.renderTexture.width, this.renderTexture.height, TextureFormat.ARGB32, true);
 		
 		RenderTexture.active = this.renderTexture;
-		texture.ReadPixels(new Rect(0, 0, texture.width, texture.height), 0, 0);
+		this.texture.ReadPixels(new Rect(0, 0, this.texture.width, this.texture.height), 0, 0);
 		
 		gameObject.SetActive(false);
-		this.callback(texture);
+		this.callback();
 	}
 	
 	private Sprite LoadSvg(String svg) {

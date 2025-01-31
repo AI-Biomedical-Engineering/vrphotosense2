@@ -25,14 +25,16 @@ public class ImageStim : BaseMediaStim<ImageConfig> {
 	}
 	
 	private void RecvedImg(String url, uint status, String contentType, byte[] data) {
+		Resources.UnloadUnusedAssets();
+		
 		if (status > 250)
 			Debug.Log("Error (" + status + ") while fetching " + url);
 		
 		else if (contentType.Contains("svg")) {
-			this.svgRenderer.RenderSVG(Encoding.UTF8.GetString(data), 3000, tex => {
-				tex.anisoLevel = 7;
-				tex.Apply(true);
-				ShowTexture(tex);
+			this.svgRenderer.RenderSVG(Encoding.UTF8.GetString(data), 3000, this.tex, () => {
+				this.tex.anisoLevel = 7;
+				this.tex.Apply(true);
+				ShowTexture(this.tex);
 			});
 		}
 		else {
