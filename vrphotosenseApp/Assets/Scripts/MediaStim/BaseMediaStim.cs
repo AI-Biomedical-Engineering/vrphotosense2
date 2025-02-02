@@ -1,6 +1,10 @@
 using System;
 using UnityEngine;
 
+public enum ProjectionShape : byte {
+	PLANE = 0,
+	CYLINDER
+}
 public enum WaveShape : byte {
 	SNAP = 0,
 	LINEAR,
@@ -10,6 +14,8 @@ public enum WaveShape : byte {
 
 public class BaseMediaStimConfig {
 	public String url;
+	public ProjectionShape projectShape;
+	public float cylinderRad;
 	public TextureWrapMode wrapMode;
 	public Vector2 offsetPos;
 	public Vector2 scale;
@@ -33,12 +39,15 @@ public abstract class BaseMediaStim<T> : AbstractScene<T> where T : BaseMediaSti
 		}
 	};
 	
+	public Mesh[] projectionShapes;
+	private MeshFilter mesh;
 	private Material mat;
 	private String lastLoadedUrl;
 	private Vector2 correctedScale;
 	
 	protected abstract void Init();
 	void Start() {
+		this.mesh = GetComponent<MeshFilter>();
 		this.mat = GetComponent<Renderer>().material;
 		
 		Init();
@@ -79,6 +88,21 @@ public abstract class BaseMediaStim<T> : AbstractScene<T> where T : BaseMediaSti
 	private void SetTextureParams(Texture tex) {
 		if (tex != null)
 			tex.wrapMode = this.config.wrapMode;
+		
+		this.mesh.mesh = this.projectionShapes[(byte) this.config.projectShape];
+		
+		if (this.config.projectShape == ProjectionShape.CYLINDER) {
+			float rad = this.config.cylinderRad * 4;
+			
+			transform.localPosition = new Vector3(0, 0, 4 - rad);
+			transform.localScale = new Vector3(rad / 10, 1, rad / 10);
+			this.mat.SetVector("_ScaleAbsolute", new Vector2(10 / rad, 1));
+		}
+		else {
+			transform.localPosition = new Vector3(0, 0, 4);
+			transform.localScale = new Vector3(1, 1, 1);
+			this.mat.SetVector("_ScaleAbsolute", new Vector2(1, 1));
+		}
 		
 		this.mat.SetInteger("_EnableClip", this.config.wrapMode == TextureWrapMode.Clamp ? 1 : 0);
 		this.SetTextureTransform(0);

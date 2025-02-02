@@ -191,7 +191,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675576947}
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -462981019419857548, guid: cb6dbdcaa9ee585fbb8efee9eacaa126, type: 3}
 --- !u!4 &675576951
 Transform:
   m_ObjectHideFlags: 0
@@ -200,13 +200,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675576947}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 4}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &675576952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,6 +221,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config:
     url: 
+    projectShape: 0
+    cylinderRad: 1
     wrapMode: 1
     offsetPos: {x: 0, y: 0}
     scale: {x: 1, y: 1}
@@ -231,6 +233,9 @@ MonoBehaviour:
     oscilScale: {x: 1, y: 1}
     oscilRot: 0
     playbackSpeed: 1
+  projectionShapes:
+  - {fileID: -462981019419857548, guid: cb6dbdcaa9ee585fbb8efee9eacaa126, type: 3}
+  - {fileID: 2534964839176971238, guid: cb6dbdcaa9ee585fbb8efee9eacaa126, type: 3}
 --- !u!328 &675576953
 VideoPlayer:
   m_ObjectHideFlags: 0

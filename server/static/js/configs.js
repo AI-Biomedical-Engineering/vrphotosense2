@@ -24,6 +24,8 @@ export default [
 			duration: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]],
 			
 			url: [UI.LabeledVar, "URL", [UI.StringVar]],
+			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVar, ["Plane", "Cylinder"], 0]],
+			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]],
 			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVar, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]],
 			offsetPos: [UI.LabeledVar, "Offset pos", [UI.Vector2Var]],
 			scale: [UI.LabeledVar, "Scale", [UI.Vector2Var, [1, 1]]],
@@ -38,6 +40,8 @@ export default [
 			duration: C.floatVar,
 			
 			url: C.stringVar,
+			projectShape: C.enumVar,
+			cylinderRad: C.floatVar,
 			wrapMode: C.enumVar,
 			offsetPos: C.vector2Var,
 			scale: C.vector2Var,
@@ -54,6 +58,8 @@ export default [
 			playbackSpeed: [UI.LabeledVar, "Speed", [UI.FloatVar, 1]],
 			
 			url: [UI.LabeledVar, "URL", [UI.StringVar]],
+			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVar, ["Plane", "Cylinder"], 0]],
+			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]],
 			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVar, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]],
 			offsetPos: [UI.LabeledVar, "Offset pos", [UI.Vector2Var]],
 			scale: [UI.LabeledVar, "Scale", [UI.Vector2Var, [1, 1]]],
@@ -68,6 +74,8 @@ export default [
 			playbackSpeed: C.floatVar,
 			
 			url: C.stringVar,
+			projectShape: C.enumVar,
+			cylinderRad: C.floatVar,
 			wrapMode: C.enumVar,
 			offsetPos: C.vector2Var,
 			scale: C.vector2Var,

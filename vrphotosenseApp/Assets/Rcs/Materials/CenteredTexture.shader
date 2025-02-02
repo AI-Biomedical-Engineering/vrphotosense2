@@ -4,6 +4,7 @@ Shader "Unlit/CenteredTexture" {
 		_EnableClip ("EnableClip", Integer) = 0
 		_Offset ("Offset", Vector) = (0, 0, 0)
 		_Scale ("Scale", Vector) = (1, 1, 0)
+		_ScaleAbsolute ("ScaleAbsolute", Vector) = (1, 1, 0)
 		_Rot ("Rotation", float) = 0
 	}
 	SubShader {
@@ -21,6 +22,7 @@ Shader "Unlit/CenteredTexture" {
 			int _EnableClip;
 			Vector _Offset;
 			Vector _Scale;
+			Vector _ScaleAbsolute;
 			float _Rot;
 			
 			v2f vert(float4 vertex : POSITION, float2 uv : TEXCOORD0) {
@@ -31,7 +33,8 @@ Shader "Unlit/CenteredTexture" {
 				v2f o;
 				o.vertex = UnityObjectToClipPos(vertex);
 				
-				o.uv = (uv - _Offset - float2(0.5, 0.5));
+				o.uv = (uv - float2(0.5, 0.5)) / _ScaleAbsolute;
+				o.uv -= _Offset;
 				o.uv = mul(o.uv, rotMatrix);
 				o.uv = (o.uv / _Scale) + float2(0.5, 0.5);
 				return o;
