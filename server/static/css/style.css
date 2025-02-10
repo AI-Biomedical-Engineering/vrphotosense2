@@ -1,10 +1,21 @@
+@font-face {
+	font-display: block;
+	font-family: "Open Sans";
+	
+	src: url('/fonts/OpenSans.ttf') format('truetype');
+}
+
 :root {
 	--xMargin: 1.1em;
 	--selectorLinesColor: #d6d6d6;
 }
 
 * {
+	font-family: 'Open Sans';
+	font-weight: 500;
+	
 	-webkit-user-select: none;
+	-webkit-user-drag: none;
 }
 
 body {
