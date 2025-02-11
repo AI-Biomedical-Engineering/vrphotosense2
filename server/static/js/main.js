@@ -8,13 +8,13 @@ import {ConfigScreen} from "./UI/ConfigScreen.js"
 import configs from "./configs.js"
 
 class ConfigsManager {
-	constructor(api, stimScreen) {
+	constructor(api, configStorage, stimScreen) {
 		this.api = api
 		this.stimScreen = stimScreen
 		
 		this.selectedConfig = null
 		this.configEnabled = false
-		this.configStorage = new ConfigStorage()
+		this.configStorage = configStorage
 		
 		this.configSelector = new ConfigSelector(this.#selectedConfig.bind(this))
 		this.#reloadConfigNames(null)
@@ -73,7 +73,7 @@ class App {
 		this.startScreen = new StartScreen(() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
 			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this))
 		this.stimScreen = new StimScreen(this.api)
-		new ConfigsManager(this.api, this.stimScreen)
+		this.configsManager = null
 		
 		let savedAppId = localStorage.getItem("appId")
 		if (autoappid) {
@@ -152,8 +152,13 @@ class App {
 	#configuredAppFolder() {
 		this.#enableStartScreen()
 		
-		if (fs.isConfigured() && fs.hasPermission() && this.connectMode !== AppMode.MANUAL_APPID)
-			this.autoConnectApp.autoConnect()
+		if (fs.isConfigured() && fs.hasPermission() && this.configsManager === null) {
+			let configStorage = new ConfigStorage(() => {
+				this.configsManager = new ConfigsManager(this.api, configStorage, this.stimScreen)
+			})
+			if (this.connectMode !== AppMode.MANUAL_APPID)
+				this.autoConnectApp.autoConnect()
+		}
 	}
 }
 

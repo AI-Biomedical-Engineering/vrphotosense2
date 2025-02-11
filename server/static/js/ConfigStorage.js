@@ -1,8 +1,19 @@
+import {fs} from "./LocalFilesystem.js"
+
 export class ConfigStorage {
-	constructor() {
-		this.configs = JSON.parse(localStorage.getItem("configs"))
-		if (this.configs === null)
+	static CONFIGS_FILE = "configs.json"
+	
+	constructor(callback) {
+		if (fs.filenames.indexOf(ConfigStorage.CONFIGS_FILE) < 0) {
 			this.configs = {}
+			callback()
+		}
+		else {
+			fs.readFile(ConfigStorage.CONFIGS_FILE, content => {
+				this.configs = JSON.parse(new TextDecoder().decode(content))
+				callback()
+			})
+		}
 	}
 	
 	getConfigNames() {
@@ -19,6 +30,6 @@ export class ConfigStorage {
 		let uiType = type === 1 && config.freq > 0 ? 10 : type
 		
 		this.configs[name] = {uiType, type, config}
-		localStorage.setItem("configs", JSON.stringify(this.configs))
+		fs.writeFile(ConfigStorage.CONFIGS_FILE, JSON.stringify(this.configs, null, "\t"))
 	}
 }
