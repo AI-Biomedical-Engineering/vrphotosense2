@@ -13,10 +13,21 @@
 </head>
 <body>
 	<div id="startScreen" class="visible">
-		<div>
-			<label id="startScreenMsg"></label>
+		<div id="startBtFrame">
+			<button id="startBt" class="action">Start</button>
+		</div>
+		<div id="configFolderFrame">
+			<label>To continue it is required to configure a local folder to save all files related to the app</label>
+			<button id="configFolderBt" class="action">Select folder</button>
+		</div>
+		<div id="connectFrame">
+			<label id="connectMsg"></label>
+			<button id="cancelConnectBt">Cancel</button>
+		</div>
+		<div id="askForIdFrame">
+			<label>Enter the number shown in the app you want to connect to:</label>
 			<input type="number" step="1" name="clientID" placeholder="ID" />
-			<button id="connectBt">Connect</button>
+			<button id="connectBt" class="action">Connect</button>
 		</div>
 	</div>
 	<main>

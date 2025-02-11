@@ -1,51 +1,62 @@
 import {HideElemController} from "./UI.js"
+import {fs} from "../LocalFilesystem.js"
 
 export class StartScreen {
-	constructor() {
-		this.hideController = new HideElemController(document.getElementById("startScreen"))
+	constructor(startCallback, configFolderCallback, idCallback, abortConnectCallback) {
+		let startScreen = document.getElementById("startScreen")
+		this.hideController = new HideElemController(startScreen)
 		
-		this.label = document.getElementById("startScreenMsg")
+		this.activeFrame = null
+		this.frames = {}
+		for (let frame of startScreen.children)
+			this.frames[frame.id] = frame
+		
+		this.actionButtons = startScreen.querySelectorAll("button.action")
 		this.inputID = document.getElementsByName("clientID")[0]
-		this.inputID.onkeydown = e => {if (e.keyCode === 13) {this.#idCallback()}}
-		this.connectBt = document.getElementById("connectBt")
-		this.connectBt.onclick = e => this.#idCallback()
+		this.connectLb = document.getElementById("connectMsg")
 		
-		this.idCallback = null
+		document.getElementById("startBt").onclick = startCallback
+		document.getElementById("configFolderBt").onclick = e => fs.configAppFolder(configFolderCallback)
+		document.getElementById("connectBt").onclick = e => idCallback(this.inputID.value)
+		document.getElementById("cancelConnectBt").onclick = abortConnectCallback
+		
+		document.addEventListener("keydown", this.#keyPress.bind(this))
+	}
+	#keyPress(e) {
+		if (e.keyCode === 13 && ! this.hideController.hiding) {
+			for (let bt of this.actionButtons) {
+				if (bt.offsetParent !== null) //If the button is visible
+					bt.onclick()
+			}
+		}
 	}
 	
 	hide() {
 		this.hideController.hide()
 	}
-	
-	#show(withInputId) {
+	#show(frameID) {
 		this.hideController.show()
-		this.inputID.style.display = withInputId ? "inline" : "none"
-		this.connectBt.style.display = withInputId ? "inline" : "none"
+		if (this.activeFrame !== null)
+			this.activeFrame.style.display = ""
 		
-		if (withInputId) {
-			this.inputID.disabled = false
-			this.connectBt.disabled = false
-		}
+		this.activeFrame = this.frames[frameID]
+		this.activeFrame.style.display = "grid"
 	}
 	
-	setMessage(msg) {
-		this.label.innerText = msg
-		this.#show(false)
+	startBt() {
+		this.#show("startBtFrame")
 	}
-	
-	askForId(callback) {
-		this.idCallback = callback
-		this.label.innerText = "App to connect to:"
+	askConfigFolder() {
+		this.#show("configFolderFrame")
+	}
+	setConnectMessage(msg) {
+		this.connectLb.innerText = msg
+		this.#show("connectFrame")
+	}
+	askForId() {
 		this.inputID.value = ""
 		requestAnimationFrame(() => this.inputID.focus())
 		
-		this.#show(true)
-	}
-	
-	#idCallback() {
-		this.inputID.disabled = true
-		this.connectBt.disabled = true
-		
-		this.idCallback(this.inputID.value)
+		this.#show("askForIdFrame")
 	}
 }

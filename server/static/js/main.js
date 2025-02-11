@@ -1,4 +1,5 @@
 import {AppMessage, AppApi, AutoConnectAppApi} from "./AppApi.js"
+import {initFS, fs} from "./LocalFilesystem.js"
 import {ConfigStorage} from "./ConfigStorage.js"
 
 import {StartScreen} from "./UI/StartScreen.js"
@@ -65,11 +66,12 @@ const AppMode = Object.freeze({
 	MANUAL_APPID: 2
 })
 class App {
-	constructor(autoappid, wsURL, streamURL) {
-		this.streamURL = streamURL
-		this.api = new AppApi(wsURL, this.#appMessage.bind(this), this.#wsConnected.bind(this), this.#wsClosed.bind(this))
+	constructor(autoappid, wsURL) {
+		this.api = new AppApi(wsURL, this.#appMessage.bind(this),
+			this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
-		this.startScreen = new StartScreen()
+		this.startScreen = new StartScreen(() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
+			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this))
 		this.stimScreen = new StimScreen(this.api)
 		new ConfigsManager(this.api, this.stimScreen)
 		
@@ -82,10 +84,7 @@ class App {
 			this.connectMode = savedAppId !== null ? AppMode.SAVED_APPID : AppMode.MANUAL_APPID
 		
 		this.autoConnectApp = new AutoConnectAppApi(this.api, savedAppId)
-		this.#enableStartScreen()
-		
-		if (this.connectMode !== AppMode.MANUAL_APPID)
-			this.autoConnectApp.autoConnect()
+		this.#configuredAppFolder()
 		
 		this.messageActions = {
 			[AppMessage.STATUS]: this.stimScreen.setProgress.bind(this.stimScreen),
@@ -107,7 +106,7 @@ class App {
 		
 		this.stimScreen.setEnabled(true)
 		this.startScreen.hide()
-		document.getElementById("stream").src = this.streamURL + `?id=${id}`
+		document.getElementById("stream").src = "/appstream?id=" + id
 	}
 	#wsClosed() {
 		console.log("WS closed")
@@ -118,15 +117,23 @@ class App {
 	#enableStartScreen() {
 		this.stimScreen.setEnabled(false)
 		
+		if (! fs.isConfigured()) {
+			this.startScreen.askConfigFolder()
+			return
+		}
+		else if (! fs.hasPermission()) {
+			this.startScreen.startBt()
+			return
+		}
 		switch (this.connectMode) {
 		case AppMode.AUTO_APPID:
-			this.startScreen.setMessage("Auto connecting")
+			this.startScreen.setConnectMessage("Auto connecting")
 			break
 		case AppMode.SAVED_APPID:
-			this.startScreen.setMessage(`Connecting to: ${this.autoConnectApp.id}`)
+			this.startScreen.setConnectMessage(`Connecting to: ${this.autoConnectApp.id}`)
 			break
 		case AppMode.MANUAL_APPID:
-			this.startScreen.askForId(this.#setSavedId.bind(this))
+			this.startScreen.askForId()
 			break
 		}
 	}
@@ -135,16 +142,18 @@ class App {
 		
 		localStorage.setItem("appId", id)
 		this.autoConnectApp.id = id
+		this.#enableStartScreen()
 		this.autoConnectApp.autoConnect()
 	}
 	disconnect() {
 		this.connectMode = AppMode.MANUAL_APPID
 		this.autoConnectApp.disable()
+	}
+	#configuredAppFolder() {
+		this.#enableStartScreen()
 		
-		if (this.api.isConnected)
-			this.api.close()
-		else
-			this.#enableStartScreen()
+		if (fs.isConfigured() && fs.hasPermission() && this.connectMode !== AppMode.MANUAL_APPID)
+			this.autoConnectApp.autoConnect()
 	}
 }
 
@@ -153,6 +162,5 @@ window.onload = () => {
 	let wsURL = `${wsProtocol}://${window.location.host}`
 	
 	let autoappid = new URL(window.location.href).searchParams.get("autoappid") !== null
-	let streamURL = `${window.location.origin}/appstream`
-	new App(autoappid, wsURL, streamURL)
+	initFS(() => new App(autoappid, wsURL))
 }

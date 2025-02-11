@@ -25,12 +25,12 @@ body:has(#startScreen.visible) {
 	right: 50%;
 	transform: translateX(50%) translateY(-50%);
 	
-	display: grid;
+	display: none;
 	row-gap: 3em;
 	column-gap: 1.5em;
 }
 
-#startScreenMsg {
+#startScreen > div > label {
 	font-size: 4em;
 	text-align: center;
 	

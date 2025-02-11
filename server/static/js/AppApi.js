@@ -90,6 +90,11 @@ export class AutoConnectAppApi {
 	disable() {
 		this.enabled = false
 		clearTimeout(this.timeoutId)
+		
+		if (this.appApi.isConnected)
+			this.appApi.close()
+		
+		this.originalClosedCallback()
 	}
 	autoConnect() {
 		this.enabled = true
@@ -110,9 +115,9 @@ export class AutoConnectAppApi {
 			this.#closedCallback()
 	}
 	#closedCallback() {
-		if (this.enabled)
+		if (this.enabled) {
 			this.timeoutId = setTimeout(this.autoConnect.bind(this), RECONNECT_DELAY)
-		
-		this.originalClosedCallback()
+			this.originalClosedCallback()
+		}
 	}
 }
