@@ -80,11 +80,15 @@ public abstract class AbstractScene<ConfigT> : SceneController {
 	}
 	
 	protected void Finished() {
+		StimState prevState = this.stimState;
 		Reset();
 		this.stimState = StimState.NONE;
 		
-		if (SceneController.loopEnabled)
+		if (SceneController.loopEnabled) {
 			Run();
+			if (prevState != StimState.RUNNING)
+				Stop();
+		}
 		else
 			ConfigApp.remoteControl.SendMessage(AppMessage.FINISHED);
 	}

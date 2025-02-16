@@ -60,7 +60,7 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 			Finished();
 	}
 	protected override void SkipPrevStim() {
-		this.videoPlayer.time -= 5;
+		this.videoPlayer.time = Math.Max(this.videoPlayer.time - 5, 0);
 	}
 	
 	public override float GetStatus() {
