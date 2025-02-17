@@ -1,6 +1,8 @@
+const fs = require("fs")
 const url = require("url")
 const express = require("express")
 const http = require("http")
+const https = require("https")
 const WebSocket = require("ws")
 
 class WSRedirectConnection {
@@ -51,15 +53,18 @@ class WSRedirectConnection {
 }
 
 class WSServer {
-	constructor(httpServer) {
+	constructor() {
 		this.appConnections = new Map()
 		this.newConnectionID = 1
 		this.lastConnectedID = -1
-		this.server = new WebSocket.Server({noServer: true, clientTracking: true})
 		
+		this.server = new WebSocket.Server({noServer: true, clientTracking: true})
 		this.server.on("connection", this.#connected.bind(this))
+	}
+	configureHttpServer(httpServer) {
 		httpServer.on("upgrade", this.#upgradeHttp.bind(this))
 	}
+	
 	getAutoAppID() {
 		let appWS = this.appConnections.get(this.lastConnectedID)
 		return appWS !== undefined && appWS.associatedWS === null ? this.lastConnectedID : 0
@@ -142,7 +147,11 @@ if (process.argv[2] === "-h") {
 const params = process.argv.splice(2)
 const addr = getAddr(params.filter(p => p.indexOf("--") === -1))
 const app = express()
-const server = http.createServer(app)
+const httpServer = http.createServer(app)
+const httpsServer = https.createServer({
+	key: fs.readFileSync("certs/key.pem"),
+	cert: fs.readFileSync("certs/cert.pem")
+}, app)
 
 app.use("/", express.static("static"))
 if (params.indexOf("--noautoappid") === -1) {
@@ -187,5 +196,9 @@ app.get("/appstream", (req, res) => {
 	}
 })
 
-var wsServer = new WSServer(server)
-server.listen(addr[1], addr[0], () => console.log(`Listening on ${addr[0]}:${addr[1]}`))
+var wsServer = new WSServer()
+wsServer.configureHttpServer(httpServer)
+wsServer.configureHttpServer(httpsServer)
+
+httpServer.listen(addr[1], addr[0], () => console.log(`http server: ${addr[0]}:${addr[1]}`))
+httpsServer.listen(addr[1] + 1, addr[0], () => console.log(`https server: ${addr[0]}:${addr[1] + 1}`))
