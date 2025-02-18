@@ -5,6 +5,7 @@ using UnityEngine.Video;
 [System.Serializable]
 public class VideoConfig : BaseMediaStimConfig {
 	public float playbackSpeed;
+	public bool audioEnabled;
 }
 
 public class VideoStim : BaseMediaStim<VideoConfig> {
@@ -14,6 +15,7 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 		this.videoPlayer = GetComponent<VideoPlayer>();
 		this.videoPlayer.loopPointReached += video => Finished();
 		this.videoPlayer.frameReady += this.FrameReadyEvent;
+		this.videoPlayer.started += vp => this.UpdateAudioEnabled();
 	}
 	
 	protected override void LoadMedia(String url) {
@@ -26,7 +28,7 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 		else
 			this.videoPlayer.Prepare();
 	}
-	private void FrameReadyEvent(VideoPlayer source, long frame) {
+	private void FrameReadyEvent(VideoPlayer vp, long frame) {
 		this.videoPlayer.sendFrameReadyEvents = false;
 		
 		RenderTexture renderTexture = new RenderTexture((int) this.videoPlayer.width, (int) this.videoPlayer.height,
@@ -35,9 +37,15 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 		ShowTexture(renderTexture);
 	}
 	
+	private void UpdateAudioEnabled() {
+		for (ushort i = 0; i < this.videoPlayer.audioTrackCount; i++)
+			this.videoPlayer.SetDirectAudioMute(i, ! this.config.audioEnabled);
+	}
+	
 	protected override void UpdateConfig() {
 		base.UpdateConfig();
 		this.videoPlayer.playbackSpeed = this.config.playbackSpeed;
+		UpdateAudioEnabled();
 	}
 	
 	protected override void RunEstim() {

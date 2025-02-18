@@ -56,6 +56,7 @@ export default [
 	], [
 		"Video", {
 			playbackSpeed: [UI.LabeledVar, "Speed", [UI.FloatVar, 1]],
+			audioEnabled: [UI.LabeledVar, "Enable audio", [UI.BoolVar, false]],
 			
 			url: [UI.LabeledVar, "URL", [UI.StringVar]],
 			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVar, ["Plane", "Cylinder"], 0]],
@@ -72,6 +73,7 @@ export default [
 		},
 		new C.Config(2, {
 			playbackSpeed: C.floatVar,
+			audioEnabled: C.boolVar,
 			
 			url: C.stringVar,
 			projectShape: C.enumVar,
