@@ -44,12 +44,17 @@ export class AppApi {
 		return this.ws !== null && this.ws.readyState === WebSocket.OPEN
 	}
 	connect(appId) {
-		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback.bind(this), this.#connected.bind(this), this.closedCallback)
+		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback.bind(this),
+			this.#connected.bind(this), this.#closed.bind(this))
 	}
 	#connected(appId) {
 		this.id = appId
 		this.sendCommand(Command.CONTROL_CONNECTED)
 		this.connectedCallback(appId)
+	}
+	#closed() {
+		this.lastFileUpload = null
+		this.closedCallback()
 	}
 	close() {
 		this.ws.close()

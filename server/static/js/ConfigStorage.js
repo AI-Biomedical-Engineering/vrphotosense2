@@ -6,7 +6,7 @@ export class ConfigStorage {
 	constructor(callback) {
 		if (fs.filenames.indexOf(ConfigStorage.CONFIGS_FILE) < 0) {
 			this.configs = {}
-			callback()
+			setTimeout(callback, 0)
 		}
 		else {
 			fs.readFile(ConfigStorage.CONFIGS_FILE, (fileData, fileType) => {
