@@ -104,9 +104,9 @@ class App {
 	#wsConnected(id) {
 		console.log(`WS connected (${id})`)
 		
+		this.stimScreen.configStream("/appstream?id=" + id)
 		this.stimScreen.setEnabled(true)
 		this.startScreen.hide()
-		document.getElementById("stream").src = "/appstream?id=" + id
 	}
 	#wsClosed() {
 		console.log("WS closed")

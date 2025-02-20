@@ -3,6 +3,13 @@ export function isTextInputActive() {
 		(document.activeElement.type === "text" || document.activeElement.type === "number")
 }
 
+export function configImageError(img, callback) {
+	img.onerror = e => {
+		img.onerror = null
+		callback(img)
+	}
+}
+
 export class HideElemController {
 	constructor(elem) {
 		this.elem = elem
@@ -92,6 +99,10 @@ export class FileSelector extends ButtonsSelector {
 			let iconContainer = document.createElement("div")
 			let icon = document.createElement("img")
 			icon.src = files[id]
+			configImageError(icon, img => {
+				img.src = "/img/file.svg"
+				img.classList.add("invertOnSelected")
+			})
 			
 			iconContainer.appendChild(icon)
 			bt.appendChild(iconContainer)

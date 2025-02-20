@@ -68,6 +68,9 @@ button.selected {
 	color: white;
 	background: #366ede !important;
 }
+.selected img.invertOnSelected {
+	filter: brightness(10);
+}
 
 
 progress {
@@ -217,6 +220,10 @@ div:has(>.dialog) {
 	
 	max-width: 100%;
 	max-height: 100%;
+}
+.fileSelector img.invertOnSelected {
+	background: transparent;
+	width: 100%;
 }
 .fileSelector > button > span {
 	font-size: 0.85em;

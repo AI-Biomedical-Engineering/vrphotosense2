@@ -1,3 +1,4 @@
+import {configImageError} from "./UI.js"
 import {ButtonsSelector, isTextInputActive} from "./UI.js"
 import {Command} from "../AppApi.js"
 
@@ -12,12 +13,22 @@ export class StimScreen {
 		this.stop = this.stimControl.stop.bind(this.stimControl)
 		this.setLoopMode = this.stimControl.setLoopMode.bind(this.stimControl)
 		
+		let eyes = document.getElementsByClassName("eye")
+		let i = 1
+		for (let eye of eyes) {
+			configImageError(eye, img => img.src = "/img/offlineCam.svg")
+			eye.src = `http://eye${i++}.local`
+		}
+		this.eyeRef = eyes[0]
 		this.stream = document.getElementById("stream")
-		this.eye = document.getElementsByClassName("eye")[0]
+	}
+	configStream(url) {
+		configImageError(this.stream, img => img.src = "/img/offlineStream.svg")
+		this.stream.src = url
 	}
 	
 	getMinWidth() {
-		return Math.max(this.stream.clientWidth, this.eye.clientWidth * 2)
+		return Math.max(this.stream.clientWidth, this.eyeRef.clientWidth * 2)
 	}
 }
 

@@ -57,9 +57,6 @@
 	display: block;
 	height: 3em;
 }
-#loopMode.selected > img {
-	filter: brightness(10);
-}
 
 
 #configSelector {
