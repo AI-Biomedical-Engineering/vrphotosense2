@@ -21,7 +21,10 @@ export class HideElemController {
 	show() {
 		this.hiding = false
 		this.elem.style.display = "block"
-		requestAnimationFrame(() => requestAnimationFrame(() => this.elem.classList.add("visible")))
+		requestAnimationFrame(() => requestAnimationFrame(() => {
+			if (! this.hiding)
+				this.elem.classList.add("visible")
+		}))
 	}
 }
 
@@ -37,7 +40,7 @@ export class ButtonsSelector {
 		for (let selectVal of selectValues) {
 			let bt = document.createElement("button")
 			bt.name = selectVal
-			bt.onmousedown = e => this.select(e.target.name)
+			bt.onmousedown = e => this.select(e.currentTarget.name)
 			configBtCallback(bt, selectVal)
 			
 			this.buttons[selectVal] = bt
@@ -71,6 +74,30 @@ export class ButtonsSelector {
 	}
 	setSelected(btName) {
 		this.select(btName, false)
+	}
+	getSelected() {
+		return this.selected !== null ? this.selected.name : null
+	}
+}
+
+export class FileSelector extends ButtonsSelector {
+	constructor(container, selectedCallback, files) {
+		super(container, selectedCallback, Object.keys(files).sort(), (bt, id) => {
+			let nameSpan = document.createElement("span")
+			nameSpan.innerText = id
+			
+			let icon = document.createElement("img")
+			icon.src = files[id]
+			bt.appendChild(icon)
+			bt.appendChild(nameSpan)
+		})
+		this.container = container
+		this.container.classList.add("fileSelector")
+	}
+	
+	deleteUI() {
+		this.container.classList.remove("fileSelector")
+		super.deleteUI()
 	}
 }
 

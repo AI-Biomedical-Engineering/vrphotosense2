@@ -1,5 +1,6 @@
 const fs = require("fs")
 const url = require("url")
+const crypto = require("crypto")
 const express = require("express")
 const http = require("http")
 const https = require("https")
@@ -9,6 +10,7 @@ class WSRedirectConnection {
 	constructor(ws, id, isApp, closeCallback) {
 		this.associatedWS = null
 		this.streamWS = null
+		this.tempFileId = null
 		
 		this.closeCallback = closeCallback
 		this.ws = ws
@@ -53,13 +55,15 @@ class WSRedirectConnection {
 }
 
 class WSServer {
-	constructor() {
+	constructor(app) {
 		this.appConnections = new Map()
 		this.newConnectionID = 1
 		this.lastConnectedID = -1
 		
 		this.server = new WebSocket.Server({noServer: true, clientTracking: true})
 		this.server.on("connection", this.#connected.bind(this))
+		
+		this.tempFilesManager = new TempFilesManager(app, this.setTempFileId.bind(this))
 	}
 	configureHttpServer(httpServer) {
 		httpServer.on("upgrade", this.#upgradeHttp.bind(this))
@@ -76,6 +80,17 @@ class WSServer {
 		
 		let appWS = this.appConnections.get(id)
 		return appWS !== undefined ? appWS : null
+	}
+	setTempFileId(appId, fileId) {
+		let appWS = this.getAppWS(appId)
+		
+		if (appWS === null)
+			return undefined
+		else {
+			let prevFileId = appWS.tempFileId
+			appWS.tempFileId = fileId
+			return prevFileId
+		}
 	}
 	
 	#rejectConection(socket) {
@@ -123,9 +138,11 @@ class WSServer {
 		}
 	}
 	
-	#wsClosed(connect) {
-		if (connect.isApp)
-			this.appConnections.delete(connect.id)
+	#wsClosed(appWS) {
+		if (appWS.isApp) {
+			this.appConnections.delete(appWS.id)
+			this.tempFilesManager.deleteID(appWS.tempFileId)
+		}
 	}
 }
 
@@ -153,13 +170,89 @@ const httpsServer = https.createServer({
 	cert: fs.readFileSync("certs/cert.pem")
 }, app)
 
+app.use(express.raw({type: "*/*", limit: "700MB"}))
 app.use("/", express.static("static"))
 if (params.indexOf("--noautoappid") === -1) {
 	app.get("/autoappid", (req, res) => {
-		res.send(String(wsServer.getAutoAppID()))
+		res.type("text/plain").send(String(wsServer.getAutoAppID()))
 	})
 }
 
+function sendError(res, code, msg) {
+	res.type("text/plain").status(code).send(msg)
+}
+
+function listFiles(folder) {
+	return fs.readdirSync(folder, {withFileTypes: true})
+		.filter(dirent => ! dirent.isDirectory()).map(dirent => dirent.name)
+}
+app.get("/mediaFiles/:type", (req, res) => {
+	if (req.params.type === "img" || req.params.type === "video")
+		res.json(listFiles("./static/media/" + req.params.type))
+	else
+		sendError(res, 404, "Invalid media type")
+})
+
+class TempFilesManager {
+	constructor(app, setTempFileIdCallback) {
+		this.tempFilesMap = new Map()
+		
+		app.get("/tempFile/:tempId", (req, res) => {
+			let file = this.tempFilesMap.get(req.params.tempId)
+			if (file === undefined) {
+				sendError(res, 404, "File not found")
+				return
+			}
+			res.setHeader("Accept-Ranges", "bytes")
+			res.setHeader("Content-Type", file.type)
+			if (req.headers.range === undefined)
+				res.send(file.file)
+			else
+				this.#sendRange(res, file.file, req.headers.range, req.params.tempId)
+		})
+		app.post("/tempFile", (req, res) => {
+			do {
+				var tempId = crypto.randomBytes(20).toString("hex")
+			} while (this.tempFilesMap.get(tempId) !== undefined)
+			
+			let prevTempFileId = setTempFileIdCallback(req.query.id, tempId)
+			if (prevTempFileId === undefined) {
+				sendError(res, 404, "App ID not connected")
+				return
+			}
+			this.deleteID(prevTempFileId)
+			
+			this.tempFilesMap.set(tempId, {type: req.get("Content-Type"), file: req.body})
+			res.type("text/plain").send(tempId)
+			
+			console.log("Temp file uploaded: " + tempId)
+		})
+	}
+	
+	#parseRangeVal(num, defaultVal) {
+		return num.length !== 0 ? parseInt(num) : defaultVal
+	}
+	#sendRange(res, data, range, etag) {
+		let dashPos = range.indexOf("-")
+		
+		if (dashPos < 0 || ! range.startsWith("bytes=")) {
+			sendError(res, 400, "Invalid range format")
+			return
+		}
+		range = range.substring(range.indexOf("=") + 1)
+		range = [this.#parseRangeVal(range.substring(0, dashPos), 0),
+			this.#parseRangeVal(range.substring(dashPos + 1), data.length - 1)]
+		
+		res.setHeader("Content-Range", `bytes ${range[0]}-${range[1]}/${data.length}`)
+		res.setHeader("Cache-Control", "public, max-age=0")
+		res.setHeader("Etag", `W/"${etag}"`)
+		res.status(206).send(data.slice(range[0], range[1] + 1))
+	}
+	deleteID(fileId) {
+		if (this.tempFilesMap.delete(fileId))
+			console.log("Temp file deleted: " + fileId)
+	}
+}
 
 class ImgSeqStream {
 	static BOUNDARY = "123456789000000000000987654321"
@@ -168,7 +261,7 @@ class ImgSeqStream {
 		this.res = res
 		
 		this.res.writeHead(200, {
-			"Content-type": "multipart/x-mixed-replace;boundary=" + ImgSeqStream.BOUNDARY,
+			"Content-Type": "multipart/x-mixed-replace;boundary=" + ImgSeqStream.BOUNDARY,
 			"Access-Control-Allow-Origin": "*",
 			"Transfer-Encoding": "chunked",
 			"X-Framerate": String(framerate)
@@ -187,7 +280,7 @@ app.get("/appstream", (req, res) => {
 	let appWS = wsServer.getAppWS(req.query.id)
 	
 	if (appWS === null || appWS.streamWS === null)
-		res.status(400).send("Invalid ID")
+		sendError(res, 400, "Invalid ID")
 	
 	else {
 		let stream = new ImgSeqStream(0, res)
@@ -196,7 +289,7 @@ app.get("/appstream", (req, res) => {
 	}
 })
 
-var wsServer = new WSServer()
+var wsServer = new WSServer(app)
 wsServer.configureHttpServer(httpServer)
 wsServer.configureHttpServer(httpsServer)
 

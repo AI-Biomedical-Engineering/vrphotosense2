@@ -93,7 +93,7 @@ class LocalFilesystem {
 	readFile(filename, callback, asURL = false) {
 		this.files[filename].getFile().then(f => {
 			let reader = new FileReader()
-			reader.onload = e => callback(e.target.result)
+			reader.onload = e => callback(e.target.result, f.type)
 			reader.onerror = e => console.log("Error reading file")
 			
 			if (asURL)

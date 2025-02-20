@@ -1,5 +1,6 @@
 import * as C from "./configParser.js"
 import * as UI from "./UI/ConfigUI.js"
+import * as FILE_UI from "./UI/FileConfigUI.js"
 
 export default [
 	[
@@ -23,7 +24,7 @@ export default [
 		"Image", {
 			duration: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]],
 			
-			url: [UI.LabeledVar, "URL", [UI.StringVar]],
+			url: [UI.LabeledVar, "URL", [FILE_UI.MediaFileVar, "img"]],
 			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVar, ["Plane", "Cylinder"], 0]],
 			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]],
 			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVar, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]],
@@ -58,7 +59,7 @@ export default [
 			playbackSpeed: [UI.LabeledVar, "Speed", [UI.FloatVar, 1]],
 			audioEnabled: [UI.LabeledVar, "Enable audio", [UI.BoolVar, false]],
 			
-			url: [UI.LabeledVar, "URL", [UI.StringVar]],
+			url: [UI.LabeledVar, "URL", [FILE_UI.MediaFileVar, "video"]],
 			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVar, ["Plane", "Cylinder"], 0]],
 			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]],
 			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVar, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]],

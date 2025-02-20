@@ -9,8 +9,8 @@ export class ConfigStorage {
 			callback()
 		}
 		else {
-			fs.readFile(ConfigStorage.CONFIGS_FILE, content => {
-				this.configs = JSON.parse(new TextDecoder().decode(content))
+			fs.readFile(ConfigStorage.CONFIGS_FILE, (fileData, fileType) => {
+				this.configs = JSON.parse(new TextDecoder().decode(fileData))
 				callback()
 			})
 		}

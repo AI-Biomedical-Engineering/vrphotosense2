@@ -235,18 +235,21 @@ export class MultiModeVar {
 		container.appendChild(this.selectorContainer)
 		container.appendChild(this.activeVarContainer)
 		
-		this.typeSelector = new ButtonsSelector(this.selectorContainer, this.#setType.bind(this),
+		this.typeSelector = new ButtonsSelector(this.selectorContainer, this.#updateUIType.bind(this),
 			Array.from(Array(varsModes.length).keys()).map(String),
 			(bt, id) => bt.innerText = varsModes[parseInt(id)].name)
 		
 		this.typeSelector.select("0")
 	}
-	#setType(type) {
+	#updateUIType(type) {
 		if (this.activeVar !== null)
 			this.activeVar.deleteUI()
 		
 		this.activeVar = createUI(this.activeVarContainer, this.updateCalback,
 			this.varsModesParams[parseInt(type)])
+	}
+	setType(type) {
+		this.typeSelector.select(type)
 	}
 	
 	deleteUI() {

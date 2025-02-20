@@ -1,3 +1,4 @@
+import {fs} from "./LocalFilesystem.js"
 
 function createWSClient(addr, id, msgCallback, connectedCallback, closedCallback) {
 	let ws = new WebSocket(addr + `?id=${id}`)
@@ -35,6 +36,9 @@ export class AppApi {
 		this.connectedCallback = connectedCallback
 		this.closedCallback = closedCallback
 		this.ws = null
+		this.id = null
+		this.lastFileUpload = null
+		this.lastFileUploadId = null
 	}
 	get isConnected() {
 		return this.ws !== null && this.ws.readyState === WebSocket.OPEN
@@ -43,6 +47,7 @@ export class AppApi {
 		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback.bind(this), this.#connected.bind(this), this.closedCallback)
 	}
 	#connected(appId) {
+		this.id = appId
 		this.sendCommand(Command.CONTROL_CONNECTED)
 		this.connectedCallback(appId)
 	}
@@ -56,7 +61,45 @@ export class AppApi {
 		
 		this.ws.send(new Uint8Array([command]))
 	}
+	
 	setConfig(configType, config) {
+		let url = config["url"]
+		
+		if (url !== undefined && url[0] === "#") {
+			if (url !== this.lastFileUpload) {
+				this.lastFileUpload = url
+				
+				this.#uploadTempFile(url.substring(1), id => {
+					this.lastFileUploadId = id
+					this.#sendTempFileConfig(configType, config, id)
+				})
+			}
+			else
+				this.#sendTempFileConfig(configType, config, this.lastFileUploadId)
+		}
+		else {
+			this.lastFileUpload = null
+			this.#sendConfig(configType, config)
+		}
+	}
+	#uploadTempFile(filename, callback) {
+		fs.readFile(filename, (fileData, fileType) => {
+			
+			fetch(`/tempFile?id=${this.id}`, {
+				method: "POST",
+				body: fileData,
+				headers: {"Content-Type": fileType}
+			}).then(resp => resp.text().then(callback))
+		})
+	}
+	#sendTempFileConfig(configType, config, tempId) {
+		let url = config.url
+		
+		config.url = "/tempFile/" + tempId
+		this.#sendConfig(configType, config)
+		config.url = url
+	}
+	#sendConfig(configType, config) {
 		let configSerialized = new Uint8Array(configType.size(config) + 1) //Extra byte for command type
 		configSerialized[0] = Command.SET_CONFIG
 		configType.toBytes(new DataView(configSerialized.buffer, 1), config)
