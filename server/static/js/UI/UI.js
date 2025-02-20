@@ -86,9 +86,15 @@ export class FileSelector extends ButtonsSelector {
 			let nameSpan = document.createElement("span")
 			nameSpan.innerText = id
 			
+			for (let dotPos of [...id.matchAll("\\.").map(m => m.index)].reverse())
+				nameSpan.innerHTML = strInsert(nameSpan.innerHTML, "<wbr />", dotPos)
+			
+			let iconContainer = document.createElement("div")
 			let icon = document.createElement("img")
 			icon.src = files[id]
-			bt.appendChild(icon)
+			
+			iconContainer.appendChild(icon)
+			bt.appendChild(iconContainer)
 			bt.appendChild(nameSpan)
 		})
 		this.container = container
@@ -99,6 +105,9 @@ export class FileSelector extends ButtonsSelector {
 		this.container.classList.remove("fileSelector")
 		super.deleteUI()
 	}
+}
+function strInsert(str, toInsert, pos) {
+	return str.slice(0, pos) + toInsert + str.slice(pos)
 }
 
 class Dialog {

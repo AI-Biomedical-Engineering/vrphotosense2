@@ -232,6 +232,7 @@ export class MultiModeVar {
 		
 		this.selectorContainer = document.createElement("div")
 		this.activeVarContainer = document.createElement("div")
+		this.selectorContainer.classList.add("configElemSelectorMultimode")
 		container.appendChild(this.selectorContainer)
 		container.appendChild(this.activeVarContainer)
 		
