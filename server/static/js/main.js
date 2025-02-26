@@ -18,12 +18,17 @@ class ConfigsManager {
 		
 		this.configSelector = new ConfigSelector(this.#selectedConfig.bind(this))
 		this.#reloadConfigNames(null)
-		this.configScreen = new ConfigScreen(this.api, this.configStorage, this.stimScreen,
-			this.#changeConfigModeCallback.bind(this), this.#reloadConfigNames.bind(this))
+		this.configScreen = new ConfigScreen(this.configStorage, this.stimScreen,
+			this.#changeConfigModeCallback.bind(this), this.#sendConfig.bind(this),
+			this.#reloadConfigNames.bind(this))
 	}
 	
+	#sendConfig(configType, config) {
+		this.api.setConfig(configType, config)
+		this.stimScreen.setConfig(configType, config)
+	}
 	#sendSelectedConfig() {
-		this.api.setConfig(configs[this.selectedConfig.type][2], this.selectedConfig.config)
+		this.#sendConfig(configs[this.selectedConfig.type][2], this.selectedConfig.config)
 	}
 	#setSelectedConfig(name) {
 		this.selectedConfig = this.configStorage.getConfig(name)

@@ -3,13 +3,13 @@ import {createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 
 export class ConfigScreen {
-	constructor(api, configStorage, stimScreen, enabledCallback, savedConfigCallback) {
+	constructor(configStorage, stimScreen, enabledCallback, uploadConfigCallback, savedConfigCallback) {
 		this.configUI = null
 		this.selectedConfigName = null
 		this.saveAsDialog = null
 		
-		this.api = api
 		this.configStorage = configStorage
+		this.uploadConfigCallback = uploadConfigCallback
 		this.savedConfigCallback = savedConfigCallback
 		this.configTypeSelector = new ConfigTypeSelector(this.#changeConfigType.bind(this))
 		
@@ -80,7 +80,7 @@ export class ConfigScreen {
 	}
 	
 	#uploadConfig() {
-		this.api.setConfig(configs[this.configUI.type.id][2], this.configUI.getValue())
+		this.uploadConfigCallback(configs[this.configUI.type.id][2], this.configUI.getValue())
 		this.uploadBt.disabled = true
 	}
 	

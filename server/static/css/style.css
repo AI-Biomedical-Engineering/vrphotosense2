@@ -74,9 +74,16 @@ button.selected {
 
 
 progress {
-	height: 16px;
-	min-height: 16px;
+	appearance: none;
+	height: 6px;
 }
+progress::-webkit-progress-bar {
+	background: #bbbbbb;
+}
+progress::-webkit-progress-value {
+	background: #3d7dff;
+}
+
 
 input {
 	border: none;

@@ -10,6 +10,14 @@ export function configImageError(img, callback) {
 	}
 }
 
+var root = null
+export function setCSSVar(varName, value) {
+	if (root === null)
+		root = document.querySelector(":root")
+	
+	root.style.setProperty(varName, value)
+}
+
 export class HideElemController {
 	constructor(elem) {
 		this.elem = elem

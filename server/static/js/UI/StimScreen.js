@@ -1,4 +1,4 @@
-import {configImageError} from "./UI.js"
+import {configImageError, setCSSVar} from "./UI.js"
 import {ButtonsSelector, isTextInputActive} from "./UI.js"
 import {Command} from "../AppApi.js"
 
@@ -8,6 +8,7 @@ export class StimScreen {
 		this.progress = new Progress()
 		
 		this.setProgress = this.progress.setProgress.bind(this.progress)
+		this.setConfig = this.progress.setConfig.bind(this.progress)
 		this.setEnabled = this.stimControl.setEnabled.bind(this.stimControl)
 		this.paused = this.stimControl.paused.bind(this.stimControl)
 		this.stop = this.stimControl.stop.bind(this.stimControl)
@@ -121,10 +122,54 @@ class StimControl {
 
 class Progress {
 	constructor() {
+		this.progressContainer = document.getElementById("progressContainer")
 		this.progress = document.getElementsByTagName("progress")[0]
+		this.bars = []
+		
+		new ResizeObserver(e => setCSSVar("--stimWidth", e[0].target.clientWidth + "px"))
+			.observe(this.progressContainer)
 	}
 	setProgress(percent) {
 		this.progress.value = percent
+	}
+	
+	setConfig(configType, config) {
+		let bars = []
+		
+		if (configType.id === 0) { //Flashing config
+			let freqTime = config.stimTime + config.restTime
+			let totalTime = freqTime * config.freqs.length
+			let freqPercent = freqTime / totalTime
+			let stimPercent = config.stimTime / totalTime
+			
+			let i = 0
+			for (let freq of config.freqs) {
+				let freqStartPercent = freqPercent * i++
+				bars.push({value: freqStartPercent, text: freq})
+				bars.push({value: freqStartPercent + stimPercent, text: null})
+			}
+		}
+		this.#setBars(bars)
+	}
+	#setBars(barsConfig) {
+		for (let bar of this.bars)
+			bar.remove()
+		this.bars.length = 0
+		
+		for (let barConfig of barsConfig) {
+			let bar = document.createElement("div")
+			bar.classList.add("bar")
+			bar.style.left = barConfig.value * 100 + "%"
+			
+			if (barConfig.text !== null) {
+				let span = document.createElement("span")
+				span.innerText = barConfig.text
+				bar.appendChild(span)
+			}
+			this.bars.push(bar)
+			this.progressContainer.appendChild(bar)
+		}
+		setCSSVar("--progressBarsCount", barsConfig.length)
 	}
 }
 

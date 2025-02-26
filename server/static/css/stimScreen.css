@@ -2,6 +2,8 @@
 	--eyeWidth: 150px;
 	--streamWidth: 400px;
 	--maxStimWidth: calc(100vw - var(--xMargin) * 2);
+	--stimWidth: var(--maxStimWidth);
+	--progressBarsCount: 1;
 }
 
 #stimScreen {
@@ -37,9 +39,35 @@
 	margin: 0.5em auto 1em;
 }
 
-#stimScreen progress {
+#stimScreen #progressContainer {
+	position: relative;
 	width: 90%;
-	margin: 0px 5%;
+	margin: 0px auto 2.4em;
+}
+#stimScreen progress {
+	display: block;
+	width: 100%;
+}
+#stimScreen #progressContainer .bar {
+	background: #4e4e4e;
+	
+	position: absolute;
+	width: 1px;
+	height: 28px;
+	top: -5px;
+}
+#stimScreen #progressContainer .bar:not(:has(span)) {
+	height: 20px;
+}
+#stimScreen #progressContainer span {
+	text-wrap: nowrap;
+	font-size: min(0.9em,
+		(var(--stimWidth) * 0.028) / (var(--progressBarsCount) * 0.026));
+	
+	position: absolute;
+	top: calc(100% + 2px);
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 #stimControls {
