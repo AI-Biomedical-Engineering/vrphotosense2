@@ -5,9 +5,9 @@ import * as FILE_UI from "./UI/FileConfigUI.js"
 export default [
 	[
 		"Flashing", {
-			freqs: [UI.LabeledVar, "Frequencies", [UI.ArrayVar, [UI.FloatVar]]],
-			stimTime: [UI.LabeledVar, "Stimulating time", [UI.FloatVar]],
-			restTime: [UI.LabeledVar, "Resting time", [UI.FloatVar]],
+			freqs: [UI.LabeledVar, "Frequencies", [UI.ArrayVar, [UI.FloatVar, 1, {min: 0}], [1], false]],
+			stimTime: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]],
+			restTime: [UI.LabeledVar, "Rest time", [UI.FloatVar]],
 			color2Time: [UI.LabeledVar, "Color 2 time", [UI.FloatVar]],
 			color1: [UI.LabeledVar, "color1", [UI.ColorVar]],
 			color2: [UI.LabeledVar, "color2", [UI.ColorVar]]
@@ -24,7 +24,7 @@ export default [
 		"Image", {
 			duration: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]],
 			
-			url: [UI.LabeledVar, "URL", [FILE_UI.MediaFileVar, "img"]],
+			url: [UI.LabeledVar, "File", [FILE_UI.MediaFileVar, "img"]],
 			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVar, ["Plane", "Cylinder"], 0]],
 			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]],
 			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVar, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]],
@@ -59,7 +59,7 @@ export default [
 			playbackSpeed: [UI.LabeledVar, "Speed", [UI.FloatVar, 1]],
 			audioEnabled: [UI.LabeledVar, "Enable audio", [UI.BoolVar, false]],
 			
-			url: [UI.LabeledVar, "URL", [FILE_UI.MediaFileVar, "video"]],
+			url: [UI.LabeledVar, "File", [FILE_UI.MediaFileVar, "video"]],
 			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVar, ["Plane", "Cylinder"], 0]],
 			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]],
 			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVar, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]],

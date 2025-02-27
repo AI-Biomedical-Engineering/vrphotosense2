@@ -62,11 +62,25 @@
 	margin-left: 1em;
 }
 
-.configElemArray {
-	display: grid;
+input:has(~ .configElemArray) {
+	width: 3em;
+	margin-right: 1.1em;
 }
-.configElemArray > * {
-	margin: 0.4em auto 0px 0px;
+button:has(~ .configElemArray) {
+	padding: 0.3em 0.7em;
+	margin-left: 0.8em;
+}
+.configElemArray {
+	display: flex;
+	column-gap: 0.5em;
+	
+	min-height: 27.3px;
+	padding: 0.5em 0em;
+	overflow-x: auto;
+}
+.configElemArray input {
+	width: 1.15em;
+	padding: 0.35em 0.5em;
 }
 
 .configElemSelectorMultimode {

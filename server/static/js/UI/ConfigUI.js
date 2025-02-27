@@ -71,14 +71,14 @@ export class BoolVar extends InputVarUI {
 }
 
 export class IntVar extends InputVarUI {
-	constructor(container, updateCalback, defaultVal = 0) {
-		super(container, updateCalback, defaultVal, {type: "number"}, parseInt)
+	constructor(container, updateCalback, defaultVal = 0, inputParams = {}) {
+		super(container, updateCalback, defaultVal, Object.assign({}, {type: "number"}, inputParams), parseInt)
 	}
 }
 
 export class FloatVar extends InputVarUI {
-	constructor(container, updateCalback, defaultVal = 0) {
-		super(container, updateCalback, defaultVal, {type: "number"}, parseFloat)
+	constructor(container, updateCalback, defaultVal = 0, inputParams = {}) {
+		super(container, updateCalback, defaultVal, Object.assign({}, {type: "number"}, inputParams), parseFloat)
 	}
 }
 
@@ -164,7 +164,7 @@ export class EnumVar {
 }
 
 export class ArrayVar {
-	constructor(container, updateCalback, elemConfig) {
+	constructor(container, updateCalback, elemConfig, defaultVal = [], allowEmpty = true) {
 		this.container = container
 		this.updateCalback = updateCalback
 		this.elemConfig = elemConfig
@@ -173,23 +173,38 @@ export class ArrayVar {
 		this.elemsDiv = document.createElement("div")
 		this.elemsDiv.classList.add("configElemArray")
 		
+		this.elemsCountVar = new IntVar(container, () => {
+			let newLength = this.elemsCountVar.getValue()
+			
+			if (newLength > 0 || (allowEmpty && newLength === 0)) {
+				this.#setArrayLength(newLength)
+				updateCalback()
+			}
+		}, 0, {min: allowEmpty ? 0 : 1})
+		
 		this.addBt = document.createElement("button")
 		this.addBt.innerText = "+"
 		this.addBt.onclick = e => {
 			this.#addValue()
+			this.#updateElemCountVar()
 			this.updateCalback()
 		}
 		
 		this.deleteBt = document.createElement("button")
 		this.deleteBt.innerText = "-"
 		this.deleteBt.onclick = e => {
-			this.#deleteValue()
-			this.updateCalback()
+			if (this.elemUIs.length > 1 || (allowEmpty && this.elemUIs.length === 1)) {
+				this.#deleteValue()
+				this.#updateElemCountVar()
+				this.updateCalback()
+			}
 		}
 		
 		this.container.appendChild(this.addBt)
 		this.container.appendChild(this.deleteBt)
 		this.container.appendChild(this.elemsDiv)
+		
+		this.setValue(defaultVal)
 	}
 	deleteUI() {
 		for (let elemUI of this.elemUIs)
@@ -201,23 +216,29 @@ export class ArrayVar {
 		this.elemsDiv.remove()
 	}
 	
+	#setArrayLength(newLength) {
+		while (this.elemUIs.length < newLength)
+			this.#addValue()
+		
+		while (this.elemUIs.length > newLength)
+			this.#deleteValue()
+	}
 	#addValue() {
 		this.elemUIs.push(createUI(this.elemsDiv, this.updateCalback, this.elemConfig))
 	}
 	#deleteValue() {
-		if (this.elemUIs.length > 0)
-			this.elemUIs.pop().deleteUI()
+		this.elemUIs.pop().deleteUI()
+	}
+	#updateElemCountVar() {
+		this.elemsCountVar.setValue(this.elemUIs.length)
 	}
 	
 	getValue() {
 		return this.elemUIs.map(elem => elem.getValue())
 	}
 	setValue(val) {
-		while (this.elemUIs.length < val.length)
-			this.#addValue()
-		
-		while (this.elemUIs.length > val.length)
-			this.#deleteValue()
+		this.#setArrayLength(val.length)
+		this.#updateElemCountVar()
 		
 		for (let i = 0; i < this.elemUIs.length; i++)
 			this.elemUIs[i].setValue(val[i])
