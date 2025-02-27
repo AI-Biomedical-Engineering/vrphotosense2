@@ -30,7 +30,7 @@ body:has(#startScreen.visible) {
 	column-gap: 1.5em;
 }
 
-#startScreen > div > label {
+#startScreen > div > span {
 	font-size: 4em;
 	text-align: center;
 	

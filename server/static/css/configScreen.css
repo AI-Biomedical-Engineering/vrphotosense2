@@ -54,7 +54,7 @@
 	
 	width: 80%;
 }
-.configElem > label {
+.configElem > span {
 	margin-bottom: 0.5em;
 	display: block;
 }

@@ -107,6 +107,8 @@ export class FileSelector extends ButtonsSelector {
 			let iconContainer = document.createElement("div")
 			let icon = document.createElement("img")
 			icon.src = files[id]
+			icon.alt = id + " thumbnail"
+			
 			configImageError(icon, img => {
 				img.src = "/img/file.svg"
 				img.classList.add("invertOnSelected")

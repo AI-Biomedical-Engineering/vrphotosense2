@@ -14,7 +14,7 @@ export class LabeledVar {
 		this.divLabel.classList.add("configElem")
 		this.divValue.classList.add("configValue")
 		
-		this.label = document.createElement("label")
+		this.label = document.createElement("span")
 		this.label.innerText = name
 		
 		this.divLabel.appendChild(this.label)
@@ -38,6 +38,7 @@ class InputVarUI {
 		this.valueConverter = valueConverter
 		
 		this.input = document.createElement("input")
+		this.input.name = "inputVar"
 		this.setValue(defaultVal)
 		this.input.onchange = updateCallback
 		
@@ -135,6 +136,7 @@ export class ColorVar extends InputVarUI {
 export class EnumVar {
 	constructor(container, updateCallback, optionNames, defaultVal = 0) {
 		this.select = document.createElement("select")
+		this.select.name = "enumVar"
 		
 		let i = 0
 		for (let optionName of optionNames) {

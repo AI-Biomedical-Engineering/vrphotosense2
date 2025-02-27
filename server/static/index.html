@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Control vrphotosense2 stimulation and define stimulation procedures." />
 	<title>vrphotosense2</title>
 
 	<link rel="stylesheet" type="text/css" href="css/style.css" />
@@ -17,15 +18,15 @@
 			<button id="startBt" class="action">Start</button>
 		</div>
 		<div id="configFolderFrame">
-			<label>To continue it is required to configure a local folder to save all files related to the app</label>
+			<span>To continue it is required to configure a local folder to save all files related to the app</span>
 			<button id="configFolderBt" class="action">Select folder</button>
 		</div>
 		<div id="connectFrame">
-			<label id="connectMsg"></label>
+			<span id="connectMsg"></span>
 			<button id="cancelConnectBt">Cancel</button>
 		</div>
 		<div id="askForIdFrame">
-			<label>Enter the number shown in the app you want to connect to:</label>
+			<span>Enter the number shown in the app you want to connect to:</span>
 			<input type="number" step="1" name="clientID" placeholder="ID" />
 			<button id="connectBt" class="action">Connect</button>
 		</div>
@@ -37,23 +38,23 @@
 				<button id="configEditorBt">Configs</button>
 			</div>
 			<div id="eyes">
-				<img class="eye" src="" />
-				<img class="eye" src="" />
+				<img class="eye" src="" alt="Eye preview" />
+				<img class="eye" src="" alt="Eye preview" />
 			</div>
-			<img id="stream" src="" />
+			<img id="stream" src="" alt="Stimulation preview" />
 			
 			<div id="progressContainer">
 				<progress value="0" max="1"></progress>
 			</div>
 			<div id="stimControls">
-				<button id="skipPrev"><img src="img/controlIcons/skipNext.svg" class="xflipped" /></button>
-				<button id="stop"><img src="img/controlIcons/stop.svg" /></button>
+				<button id="skipPrev"><img src="img/controlIcons/skipNext.svg" class="xflipped" alt="Skip previous" /></button>
+				<button id="stop"><img src="img/controlIcons/stop.svg" alt="Stop" /></button>
 				<button id="playPause">
-					<img id="playImg" src="img/controlIcons/play.svg" />
-					<img id="pauseImg" src="img/controlIcons/pause.svg" />
+					<img id="playImg" src="img/controlIcons/play.svg" alt="Play" />
+					<img id="pauseImg" src="img/controlIcons/pause.svg" alt="Pause" />
 				</button>
-				<button id="skipNext"><img src="img/controlIcons/skipNext.svg" /></button>
-				<button id="loopMode"><img src="img/controlIcons/loop.svg" class="invertOnSelected" /></button>
+				<button id="skipNext"><img src="img/controlIcons/skipNext.svg" alt="Skip next" /></button>
+				<button id="loopMode"><img src="img/controlIcons/loop.svg" class="invertOnSelected" alt="Loop mode" /></button>
 			</div>
 			
 			<div id="configSelector">
@@ -69,7 +70,7 @@
 				<div>
 					<button id="saveAsBt">Save as...</button>
 					<div id="saveAsNameDialog" class="dialog">
-						<input class="dialogInput" type="text" />
+						<input class="dialogInput" type="text" name="saveAsName" />
 					</div>
 				</div>
 			</div>
