@@ -3,9 +3,9 @@ import {StringVar, MultiModeVar} from "./ConfigUI.js"
 import {fs} from "../LocalFilesystem.js"
 
 class FileVar {
-	constructor(container, updateCalback, filePreffix) {
+	constructor(container, updateCallback, filePreffix) {
 		this.container = container
-		this.updateCalback = updateCalback
+		this.updateCallback = updateCallback
 		this.filePreffix = filePreffix
 		
 		this.fileSelector = null
@@ -16,7 +16,7 @@ class FileVar {
 		if (! this.active)
 			return
 		
-		this.fileSelector = new FileSelector(this.container, this.updateCalback, files)
+		this.fileSelector = new FileSelector(this.container, this.updateCallback, files)
 		
 		if (this.pendingToSetVal !== null) {
 			this.fileSelector.setSelected(this.pendingToSetVal)
@@ -46,10 +46,10 @@ class FileVar {
 }
 
 class LocalFileVar extends FileVar {
-	constructor(container, updateCalback, fileTypes) {
+	constructor(container, updateCallback, fileTypes) {
 		fileTypes = new Set(fileTypes)
 		
-		super(container, updateCalback, "#")
+		super(container, updateCallback, "#")
 		let files = {}
 		let fileNames = fs.filenames.filter(filename => fileTypes.has(filename.split(".").at(-1)))
 		let i = 0
@@ -66,8 +66,8 @@ class LocalFileVar extends FileVar {
 }
 
 class ServerFileVar extends FileVar {
-	constructor(container, updateCalback, mediaType) {
-		super(container, updateCalback, `/media/${mediaType}/`)
+	constructor(container, updateCallback, mediaType) {
+		super(container, updateCallback, `/media/${mediaType}/`)
 		this.mediaType = mediaType
 		
 		fetch("/mediaFiles/" + this.mediaType)
@@ -85,8 +85,8 @@ class ServerFileVar extends FileVar {
 }
 
 export class MediaFileVar extends MultiModeVar {
-	constructor(container, updateCalback, mediaType) {
-		super(container, updateCalback, [
+	constructor(container, updateCallback, mediaType) {
+		super(container, updateCallback, [
 			{name: "Remote", params: [ServerFileVar, mediaType]},
 			{name: "Local", params: [LocalFileVar, mediaType === "img" ?
 				["jpg", "jpeg", "png", "svg"] :
