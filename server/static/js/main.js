@@ -79,6 +79,7 @@ class App {
 			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this))
 		this.stimScreen = new StimScreen(this.api)
 		this.configsManager = null
+		this.firstConnection = true
 		
 		let savedAppId = localStorage.getItem("appId")
 		if (autoappid) {
@@ -108,6 +109,7 @@ class App {
 	
 	#wsConnected(id) {
 		console.log(`WS connected (${id})`)
+		this.firstConnection = false
 		
 		this.stimScreen.configStream("/appstream?id=" + id)
 		this.stimScreen.setEnabled(true)
@@ -115,6 +117,9 @@ class App {
 	}
 	#wsClosed() {
 		console.log("WS closed")
+		if (! this.firstConnection)
+			this.startScreen.setReconnectMode()
+		
 		this.stimScreen.paused()
 		this.stimScreen.setLoopMode(false)
 		this.#enableStartScreen()
@@ -135,7 +140,7 @@ class App {
 			this.startScreen.setConnectMessage("Auto connecting")
 			break
 		case AppMode.SAVED_APPID:
-			this.startScreen.setConnectMessage(`Connecting to: ${this.autoConnectApp.id}`)
+			this.startScreen.connectingTo(this.autoConnectApp.id)
 			break
 		case AppMode.MANUAL_APPID:
 			this.startScreen.askForId()

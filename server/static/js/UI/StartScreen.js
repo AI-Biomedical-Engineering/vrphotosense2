@@ -3,15 +3,16 @@ import {fs} from "../LocalFilesystem.js"
 
 export class StartScreen {
 	constructor(startCallback, configFolderCallback, idCallback, abortConnectCallback) {
-		let startScreen = document.getElementById("startScreen")
-		this.hideController = new HideElemController(startScreen)
+		this.startScreen = document.getElementById("startScreen")
+		this.hideController = new HideElemController(this.startScreen)
+		this.reconnectMode = false
 		
 		this.activeFrame = null
 		this.frames = {}
-		for (let frame of startScreen.children)
+		for (let frame of this.startScreen.children)
 			this.frames[frame.id] = frame
 		
-		this.actionButtons = startScreen.querySelectorAll("button.action")
+		this.actionButtons = this.startScreen.querySelectorAll("button.action")
 		this.inputID = document.getElementsByName("clientID")[0]
 		this.connectLb = document.getElementById("connectMsg")
 		
@@ -31,6 +32,12 @@ export class StartScreen {
 		}
 	}
 	
+	setReconnectMode() {
+		if (! this.reconnectMode) {
+			this.reconnectMode = true
+			this.startScreen.classList.add("transparent")
+		}
+	}
 	hide() {
 		this.hideController.hide()
 	}
@@ -52,6 +59,9 @@ export class StartScreen {
 	setConnectMessage(msg) {
 		this.connectLb.innerText = msg
 		this.#show("connectFrame")
+	}
+	connectingTo(id) {
+		this.setConnectMessage(`${this.reconnectMode ? "Reconnecting" : "Connecting"} to: ${id}`)
 	}
 	askForId() {
 		this.inputID.value = ""
