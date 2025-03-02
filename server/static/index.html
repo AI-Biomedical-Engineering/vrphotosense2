@@ -18,7 +18,7 @@
 			<button id="startBt" class="action">Start</button>
 		</div>
 		<div id="configFolderFrame">
-			<span>To continue it is required to configure a local folder to save all files related to the app</span>
+			<span>To continue, it is required to configure a local folder<br />where all files related to the app will be saved</span>
 			<button id="configFolderBt" class="action">Select folder</button>
 		</div>
 		<div id="connectFrame">
@@ -26,8 +26,10 @@
 			<button id="cancelConnectBt">Cancel</button>
 		</div>
 		<div id="askForIdFrame">
-			<span>Enter the number shown in the app you want to connect to:</span>
-			<input type="number" step="1" name="clientID" placeholder="ID" />
+			<div>
+				<span>App: #</span>
+				<input type="number" step="1" name="clientID" />
+			</div>
 			<button id="connectBt" class="action">Connect</button>
 		</div>
 	</div>

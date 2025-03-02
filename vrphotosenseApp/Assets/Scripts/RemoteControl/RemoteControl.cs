@@ -85,7 +85,7 @@ public class RemoteControl {
 			this.Close();
 			return;
 		}
-		MsgPanel.active.SetMsg("ID: " + this.config.appId);
+		MsgPanel.active.SetMsg("App: #" + this.config.appId);
 		
 		if (this.config.streamEnabled) {
 			UpdateSyncer.AddSingleUpdate(() => {

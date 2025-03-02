@@ -47,7 +47,7 @@ export class StartScreen {
 			this.activeFrame.style.display = ""
 		
 		this.activeFrame = this.frames[frameID]
-		this.activeFrame.style.display = "grid"
+		this.activeFrame.style.display = "flex"
 	}
 	
 	startBt() {
@@ -61,7 +61,7 @@ export class StartScreen {
 		this.#show("connectFrame")
 	}
 	connectingTo(id) {
-		this.setConnectMessage(`${this.reconnectMode ? "Reconnecting" : "Connecting"} to: ${id}`)
+		this.setConnectMessage(`${this.reconnectMode ? "Reconnecting" : "Connecting"} to: App #${id}`)
 	}
 	askForId() {
 		this.inputID.value = ""

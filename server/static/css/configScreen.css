@@ -67,7 +67,9 @@ input:has(~ .configElemArray) {
 	margin-right: 1.1em;
 }
 button:has(~ .configElemArray) {
-	padding: 0.3em 0.7em;
+	width: 1.6em;
+	height: 1.6em;
+	padding: 0px;
 	margin-left: 0.8em;
 }
 .configElemArray {

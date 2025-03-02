@@ -22,7 +22,7 @@ body:has(#startScreen.visible) {
 }
 
 #startScreen > div {
-	font-size: min(1em, min(2vw, 4vh));
+	font-size: min(1em, min(2.5vw, 4vh));
 	background: white;
 	
 	position: absolute;
@@ -31,8 +31,8 @@ body:has(#startScreen.visible) {
 	transform: translateX(50%) translateY(-50%);
 	
 	display: none;
-	row-gap: 3em;
-	column-gap: 1.5em;
+	flex-direction: column;
+	row-gap: 1.5em;
 	
 	padding: 3.5em 4.5em;
 	border-radius: 1.2em;
@@ -41,24 +41,27 @@ body:has(#startScreen.visible) {
 	box-shadow: 0px 0px 25px -11px black;
 }
 
-#startScreen > div > span {
-	font-size: 4em;
-	text-align: center;
-	
-	grid-column-start: 1;
-	grid-column-end: 3;
+#startScreen > div#askForIdFrame > div {
+	display: flex;
+}
+#startScreen > div#configFolderFrame {
+	font-size: min(0.7em, min(1.6vw, 3.5vh));
+}
+#startScreen > div#configFolderFrame button {
+	font-size: 1.72em;
 }
 
-#startScreen input {
-	font-size: 3em;
-	width: 6em;
-	margin: 0px;
-}
-
-#startScreen button {
+#startScreen > div span {
 	font-size: 2em;
+	text-wrap: nowrap;
 }
-
-#startScreen button:disabled {
-	color: inherit;
+#startScreen input {
+	font-size: 2em;
+	width: 3em;
+	padding: 0.15em 0.2em;
+	border-radius: 0.15em;
+}
+#startScreen button {
+	font-size: 1.2em;
+	margin-left: auto;
 }
