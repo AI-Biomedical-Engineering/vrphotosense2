@@ -41,7 +41,10 @@ export class AppApi {
 		this.lastFileUploadId = null
 	}
 	get isConnected() {
-		return this.ws !== null && this.ws.readyState === WebSocket.OPEN
+		return this.ws !== null && (
+			this.ws.readyState === WebSocket.OPEN ||
+			this.ws.readyState === WebSocket.CONNECTING
+		)
 	}
 	connect(appId) {
 		this.ws = createWSClient(this.wsAddr, appId, this.#msgCallback.bind(this),
