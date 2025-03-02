@@ -3,12 +3,14 @@ import {createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 
 export class ConfigScreen {
-	constructor(configStorage, stimScreen, enabledCallback, uploadConfigCallback, savedConfigCallback) {
+	constructor(configStorage, screenLayout, uploadConfigCallback, savedConfigCallback) {
+		
 		this.configUI = null
 		this.selectedConfigName = null
 		this.saveAsDialog = null
 		
 		this.configStorage = configStorage
+		this.screenLayout = screenLayout
 		this.uploadConfigCallback = uploadConfigCallback
 		this.savedConfigCallback = savedConfigCallback
 		this.configTypeSelector = new ConfigTypeSelector(this.#changeConfigType.bind(this))
@@ -23,7 +25,6 @@ export class ConfigScreen {
 		window.addEventListener("keydown", this.#keyPress.bind(this))
 		
 		this.#setConfigType(configs[0][2].id)
-		this.screenLayout = new ConfigScreenLayout(stimScreen, enabledCallback)
 	}
 	
 	#changeConfigType(type) {
@@ -132,8 +133,8 @@ class ConfigTypeSelector {
 	}
 }
 
-class ConfigScreenLayout {
-	constructor(stimScreen, enabledCallback) {
+export class ConfigScreenLayout {
+	constructor(stimScreen, enabledCallback = enabled => {}) {
 		this.stimScreen = stimScreen
 		this.enabledCallback = enabledCallback
 		

@@ -4,23 +4,23 @@ import {ConfigStorage} from "./ConfigStorage.js"
 
 import {StartScreen} from "./UI/StartScreen.js"
 import {StimScreen, ConfigSelector} from "./UI/StimScreen.js"
-import {ConfigScreen} from "./UI/ConfigScreen.js"
+import {ConfigScreen, ConfigScreenLayout} from "./UI/ConfigScreen.js"
 import configs from "./configs.js"
 
 class ConfigsManager {
-	constructor(api, configStorage, stimScreen) {
+	constructor(api, configStorage, stimScreen, screenLayout) {
 		this.api = api
 		this.stimScreen = stimScreen
 		
 		this.selectedConfig = null
 		this.configEnabled = false
 		this.configStorage = configStorage
+		screenLayout.enabledCallback = this.#changeConfigModeCallback.bind(this)
 		
 		this.configSelector = new ConfigSelector(this.#selectedConfig.bind(this))
 		this.#reloadConfigNames(null)
-		this.configScreen = new ConfigScreen(this.configStorage, this.stimScreen,
-			this.#changeConfigModeCallback.bind(this), this.#sendConfig.bind(this),
-			this.#reloadConfigNames.bind(this))
+		this.configScreen = new ConfigScreen(this.configStorage, screenLayout,
+			this.#sendConfig.bind(this), this.#reloadConfigNames.bind(this))
 	}
 	
 	#sendConfig(configType, config) {
@@ -78,6 +78,7 @@ class App {
 		this.startScreen = new StartScreen(() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
 			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this))
 		this.stimScreen = new StimScreen(this.api)
+		this.screenLayout = new ConfigScreenLayout(this.stimScreen)
 		this.configsManager = null
 		this.firstConnection = true
 		
@@ -164,7 +165,8 @@ class App {
 		
 		if (fs.isConfigured() && fs.hasPermission() && this.configsManager === null) {
 			let configStorage = new ConfigStorage(() => {
-				this.configsManager = new ConfigsManager(this.api, configStorage, this.stimScreen)
+				this.configsManager = new ConfigsManager(this.api,
+					configStorage, this.stimScreen, this.screenLayout)
 			})
 			if (this.connectMode !== AppMode.MANUAL_APPID)
 				this.autoConnectApp.autoConnect()
