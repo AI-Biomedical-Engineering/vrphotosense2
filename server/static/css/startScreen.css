@@ -44,6 +44,15 @@ body:has(#startScreen.visible) {
 #startScreen > div#askForIdFrame > div {
 	display: flex;
 }
+#startScreen > div#connectFrame > div {
+	display: flex;
+}
+#startScreen > div#connectFrame img {
+	height: 2.88em;
+	margin-left: 7em;
+	filter: invert(60%);
+	animation: rotateLoading 0.6s linear infinite;
+}
 #startScreen > div#configFolderFrame {
 	font-size: min(0.7em, min(1.6vw, 3.5vh));
 }
@@ -64,4 +73,10 @@ body:has(#startScreen.visible) {
 #startScreen button {
 	font-size: 1.2em;
 	margin-left: auto;
+}
+
+@keyframes rotateLoading {
+	to {
+		transform: rotate(360deg);
+	}
 }

@@ -67,7 +67,7 @@ public class RemoteControl {
 		Utils.Delay(RECONNECT_DELAY, () => UpdateSyncer.AddSingleUpdate(this.WSConnect));
 		SceneController.active.Stop();
 		SceneController.loopEnabled = false;
-		MsgPanel.active.SetMsg("Not connected");
+		MsgPanel.active.SetMsg("Connecting to server");
 	}
 	
 	public void Close() {

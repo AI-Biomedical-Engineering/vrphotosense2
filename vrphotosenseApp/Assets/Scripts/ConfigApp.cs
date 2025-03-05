@@ -23,7 +23,7 @@ public class ConfigApp : MonoBehaviour {
 		
 		remoteControl.LoadedScene();
 		if (startup)
-			MsgPanel.active.SetMsg("Not connected");
+			MsgPanel.active.SetMsg("Connecting to server");
 		
 		BaseConfigPlayer.config.ConfigStream(config.streamEnabled, config.streamFramerate);
 		BaseConfigPlayer.config.SetTrackingMode(this.trackMode);
