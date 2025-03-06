@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Flashing.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Image.unity
+    guid: fb21af1f8b313e740b0298fe43d1d9f2
+  - enabled: 1
+    path: Assets/Scenes/Video.unity
+    guid: 4404f50e95d664e45975189fb3c748ac
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 5929a754ab537c24c862c421cee60634, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 10de77505d62983499c90dd7d0b9b0ec, type: 2}
