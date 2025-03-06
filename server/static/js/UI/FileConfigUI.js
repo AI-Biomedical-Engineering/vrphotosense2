@@ -46,7 +46,9 @@ class FileVar {
 }
 
 class LocalFileVar extends FileVar {
-	constructor(container, updateCallback, fileTypes) {
+	constructor(container, updateCallback, mediaType) {
+		let fileTypes = mediaType === "img" ? ["jpg", "jpeg", "png", "svg"] :
+			["mp4", "mov", "mpg", "mpeg", "ogv", "vp8", "webm"]
 		fileTypes = new Set(fileTypes)
 		
 		super(container, updateCallback, "#")
@@ -54,13 +56,21 @@ class LocalFileVar extends FileVar {
 		let fileNames = fs.filenames.filter(filename => fileTypes.has(filename.split(".").at(-1)))
 		let i = 0
 		
-		for (let filename of fileNames) {
-			fs.readFile(filename, (fileUrl, fileType) => {
-				files[filename] = fileUrl
-				
-				if (++i === fileNames.length)
-					this.showFiles(files)
-			}, true)
+		if (mediaType === "img") {
+			for (let filename of fileNames) {
+				fs.readFile(filename, (fileUrl, fileType) => {
+					files[filename] = fileUrl
+					
+					if (++i === fileNames.length)
+						this.showFiles(files)
+				}, true)
+			}
+		}
+		else {
+			for (let filename of fileNames)
+				files[filename] = "" //Force error to show default icon
+			
+			this.showFiles(files)
 		}
 	}
 }
@@ -77,8 +87,10 @@ class ServerFileVar extends FileVar {
 		fileNames = JSON.parse(fileNames)
 		let files = {}
 		
-		for (let file of fileNames)
-			files[file] = `/media/${this.mediaType}/` + file
+		for (let file of fileNames) {
+			files[file] = `/media/${this.mediaType}/` +
+				(this.mediaType === "img" ? file : `thumbnails/${file.slice(0, file.lastIndexOf("."))}.jpg`)
+		}
 		
 		this.showFiles(files)
 	}
@@ -88,10 +100,7 @@ export class MediaFileVar extends MultiModeVar {
 	constructor(container, updateCallback, mediaType) {
 		super(container, updateCallback, [
 			{name: "Remote", params: [ServerFileVar, mediaType]},
-			{name: "Local", params: [LocalFileVar, mediaType === "img" ?
-				["jpg", "jpeg", "png", "svg"] :
-				["mp4", "mov", "mpg", "mpeg", "ogv", "vp8", "webm"]]
-			},
+			{name: "Local", params: [LocalFileVar, mediaType]},
 			{name: "URL", params: [StringVar]}
 		])
 	}
