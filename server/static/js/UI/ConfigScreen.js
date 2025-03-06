@@ -13,36 +13,33 @@ export class ConfigScreen {
 		this.screenLayout = screenLayout
 		this.uploadConfigCallback = uploadConfigCallback
 		this.savedConfigCallback = savedConfigCallback
-		this.configTypeSelector = new ConfigTypeSelector(this.#changeConfigType.bind(this))
+		this.configTypeSelector = new ConfigTypeSelector(type => {
+			this.#setConfigUIType(type)
+			this.#changedConfig()
+		})
 		
 		this.configContainer = document.getElementById("config")
 		this.saveBt = document.getElementById("saveBt")
-		this.uploadBt = document.getElementById("uploadBt")
 		
 		this.saveBt.onclick = e => this.#saveConfig(this.selectedConfigName)
-		this.uploadBt.onclick = this.#uploadConfig.bind(this)
 		document.getElementById("saveAsBt").onclick = this.#showSaveAsDialog.bind(this)
 		window.addEventListener("keydown", this.#keyPress.bind(this))
-		
-		this.#setConfigType(configs[0][2].id)
 	}
 	
-	#changeConfigType(type) {
+	#setConfigUIType(type) {
 		if (this.configUI !== null)
 			this.configUI.deleteUI()
 		
 		this.configUI = createConfigUI(this.configContainer,
 			this.#changedConfig.bind(this), configs[type])
-		
-		this.#changedConfig()
 	}
 	#setConfigType(type) {
 		this.configTypeSelector.setConfigType(type)
-		this.#changeConfigType(type)
+		this.#setConfigUIType(type)
 	}
 	#changedConfig() {
 		this.saveBt.disabled = this.selectedConfigName === null
-		this.uploadBt.disabled = false
+		this.uploadConfigCallback(configs[this.configUI.type.id][2], this.configUI.getValue())
 	}
 	setConfig(config) {
 		if (this.configTypeSelector.getConfigType() !== config.type)
@@ -52,7 +49,6 @@ export class ConfigScreen {
 		this.selectedConfigName = config.name
 		
 		this.saveBt.disabled = true
-		this.uploadBt.disabled = true
 	}
 	
 	#showSaveAsDialog() {
@@ -80,11 +76,6 @@ export class ConfigScreen {
 		this.saveBt.disabled = true
 	}
 	
-	#uploadConfig() {
-		this.uploadConfigCallback(configs[this.configUI.type.id][2], this.configUI.getValue())
-		this.uploadBt.disabled = true
-	}
-	
 	#keyPress(e) {
 		if (e.keyCode === 83 && e.ctrlKey) //Ctrl + S
 			e.preventDefault()
@@ -110,10 +101,6 @@ export class ConfigScreen {
 			if (this.saveAsDialog !== null)
 				this.saveAsDialog.closeDialog()
 			break
-		case 85: //U
-			if (! (isTextInputActive() || this.uploadBt.disabled))
-				this.#uploadConfig()
-			break
 		}
 	}
 }
@@ -129,7 +116,7 @@ class ConfigTypeSelector {
 		this.selector.setSelected(type.toString())
 	}
 	getConfigType() {
-		return parseInt(this.selector.selected)
+		return parseInt(this.selector.getSelected())
 	}
 }
 

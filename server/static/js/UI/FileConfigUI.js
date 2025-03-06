@@ -31,7 +31,11 @@ class FileVar {
 			this.fileSelector.deleteUI()
 	}
 	getValue() {
-		return this.filePreffix + this.fileSelector.getSelected()
+		let selected = null
+		if (this.fileSelector !== null)
+			selected = this.fileSelector.getSelected()
+		
+		return selected !== null ? this.filePreffix + selected : ""
 	}
 	setValue(val) {
 		if (! val.startsWith(this.filePreffix))

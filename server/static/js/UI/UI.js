@@ -77,14 +77,14 @@ export class ButtonsSelector {
 		let bt = this.buttons[btName]
 		
 		if (bt !== undefined && (bt !== this.selected || this.selectOnSelected)) {
-			if (callCallback)
-				this.selectedCallback(btName)
-			
 			if (this.selected !== null)
 				this.selected.classList.remove("selected")
 			
 			this.selected = bt
 			this.selected.classList.add("selected")
+			
+			if (callCallback)
+				this.selectedCallback(btName)
 		}
 	}
 	setSelected(btName) {
