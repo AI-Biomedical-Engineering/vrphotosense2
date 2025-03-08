@@ -183,15 +183,28 @@ export class ConfigSelector {
 		this.selectedType = -1
 		
 		let configTypes = {
-			"0": "Flashing",
-			"1": "Static Pattern",
-			"10": "Dynamic Pattern",
-			"2": "Video",
-			"3": "Real life scenario",
+			"0": {name: "Flashing", icon: "flash.svg"},
+			"1": {name: "Static Pattern", icon: "image.svg"},
+			"10": {name: "Dynamic Pattern", icon: "imageMov.svg"},
+			"2": {name: "Video", icon: "video.svg"},
+			"3": {name: "Real life scenario", icon: "skateboarding.svg"}
 		}
+		let nthChild = 0
 		this.configGroupsSelector = new ButtonsSelector(
 			document.getElementById("configGroups"), this.#selectedConfigType.bind(this),
-			["0", "1", "10", "2", "3"], (bt, id) => bt.innerText = configTypes[id])
+			["0", "1", "10", "2", "3"], (bt, id) => {
+				let img = document.createElement("img")
+				img.src = "img/modeIcons/" + configTypes[id].icon
+				img.classList.add("invertOnSelected")
+				
+				let tooltipSpan = document.createElement("span")
+				tooltipSpan.innerText = configTypes[id].name
+				
+				bt.style.setProperty("--nthChild", nthChild++)
+				bt.appendChild(img)
+				bt.appendChild(tooltipSpan)
+			})
+		this.configGroupsSelector.select("0")
 	}
 	
 	loadConfigs(configsDef) {
