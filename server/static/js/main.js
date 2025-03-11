@@ -50,7 +50,7 @@ class ConfigsManager {
 	}
 	
 	#reloadConfigNames(selectedConfigName) {
-		this.configSelector.loadConfigs(this.configStorage.getConfigNames())
+		this.configSelector.loadConfigs(this.configStorage.getConfigNames(true))
 		
 		if (selectedConfigName !== null) {
 			this.#setSelectedConfig(selectedConfigName)

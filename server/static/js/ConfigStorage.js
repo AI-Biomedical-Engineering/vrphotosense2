@@ -16,10 +16,13 @@ export class ConfigStorage {
 		}
 	}
 	
-	getConfigNames() {
+	getConfigNames(sorted = false) {
 		let configNames = []
 		for (let configName in this.configs)
 			configNames.push({name: configName, uiType: this.configs[configName].uiType})
+		
+		if (sorted)
+			configNames.sort((c1, c2) => c1.name.localeCompare(c2.name))
 		
 		return configNames
 	}
