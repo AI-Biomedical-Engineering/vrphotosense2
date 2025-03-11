@@ -17,7 +17,12 @@ class ConfigsManager {
 		this.configStorage = configStorage
 		screenLayout.enabledCallback = this.#changeConfigModeCallback.bind(this)
 		
-		this.configSelector = new ConfigSelector(this.#selectedConfig.bind(this))
+		this.configSelector = new ConfigSelector({
+			selected: this.#selectedConfig.bind(this),
+			edit: name => console.log("Edit config", name),
+			clone: this.#cloneConfig.bind(this),
+			delete: this.#deleteConfig.bind(this)
+		})
 		this.#reloadConfigNames(null)
 		this.configScreen = new ConfigScreen(this.configStorage, screenLayout,
 			this.#sendConfig.bind(this), this.#reloadConfigNames.bind(this))
@@ -31,7 +36,7 @@ class ConfigsManager {
 		this.#sendConfig(configs[this.selectedConfig.type][2], this.selectedConfig.config)
 	}
 	#setSelectedConfig(name) {
-		this.selectedConfig = this.configStorage.getConfig(name)
+		this.selectedConfig = this.configStorage.get(name)
 		this.selectedConfig.name = name
 	}
 	
@@ -62,6 +67,32 @@ class ConfigsManager {
 			else
 				this.#sendSelectedConfig()
 		}
+	}
+	
+	#getCloneName(name) {
+		let suffixRE = "_[0-9]+$"
+		let suffixMatch = name.match(suffixRE)
+		let baseName = suffixMatch !== null ?
+			name.slice(0, suffixMatch.index) : name
+		
+		let linkedConfigs = this.configStorage.getConfigNames()
+			.filter(c => c.name.match(`^${baseName}${suffixRE}`) !== null)
+			.map(c => parseInt(c.name.match(suffixRE)[0].slice(1)))
+		
+		let numSuffix = linkedConfigs.length > 0 ? Math.max(...linkedConfigs) : 0
+		return `${baseName}_${numSuffix + 1}`
+	}
+	#cloneConfig(name) {
+		let config = this.configStorage.get(name)
+		this.configStorage.save(this.#getCloneName(name), config.type, config.config)
+		this.#reloadConfigNames(null)
+	}
+	#deleteConfig(name) {
+		if (this.selectedConfig !== null && this.selectedConfig.name === name)
+			this.selectedConfig = null
+		
+		this.configStorage.delete(name)
+		this.#reloadConfigNames(null)
 	}
 }
 

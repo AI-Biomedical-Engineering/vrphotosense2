@@ -43,6 +43,25 @@ export class HideElemController {
 	}
 }
 
+export class ImgCache {
+	constructor() {
+		this.images = new Map()
+	}
+	getImage(url, callback) {
+		let img = this.images.get(url)
+		
+		if (img !== undefined)
+			callback(img)
+		else {
+			fetch(url).then(resp => resp.blob().then(blob => {
+				let dataURL = URL.createObjectURL(blob)
+				this.images.set(url, dataURL)
+				callback(dataURL)
+			}))
+		}
+	}
+}
+
 export class ButtonsSelector {
 	constructor(container, selectedCallback, selectValues, configBtCallback,
 			selectOnSelected = false) {

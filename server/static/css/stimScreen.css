@@ -4,7 +4,7 @@
 	--maxStimWidth: calc(100vw - var(--xMargin) * 2);
 	--stimWidth: var(--maxStimWidth);
 	--progressBarsCount: 1;
-	--tabColor: #7c7c7c;
+	--tabColor: #767676;
 	--configSelectBorderColor: #565656;
 }
 
@@ -179,24 +179,56 @@
 	border-radius: 0px 0.6em 0.6em 0.6em;
 	overflow: hidden;
 }
-#configNames button {
-	text-align: left;
+#configNames > button {
 	font-size: 0.82em;
 	color: white;
 	background: var(--tabColor);
-	padding: 0.35em 0.9em;
 	
+	display: flex;
+	align-items: center;
+	
+	padding: 0px;
 	border-style: solid;
 	border-color: var(--configSelectBorderColor);
 	border-width: 0px 0px 1px;
 	border-radius: 0px;
 }
-#configNames button:last-child {
+#configNames > button:last-child {
 	border-width: 0px;
 }
-#configNames button.selected {
+#configNames > button.selected {
 	background: #3c3c3c !important;
 }
-#configNames button:hover:not(.selected) {
-	background: #939191;
+#configNames > button:hover:not(.selected) {
+	background: #898888;
+}
+
+#configNames > button > span {
+	margin: 0.35em 0.9em;
+}
+
+#configNames > button > div {
+	height: calc(100% - 0.2em);
+	display: none;
+	justify-content: flex-end;
+	column-gap: 0.2em;
+	
+	flex-grow: 1;
+	margin-right: 0.4em;
+}
+#configNames > button:hover > div {
+	display: flex;
+}
+#configNames > button > div > button {
+	background: transparent;
+	aspect-ratio: 1 / 1;
+	padding: 0px;
+}
+#configNames > button > div > button:hover {
+	background: #242424;
+}
+#configNames > button > div > button > img {
+	display: block;
+	height: 95%;
+	margin: auto;
 }

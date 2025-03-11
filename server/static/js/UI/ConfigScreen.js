@@ -70,7 +70,7 @@ export class ConfigScreen {
 			return false
 	}
 	#saveConfig(name) {
-		this.configStorage.saveConfig(name, this.configUI.type.id, this.configUI.getValue())
+		this.configStorage.save(name, this.configUI.type.id, this.configUI.getValue())
 		this.savedConfigCallback(name)
 		this.selectedConfigName = name
 		this.saveBt.disabled = true

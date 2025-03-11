@@ -1,5 +1,5 @@
 import {configImageError, setCSSVar} from "./UI.js"
-import {ButtonsSelector, isTextInputActive} from "./UI.js"
+import {ImgCache, ButtonsSelector, isTextInputActive} from "./UI.js"
 import {Command} from "../AppApi.js"
 
 export class StimScreen {
@@ -174,8 +174,9 @@ class Progress {
 }
 
 export class ConfigSelector {
-	constructor(selectedCallback) {
-		this.selectedCallback = selectedCallback
+	constructor(callbacks) {
+		this.callbacks = callbacks
+		this.imgCache = new ImgCache()
 		this.configsContainer = document.getElementById("configNames")
 		this.configsDef = []
 		this.configSelector = null
@@ -194,6 +195,7 @@ export class ConfigSelector {
 			document.getElementById("configGroups"), this.#selectedConfigType.bind(this),
 			["0", "1", "10", "2", "3"], (bt, id) => {
 				let img = document.createElement("img")
+				img.alt = configTypes[id].name + " icon"
 				img.src = "img/modeIcons/" + configTypes[id].icon
 				img.classList.add("invertOnSelected")
 				
@@ -215,9 +217,35 @@ export class ConfigSelector {
 		if (this.configSelector !== null)
 			this.configSelector.deleteUI()
 		
+		let iconCallbacks = {
+			edit: this.callbacks.edit,
+			duplicate: this.callbacks.clone,
+			delete: this.callbacks.delete
+		}
 		this.configSelector = new ButtonsSelector(this.configsContainer, this.#selectedConfig.bind(this),
 			this.configsDef.filter(config => config.uiType === this.selectedType).map(config => config.name),
-			(bt, id) => bt.innerText = id, true)
+			(bt, id) => {
+				let iconsDiv = document.createElement("div")
+				let nameSpan = document.createElement("span")
+				nameSpan.innerText = id
+				
+				for (let iconName in iconCallbacks) {
+					let iconBt = document.createElement("button")
+					
+					iconBt.onmousedown = e => {
+						iconCallbacks[iconName](id)
+						e.stopPropagation() //Prevent event in the button underneath
+					}
+					let img = document.createElement("img")
+					img.alt = iconName
+					this.imgCache.getImage(`img/fileIcons/${iconName}.svg`, data => img.src = data)
+					
+					iconBt.appendChild(img)
+					iconsDiv.appendChild(iconBt)
+				}
+				bt.appendChild(nameSpan)
+				bt.appendChild(iconsDiv)
+			}, true)
 		this.configSelector.setSelected(this.selectedConfig)
 	}
 	deselect() {
@@ -243,6 +271,6 @@ export class ConfigSelector {
 	}
 	#selectedConfig(configName) {
 		this.selectedConfig = configName
-		this.selectedCallback(configName)
+		this.callbacks.selected(configName)
 	}
 }

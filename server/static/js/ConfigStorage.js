@@ -23,13 +23,20 @@ export class ConfigStorage {
 		
 		return configNames
 	}
-	getConfig(name) {
+	get(name) {
 		return this.configs[name]
 	}
-	saveConfig(name, type, config) {
+	save(name, type, config) {
 		let uiType = type === 1 && config.freq > 0 ? 10 : type
 		
 		this.configs[name] = {uiType, type, config}
+		this.#saveToDisk()
+	}
+	delete(name) {
+		delete this.configs[name]
+		this.#saveToDisk()
+	}
+	#saveToDisk() {
 		fs.writeFile(ConfigStorage.CONFIGS_FILE, JSON.stringify(this.configs, null, "\t"))
 	}
 }
