@@ -183,6 +183,10 @@ export class ConfigSelector {
 		this.selectedConfig = null
 		this.selectedType = -1
 		
+		document.getElementById("addConfigBt").onclick = e => {
+			this.callbacks.add(this.selectedType)
+		}
+		
 		let configTypes = {
 			"0": {name: "Flashing", icon: "flash.svg"},
 			"1": {name: "Static Pattern", icon: "image.svg"},

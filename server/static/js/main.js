@@ -1,13 +1,14 @@
 import {AppMessage, AppApi, AutoConnectAppApi} from "./AppApi.js"
 import {initFS, fs} from "./LocalFilesystem.js"
 import {ConfigStorage} from "./ConfigStorage.js"
+import {ConfigsManager} from "./ConfigsManager.js"
 
 import {StartScreen} from "./UI/StartScreen.js"
 import {StimScreen, ConfigSelector} from "./UI/StimScreen.js"
 import {ConfigScreen, ConfigScreenLayout} from "./UI/ConfigScreen.js"
 import configs from "./configs.js"
 
-class ConfigsManager {
+class AppController {
 	constructor(api, configStorage, stimScreen, screenLayout) {
 		this.api = api
 		this.stimScreen = stimScreen
@@ -15,13 +16,21 @@ class ConfigsManager {
 		this.selectedConfig = null
 		this.configEnabled = false
 		this.configStorage = configStorage
+		this.configsManager = new ConfigsManager(this.configStorage)
 		screenLayout.enabledCallback = this.#changeConfigModeCallback.bind(this)
 		
 		this.configSelector = new ConfigSelector({
 			selected: this.#selectedConfig.bind(this),
 			edit: name => console.log("Edit config", name),
-			clone: this.#cloneConfig.bind(this),
-			delete: this.#deleteConfig.bind(this)
+			clone: name => {
+				this.configsManager.cloneConfig(name)
+				this.#reloadConfigNames(null)
+			},
+			delete: this.#deleteConfig.bind(this),
+			add: uiType => {
+				this.configsManager.addConfig(uiType)
+				this.#reloadConfigNames(null)
+			}
 		})
 		this.#reloadConfigNames(null)
 		this.configScreen = new ConfigScreen(this.configStorage, screenLayout,
@@ -68,25 +77,6 @@ class ConfigsManager {
 				this.#sendSelectedConfig()
 		}
 	}
-	
-	#getCloneName(name) {
-		let suffixRE = "_[0-9]+$"
-		let suffixMatch = name.match(suffixRE)
-		let baseName = suffixMatch !== null ?
-			name.slice(0, suffixMatch.index) : name
-		
-		let linkedConfigs = this.configStorage.getConfigNames()
-			.filter(c => c.name.match(`^${baseName}${suffixRE}`) !== null)
-			.map(c => parseInt(c.name.match(suffixRE)[0].slice(1)))
-		
-		let numSuffix = linkedConfigs.length > 0 ? Math.max(...linkedConfigs) : 0
-		return `${baseName}_${numSuffix + 1}`
-	}
-	#cloneConfig(name) {
-		let config = this.configStorage.get(name)
-		this.configStorage.save(this.#getCloneName(name), config.type, config.config)
-		this.#reloadConfigNames(null)
-	}
 	#deleteConfig(name) {
 		if (this.selectedConfig !== null && this.selectedConfig.name === name)
 			this.selectedConfig = null
@@ -110,7 +100,7 @@ class App {
 			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this))
 		this.stimScreen = new StimScreen(this.api)
 		this.screenLayout = new ConfigScreenLayout(this.stimScreen)
-		this.configsManager = null
+		this.appController = null
 		this.firstConnection = true
 		
 		let savedAppId = localStorage.getItem("appId")
@@ -194,9 +184,9 @@ class App {
 	#configuredAppFolder() {
 		this.#enableStartScreen()
 		
-		if (fs.isConfigured() && fs.hasPermission() && this.configsManager === null) {
+		if (fs.isConfigured() && fs.hasPermission() && this.appController === null) {
 			let configStorage = new ConfigStorage(() => {
-				this.configsManager = new ConfigsManager(this.api,
+				this.appController = new AppController(this.api,
 					configStorage, this.stimScreen, this.screenLayout)
 			})
 			if (this.connectMode !== AppMode.MANUAL_APPID)
