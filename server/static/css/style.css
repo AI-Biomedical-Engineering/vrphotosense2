@@ -58,8 +58,10 @@ button {
 	
 	transition: var(--btColorTrans);
 }
-button:hover {
-	background: #d2d2d2;
+@media (hover: hover) {
+	button:hover {
+		background: #d2d2d2;
+	}
 }
 button:active {
 	background: #eee;
@@ -211,9 +213,11 @@ div:has(>.dialog) {
 	border-width: 1px;
 	border-color: #959595;
 }
-.fileSelector > button:hover:not(.selected) {
-	padding: 0.5em;
-	border-style: solid;
+@media (hover: hover) {
+	.fileSelector > button:hover:not(.selected) {
+		padding: 0.5em;
+		border-style: solid;
+	}
 }
 .fileSelector > button > div {
 	width: 100%;

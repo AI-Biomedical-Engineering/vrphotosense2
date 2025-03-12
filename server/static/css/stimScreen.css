@@ -123,6 +123,9 @@
 	padding: 0.5em 0.6em;
 	border-bottom-width: 0px;
 }
+#configGroups > button:not(.selected) {
+	box-shadow: 0px -11px 11px -14px black inset;
+}
 #configGroups > button > img {
 	display: block;
 }
@@ -200,8 +203,10 @@
 #configNames > button.selected {
 	background: #3c3c3c !important;
 }
-#configNames > button:hover:not(.selected) {
-	background: #898888;
+@media (hover: hover) {
+	#configNames > button:hover:not(.selected) {
+		background: #898888;
+	}
 }
 
 #configNames > button > span {
@@ -217,16 +222,26 @@
 	flex-grow: 1;
 	margin-right: 0.4em;
 }
-#configNames > button:hover > div {
-	display: flex;
+@media (hover: hover) {
+	#configNames > button:hover > div {
+		display: flex;
+	}
 }
+@media not (hover: hover) {
+	#configNames > button.selected > div {
+		display: flex;
+	}
+}
+
 #configNames > button > div > button {
 	background: transparent;
 	aspect-ratio: 1 / 1;
 	padding: 0px;
 }
-#configNames > button > div > button:hover {
-	background: #242424;
+@media (hover: hover) {
+	#configNames > button > div > button:hover {
+		background: #242424;
+	}
 }
 #configNames > button > div > button > img {
 	display: block;
@@ -249,10 +264,12 @@
 	
 	transition: padding 0.15s ease, margin 0.15s ease, var(--btColorTrans);
 }
-#addConfigBt:hover {
-	background: #56ff5c;
-	padding-top: 0.29em;
-	margin-bottom: 0px;
+@media (hover: hover) {
+	#addConfigBt:hover {
+		background: #56ff5c;
+		padding-top: 0.29em;
+		margin-bottom: 0px;
+	}
 }
 #addConfigBt img {
 	height: 1.38em;
