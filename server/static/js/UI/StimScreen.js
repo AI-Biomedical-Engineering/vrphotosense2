@@ -1,5 +1,5 @@
-import {configImageError, setCSSVar} from "./UI.js"
-import {ImgCache, ButtonsSelector, isTextInputActive} from "./UI.js"
+import {ImgCache, ButtonsSelector, ConfirmDialog,
+	isTextInputActive, configImageError, setCSSVar} from "./UI.js"
 import {Command} from "../AppApi.js"
 
 export class StimScreen {
@@ -224,7 +224,7 @@ export class ConfigSelector {
 		let iconCallbacks = {
 			edit: this.callbacks.edit,
 			duplicate: this.callbacks.clone,
-			delete: this.callbacks.delete
+			delete: this.#deleteConfig.bind(this)
 		}
 		this.configSelector = new ButtonsSelector(this.configsContainer, this.#selectedConfig.bind(this),
 			this.configsDef.filter(config => config.uiType === this.selectedType).map(config => config.name),
@@ -237,7 +237,7 @@ export class ConfigSelector {
 					let iconBt = document.createElement("button")
 					
 					iconBt.onmousedown = e => {
-						iconCallbacks[iconName](id)
+						iconCallbacks[iconName](id, e)
 						e.stopPropagation() //Prevent event in the button underneath
 					}
 					let img = document.createElement("img")
@@ -276,5 +276,13 @@ export class ConfigSelector {
 	#selectedConfig(configName) {
 		this.selectedConfig = configName
 		this.callbacks.selected(configName)
+	}
+	#deleteConfig(configName, e) {
+		let target = e.currentTarget
+		target.classList.add("selectedDel")
+		
+		new ConfirmDialog(target, "deleteDialog", false,
+			() => target.classList.remove("selectedDel"),
+			() => this.callbacks.delete(configName), "Delete config?")
 	}
 }

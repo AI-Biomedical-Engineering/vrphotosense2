@@ -4,10 +4,8 @@ import configs from "../configs.js"
 
 export class ConfigScreen {
 	constructor(configStorage, screenLayout, uploadConfigCallback, savedConfigCallback) {
-		
 		this.configUI = null
 		this.selectedConfigName = null
-		this.saveAsDialog = null
 		
 		this.configStorage = configStorage
 		this.screenLayout = screenLayout
@@ -22,7 +20,8 @@ export class ConfigScreen {
 		this.saveBt = document.getElementById("saveBt")
 		
 		this.saveBt.onclick = e => this.#saveConfig(this.selectedConfigName)
-		document.getElementById("saveAsBt").onclick = this.#showSaveAsDialog.bind(this)
+		this.saveAsBt = document.getElementById("saveAsBt")
+		this.saveAsBt.onclick = this.#showSaveAsDialog.bind(this)
 		window.addEventListener("keydown", this.#keyPress.bind(this))
 	}
 	
@@ -52,14 +51,8 @@ export class ConfigScreen {
 	}
 	
 	#showSaveAsDialog() {
-		if (this.saveAsDialog === null) {
-			this.saveAsDialog = new InputDialog(document.getElementById("saveAsNameDialog"),
-				this.#closedSaveAsDialog.bind(this), this.#saveAsCallback.bind(this),
-				this.selectedConfigName)
-		}
-	}
-	#closedSaveAsDialog() {
-		this.saveAsDialog = null
+		new InputDialog(this.saveAsBt, "saveAsNameDialog", true, () => {},
+			this.#saveAsCallback.bind(this), this.selectedConfigName, "saveAsName")
 	}
 	#saveAsCallback(name) {
 		if (name.trim().length > 0) {
@@ -96,10 +89,6 @@ export class ConfigScreen {
 				else if (! this.saveBt.disabled)
 					this.#saveConfig(this.selectedConfigName)
 			}
-			break
-		case 27: //Esc
-			if (this.saveAsDialog !== null)
-				this.saveAsDialog.closeDialog()
 			break
 		}
 	}

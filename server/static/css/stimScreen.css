@@ -232,6 +232,9 @@
 		display: flex;
 	}
 }
+#configNames > button > div:has(.selectedDel) {
+	display: flex;
+}
 
 #configNames > button > div > button {
 	background: transparent;
@@ -243,10 +246,24 @@
 		background: #242424;
 	}
 }
+#configNames > button > div > button.selectedDel {
+	background: #242424;
+}
 #configNames > button > div > button > img {
 	display: block;
 	height: 95%;
 	margin: auto;
+}
+
+#deleteDialog {
+	--xOffset: -50%;
+	--xOffsetParent: 0.5;
+	--xPosMark: 50%;
+}
+.vertical #deleteDialog {
+	--xOffset: -78%;
+	--xOffsetParent: 0.5;
+	--xPosMark: 78%;
 }
 
 #addConfigBt {

@@ -14,10 +14,9 @@
 }
 
 #saveAsNameDialog {
-	right: 35%;
-}
-#saveAsNameDialog::before {
-	left: 80%;
+	--xOffset: -100%;
+	--xOffsetParent: 1;
+	--xPosMark: 77%;
 }
 
 #configTypeSelector {

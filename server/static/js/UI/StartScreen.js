@@ -1,4 +1,4 @@
-import {HideElemController} from "./UI.js"
+import {HideElemController, closeAllDialogs} from "./UI.js"
 import {fs} from "../LocalFilesystem.js"
 
 export class StartScreen {
@@ -42,6 +42,8 @@ export class StartScreen {
 		this.hideController.hide()
 	}
 	#show(frameID) {
+		closeAllDialogs()
+		
 		this.hideController.show()
 		if (this.activeFrame !== null)
 			this.activeFrame.style.display = ""
