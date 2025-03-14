@@ -22,9 +22,6 @@
 	padding: 0px;
 	margin: 0px 0px 1em;
 }
-#topBar > button:last-child {
-	margin-left: auto;
-}
 
 #eyes {
 	display: flex;

@@ -1,29 +1,36 @@
 import {ButtonsSelector, isTextInputActive} from "./UI.js"
-import {InputDialog} from "./Dialog.js"
+import {ConfirmDialog} from "./Dialog.js"
 import {createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 
 export class ConfigScreen {
-	constructor(configStorage, screenLayout, uploadConfigCallback, savedConfigCallback) {
+	constructor(configStorage, uploadConfigCallback, savedConfigCallback, closedCallback) {
 		this.configUI = null
 		this.selectedConfigName = null
 		
 		this.configStorage = configStorage
-		this.screenLayout = screenLayout
 		this.uploadConfigCallback = uploadConfigCallback
 		this.savedConfigCallback = savedConfigCallback
+		this.closedCallback = closedCallback
 		this.configTypeSelector = new ConfigTypeSelector(type => {
 			this.#setConfigUIType(type)
 			this.#changedConfig()
 		})
 		
+		this.screenDiv = document.getElementById("configScreen")
 		this.configContainer = document.getElementById("config")
 		this.saveBt = document.getElementById("saveBt")
+		this.cancelBt = document.getElementById("cancelBt")
 		
 		this.saveBt.onclick = e => this.#saveConfig(this.selectedConfigName)
-		this.saveAsBt = document.getElementById("saveAsBt")
-		this.saveAsBt.onclick = this.#showSaveAsDialog.bind(this)
+		this.cancelBt.onclick = this.#cancel.bind(this)
+		
 		window.addEventListener("keydown", this.#keyPress.bind(this))
+		this.setEnabled(false)
+	}
+	setEnabled(enabled) {
+		this.enabled = enabled
+		this.screenDiv.style.display = enabled ? "flex" : "none"
 	}
 	
 	#setConfigUIType(type) {
@@ -51,45 +58,34 @@ export class ConfigScreen {
 		this.saveBt.disabled = true
 	}
 	
-	#showSaveAsDialog() {
-		new InputDialog(this.saveAsBt, "saveAsNameDialog", true, () => {},
-			this.#saveAsCallback.bind(this), this.selectedConfigName, "saveAsName")
-	}
-	#saveAsCallback(name) {
-		if (name.trim().length > 0) {
-			this.#saveConfig(name.trim())
-			return true
-		}
-		else
-			return false
-	}
 	#saveConfig(name) {
 		this.configStorage.save(name, this.configUI.type.id, this.configUI.getValue())
-		this.savedConfigCallback(name)
 		this.selectedConfigName = name
 		this.saveBt.disabled = true
+		
+		this.savedConfigCallback(name)
+		this.closedCallback()
+	}
+	#cancel() {
+		if (this.saveBt.disabled)
+			this.closedCallback()
+		else {
+			new ConfirmDialog(this.cancelBt, "cancelDialog", true,
+				() => {}, this.closedCallback, "Discard changes?")
+		}
 	}
 	
 	#keyPress(e) {
 		if (e.keyCode === 83 && e.ctrlKey) //Ctrl + S
 			e.preventDefault()
 		
-		if (! this.screenLayout.enabled)
+		if (! this.enabled)
 			return
 		
 		switch (e.keyCode) {
 		case 13: //Enter
 			if (isTextInputActive())
 				document.activeElement.blur()
-			break
-		case 83: //S
-			if (e.ctrlKey) {
-				if (e.shiftKey)
-					this.#showSaveAsDialog()
-				
-				else if (! this.saveBt.disabled)
-					this.#saveConfig(this.selectedConfigName)
-			}
 			break
 		}
 	}
@@ -111,16 +107,10 @@ class ConfigTypeSelector {
 }
 
 export class ConfigScreenLayout {
-	constructor(stimScreen, enabledCallback = enabled => {}) {
+	constructor(stimScreen) {
 		this.stimScreen = stimScreen
-		this.enabledCallback = enabledCallback
-		
-		this.screenDiv = document.getElementById("configScreen")
-		this.configEditorBt = document.getElementById("configEditorBt")
-		this.configEditorBt.onclick = this.#toggleEnabled.bind(this)
-		this.hide()
-		
 		this.verticalEnabled = false
+		
 		window.onresize = this.#updateVerticalMode.bind(this)
 		this.#updateVerticalMode()
 	}
@@ -133,24 +123,5 @@ export class ConfigScreenLayout {
 			else
 				document.body.classList.remove("vertical")
 		}
-	}
-	
-	#toggleEnabled() {
-		if (this.screenDiv.style.display === "none")
-			this.show()
-		else
-			this.hide()
-	}
-	hide() {
-		this.screenDiv.style.display = "none"
-		this.configEditorBt.classList.remove("selected")
-		this.enabled = false
-		this.enabledCallback(false)
-	}
-	show() {
-		this.screenDiv.style.display = "flex"
-		this.configEditorBt.classList.add("selected")
-		this.enabled = true
-		this.enabledCallback(true)
 	}
 }

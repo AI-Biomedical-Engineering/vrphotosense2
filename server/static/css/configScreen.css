@@ -13,12 +13,6 @@
 	margin-left: auto;
 }
 
-#saveAsNameDialog {
-	--xOffset: -100%;
-	--xOffsetParent: 1;
-	--xPosMark: 77%;
-}
-
 #configTypeSelector {
 	display: flex;
 }

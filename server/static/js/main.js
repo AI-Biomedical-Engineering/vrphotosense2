@@ -10,19 +10,17 @@ import {ConfigSelector} from "./UI/ConfigSelector.js"
 import configs from "./configs.js"
 
 class AppController {
-	constructor(api, configStorage, stimScreen, screenLayout) {
+	constructor(api, configStorage, stimScreen) {
 		this.api = api
 		this.stimScreen = stimScreen
 		
 		this.selectedConfig = null
-		this.configEnabled = false
 		this.configStorage = configStorage
 		this.configsManager = new ConfigsManager(this.configStorage)
-		screenLayout.enabledCallback = this.#changeConfigModeCallback.bind(this)
 		
 		this.configSelector = new ConfigSelector({
 			selected: this.#selectedConfig.bind(this),
-			edit: name => console.log("Edit config", name),
+			edit: this.#editConfig.bind(this),
 			clone: name => {
 				this.configsManager.cloneConfig(name)
 				this.#reloadConfigNames(null)
@@ -34,8 +32,8 @@ class AppController {
 			}
 		})
 		this.#reloadConfigNames(null)
-		this.configScreen = new ConfigScreen(this.configStorage, screenLayout,
-			this.#sendConfig.bind(this), this.#reloadConfigNames.bind(this))
+		this.configScreen = new ConfigScreen(this.configStorage, this.#sendConfig.bind(this),
+			this.#reloadConfigNames.bind(this), this.#closeEditConfig.bind(this))
 	}
 	
 	#sendConfig(configType, config) {
@@ -54,9 +52,6 @@ class AppController {
 		this.stimScreen.stop()
 		this.#setSelectedConfig(name)
 		this.#sendSelectedConfig()
-		
-		if (this.configEnabled)
-			this.configScreen.setConfig(this.selectedConfig)
 	}
 	
 	#reloadConfigNames(selectedConfigName) {
@@ -68,15 +63,16 @@ class AppController {
 		}
 	}
 	
-	#changeConfigModeCallback(enabled) {
-		this.configEnabled = enabled
+	#closeEditConfig() {
+		this.configScreen.setEnabled(false)
+		this.#sendSelectedConfig()
+	}
+	#editConfig(name) {
+		this.configScreen.setEnabled(true)
 		
-		if (this.selectedConfig !== null) {
-			if (enabled)
-				this.configScreen.setConfig(this.selectedConfig)
-			else
-				this.#sendSelectedConfig()
-		}
+		this.configSelector.setSelectedConfig(name)
+		this.#selectedConfig(name)
+		this.configScreen.setConfig(this.selectedConfig)
 	}
 	#deleteConfig(name) {
 		if (this.selectedConfig !== null && this.selectedConfig.name === name)
@@ -100,9 +96,9 @@ class App {
 		this.startScreen = new StartScreen(() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
 			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this))
 		this.stimScreen = new StimScreen(this.api)
-		this.screenLayout = new ConfigScreenLayout(this.stimScreen)
 		this.appController = null
 		this.firstConnection = true
+		new ConfigScreenLayout(this.stimScreen)
 		
 		let savedAppId = localStorage.getItem("appId")
 		if (autoappid) {
@@ -187,8 +183,7 @@ class App {
 		
 		if (fs.isConfigured() && fs.hasPermission() && this.appController === null) {
 			let configStorage = new ConfigStorage(() => {
-				this.appController = new AppController(this.api,
-					configStorage, this.stimScreen, this.screenLayout)
+				this.appController = new AppController(this.api, configStorage, this.stimScreen)
 			})
 			if (this.connectMode !== AppMode.MANUAL_APPID)
 				this.autoConnectApp.autoConnect()

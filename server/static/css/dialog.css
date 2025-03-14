@@ -1,4 +1,8 @@
 .dialog {
+	--xOffset: -50%;
+	--xOffsetParent: 0.5;
+	--xPosMark: 50%;
+	
 	background: white;
 	opacity: 0%;
 	

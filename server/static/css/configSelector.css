@@ -166,11 +166,6 @@
 	margin: auto;
 }
 
-#deleteDialog {
-	--xOffset: -50%;
-	--xOffsetParent: 0.5;
-	--xPosMark: 50%;
-}
 .vertical #deleteDialog {
 	--xOffset: -78%;
 	--xOffsetParent: 0.5;
