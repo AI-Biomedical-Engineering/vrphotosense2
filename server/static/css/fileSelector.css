@@ -1,0 +1,57 @@
+.fileSelector {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	align-content: flex-start;
+	
+	column-gap: 8px;
+	row-gap: 8px;
+	
+	height: 20em;
+	overflow-y: auto;
+	
+	margin-right: 0.5em;
+}
+.fileSelector > button {
+	background: transparent;
+	width: 6.4em;
+	
+	padding: calc(0.5em + 1px);
+	border-radius: 0px;
+	border-width: 1px;
+	border-color: #959595;
+}
+@media (hover: hover) {
+	.fileSelector > button:hover:not(.selected) {
+		padding: 0.5em;
+		border-style: solid;
+	}
+}
+.fileSelector > button > div {
+	width: 100%;
+	aspect-ratio: 1/1;
+}
+.fileSelector > button > div > img {
+	background: white;
+	
+	display: block;
+	position: relative;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	
+	max-width: 100%;
+	max-height: 100%;
+}
+.fileSelector img.invertOnSelected {
+	background: transparent;
+	width: 100%;
+}
+.fileSelector > button > span {
+	font-size: 0.85em;
+	word-wrap: break-word;
+	
+	display: block;
+	margin-top: 0.4em;
+}

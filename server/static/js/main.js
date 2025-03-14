@@ -4,8 +4,9 @@ import {ConfigStorage} from "./ConfigStorage.js"
 import {ConfigsManager} from "./ConfigsManager.js"
 
 import {StartScreen} from "./UI/StartScreen.js"
-import {StimScreen, ConfigSelector} from "./UI/StimScreen.js"
+import {StimScreen} from "./UI/StimScreen.js"
 import {ConfigScreen, ConfigScreenLayout} from "./UI/ConfigScreen.js"
+import {ConfigSelector} from "./UI/ConfigSelector.js"
 import configs from "./configs.js"
 
 class AppController {

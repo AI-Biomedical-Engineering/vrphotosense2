@@ -1,4 +1,5 @@
-import {HideElemController, closeAllDialogs} from "./UI.js"
+import {HideElemController} from "./UI.js"
+import {closeAllDialogs} from "./Dialog.js"
 import {fs} from "../LocalFilesystem.js"
 
 export class StartScreen {

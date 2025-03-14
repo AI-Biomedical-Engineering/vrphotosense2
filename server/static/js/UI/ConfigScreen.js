@@ -1,4 +1,5 @@
-import {ButtonsSelector, InputDialog, isTextInputActive} from "./UI.js"
+import {ButtonsSelector, isTextInputActive} from "./UI.js"
+import {InputDialog} from "./Dialog.js"
 import {createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 

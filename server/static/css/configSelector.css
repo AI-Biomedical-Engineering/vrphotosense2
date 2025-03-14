@@ -1,0 +1,206 @@
+:root {
+	--tabColor: #767676;
+	--tabBorderRad: 0.6em;
+	--configSelectBorderColor: #565656;
+}
+
+#configSelector {
+	display: flex;
+	flex-direction: column;
+	
+	margin-top: 1em;
+}
+
+#configGroups {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-end;
+	transform: translateY(1px);
+}
+#configGroups > button {
+	font-size: 1em;
+	padding: 0.6em;
+	
+	border-style: solid;
+	border-color: var(--configSelectBorderColor);
+	border-width: 1px;
+	border-radius: var(--tabBorderRad) var(--tabBorderRad) 0px 0px;
+	
+	transform: translateX(calc(-1px * var(--nthChild)));
+	transition: padding 0.1s ease-out, z-index 0.5s step-end, var(--btColorTrans);
+}
+#configGroups > button.selected {
+	background: var(--tabColor) !important;
+	padding: 0.5em 0.6em;
+	border-bottom-width: 0px;
+}
+#configGroups > button:not(.selected) {
+	box-shadow: 0px -11px 11px -14px black inset;
+}
+#configGroups > button > img {
+	display: block;
+}
+
+#configGroups > button > span {
+	pointer-events: none;
+	color: black;
+	background: white;
+	box-shadow: 0px 0px 9px -3px black;
+	
+	font-size: 0.8em;
+	text-wrap: nowrap;
+	
+	display: block;
+	position: absolute;
+	bottom: 0.4em;
+	left: 50%;
+	transform: translateX(-50%) translateY(100%);
+	
+	padding: 0.07em 0.3em;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+	
+	opacity: 0;
+	transition: opacity 0.15s ease;
+	transition-delay: 0s;
+}
+#configGroups > button:first-child > span {
+	left: 0%;
+	transform: translateX(0px) translateY(100%);
+}
+@media (hover: hover) {
+	#configGroups > button {
+		z-index: 0;
+	}
+	#configGroups > button:hover {
+		z-index: 1;
+	}
+	#configGroups > button:hover > span {
+		transition-delay: 1.1s;
+		opacity: 1
+	}
+}
+
+#configNames {
+	display: flex;
+	flex-direction: column;
+	
+	background: var(--tabColor);
+	padding-top: 0.5em;
+	border-style: solid;
+	border-color: var(--configSelectBorderColor);
+	border-width: 1px;
+	border-radius: 0px var(--tabBorderRad) var(--tabBorderRad) 0px;
+	overflow: hidden;
+}
+#configNames > button {
+	font-size: 0.82em;
+	color: white;
+	background: var(--tabColor);
+	
+	display: flex;
+	align-items: center;
+	
+	padding: 0px;
+	border-style: solid;
+	border-color: var(--configSelectBorderColor);
+	border-width: 0px 0px 1px;
+	border-radius: 0px;
+}
+#configNames > button:last-child {
+	border-width: 0px;
+}
+#configNames > button.selected {
+	background: #3c3c3c !important;
+}
+@media (hover: hover) {
+	#configNames > button:hover:not(.selected) {
+		background: #898888;
+	}
+}
+
+#configNames > button > span {
+	margin: 0.35em 0.9em;
+}
+
+#configNames > button > div {
+	height: calc(100% - 0.2em);
+	display: none;
+	justify-content: flex-end;
+	column-gap: 0.2em;
+	
+	flex-grow: 1;
+	margin-right: 0.4em;
+}
+@media (hover: hover) {
+	#configNames > button:hover > div {
+		display: flex;
+	}
+}
+@media not (hover: hover) {
+	#configNames > button.selected > div {
+		display: flex;
+	}
+}
+#configNames > button > div:has(.selectedDel) {
+	display: flex;
+}
+
+#configNames > button > div > button {
+	background: transparent;
+	aspect-ratio: 1 / 1;
+	padding: 0px;
+}
+@media (hover: hover) {
+	#configNames > button > div > button:hover {
+		background: #242424;
+	}
+}
+#configNames > button > div > button.selectedDel {
+	background: #242424;
+}
+#configNames > button > div > button > img {
+	display: block;
+	height: 95%;
+	margin: auto;
+}
+
+#deleteDialog {
+	--xOffset: -50%;
+	--xOffsetParent: 0.5;
+	--xPosMark: 50%;
+}
+.vertical #deleteDialog {
+	--xOffset: -78%;
+	--xOffsetParent: 0.5;
+	--xPosMark: 78%;
+}
+
+#addConfigBt {
+	font-size: 1em;
+	width: 2.46em;
+	
+	box-shadow: 0px 0px 5px -3px black inset, 0px 8px 10px -10px black inset;
+	
+	padding: 0px 0px 0.18em;
+	border-style: solid;
+	border-color: var(--configSelectBorderColor);
+	border-width: 0px 1px 1px;
+	border-radius: 0px 0px var(--tabBorderRad) var(--tabBorderRad);
+	margin-bottom: 0.29em;
+	
+	transition: padding 0.15s ease, margin 0.15s ease, var(--btColorTrans);
+}
+@media (hover: hover) {
+	#addConfigBt:hover {
+		background: #56ff5c;
+		padding-top: 0.29em;
+		margin-bottom: 0px;
+	}
+}
+#addConfigBt img {
+	height: 1.38em;
+	display: block;
+	margin: auto;
+}
