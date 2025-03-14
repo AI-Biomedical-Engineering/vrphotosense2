@@ -62,6 +62,7 @@ class Dialog {
 			this.closeDialog()
 			break
 		}
+		e.preventDefault()
 		e.stopPropagation()
 	}
 	confirmedAction() {}

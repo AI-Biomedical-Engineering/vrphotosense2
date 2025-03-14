@@ -64,10 +64,9 @@ export class ConfigSelector {
 				for (let iconName in iconCallbacks) {
 					let iconBt = document.createElement("button")
 					
-					iconBt.onmousedown = e => {
-						iconCallbacks[iconName](id, e)
-						e.stopPropagation() //Prevent event in the button underneath
-					}
+					//Prevent event in the button underneath
+					iconBt.onmousedown = e => e.stopPropagation()
+					iconBt.onclick = e => iconCallbacks[iconName](id, e)
 					let img = document.createElement("img")
 					img.alt = iconName
 					this.imgCache.getImage(`img/fileIcons/${iconName}.svg`, data => img.src = data)

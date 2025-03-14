@@ -99,6 +99,9 @@ class StimControl {
 			return
 		
 		switch (e.keyCode) {
+		case 13: //Enter
+			e.preventDefault()
+			break
 		case 32: //Space
 			this.#togglePlay()
 			e.preventDefault()

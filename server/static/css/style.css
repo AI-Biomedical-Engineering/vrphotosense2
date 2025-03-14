@@ -49,6 +49,7 @@ body.vertical main {
 button {
 	font-size: 0.9em;
 	background: #eee;
+	outline: none;
 	cursor: pointer;
 	
 	padding: 0.5em 1em;
