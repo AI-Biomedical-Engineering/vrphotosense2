@@ -1,4 +1,4 @@
-import {isTextInputActive, configImageError, setCSSVar} from "./UI.js"
+import {HideElemController, isTextInputActive, configImageError, setCSSVar} from "./UI.js"
 import {Command} from "../AppApi.js"
 
 export class StimScreen {
@@ -13,15 +13,27 @@ export class StimScreen {
 		this.stop = this.stimControl.stop.bind(this.stimControl)
 		this.setLoopMode = this.stimControl.setLoopMode.bind(this.stimControl)
 		
+		this.hideEyeControllers = []
 		let eyes = document.getElementsByClassName("eye")
 		let i = 1
 		for (let eye of eyes) {
 			configImageError(eye, img => img.src = "/img/offlineCam.svg")
 			eye.src = `http://eye${i++}.local`
+			
+			this.hideEyeControllers.push(new HideElemController(eye))
 		}
 		this.eyeRef = eyes[0]
 		this.stream = document.getElementById("stream")
 	}
+	setPreviewEnabled(enabled) {
+		for (let hideEyeController of this.hideEyeControllers) {
+			if (enabled)
+				hideEyeController.hide()
+			else
+				hideEyeController.show()
+		}
+	}
+	
 	configStream(url) {
 		configImageError(this.stream, img => img.src = "/img/offlineStream.svg")
 		this.stream.src = url

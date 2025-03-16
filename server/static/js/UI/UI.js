@@ -102,6 +102,10 @@ export class ButtonsSelector {
 		for (let btName in this.buttons)
 			this.buttons[btName].remove()
 	}
+	setEnabled(enabled) {
+		for (let btName in this.buttons)
+			this.buttons[btName].disabled = ! enabled
+	}
 	
 	deselect() {
 		if (this.selected !== null) {

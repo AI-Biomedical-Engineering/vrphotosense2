@@ -11,9 +11,8 @@ export class ConfigSelector {
 		this.selectedConfig = null
 		this.selectedType = -1
 		
-		document.getElementById("addConfigBt").onclick = e => {
-			this.callbacks.add(this.selectedType)
-		}
+		this.addConfigBt = document.getElementById("addConfigBt")
+		this.addConfigBt.onclick = e => this.callbacks.add(this.selectedType)
 		
 		let configTypes = {
 			"0": {name: "Flashing", icon: "flash.svg"},
@@ -39,6 +38,12 @@ export class ConfigSelector {
 				bt.appendChild(tooltipSpan)
 			})
 		this.configGroupsSelector.select("0")
+	}
+	
+	setEnabled(enabled) {
+		this.configGroupsSelector.setEnabled(enabled)
+		this.configSelector.setEnabled(enabled)
+		this.addConfigBt.disabled = ! enabled
 	}
 	
 	loadConfigs(configsDef) {

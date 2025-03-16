@@ -1,5 +1,6 @@
 :root {
 	--tabColor: #767676;
+	--tabSelectedNameColor: #3c3c3c;
 	--tabBorderRad: 0.6em;
 	--configSelectBorderColor: #565656;
 }
@@ -9,6 +10,10 @@
 	flex-direction: column;
 	
 	margin-top: 1em;
+}
+#configSelector:has(:disabled) {
+	--tabColor: #979797;
+	--tabSelectedNameColor: #4f4f4f;
 }
 
 #configGroups {
@@ -112,7 +117,7 @@
 	border-width: 0px;
 }
 #configNames > button.selected {
-	background: #3c3c3c !important;
+	background: var(--tabSelectedNameColor) !important;
 }
 @media (hover: hover) {
 	#configNames > button:hover:not(.selected) {

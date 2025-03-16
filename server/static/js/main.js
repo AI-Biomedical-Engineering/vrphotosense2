@@ -64,10 +64,15 @@ class AppController {
 	}
 	
 	#closeEditConfig() {
+		this.stimScreen.setPreviewEnabled(false)
+		this.configSelector.setEnabled(true)
 		this.configScreen.setEnabled(false)
+		
 		this.#sendSelectedConfig()
 	}
 	#editConfig(name) {
+		this.stimScreen.setPreviewEnabled(true)
+		this.configSelector.setEnabled(false)
 		this.configScreen.setEnabled(true)
 		
 		this.configSelector.setSelectedConfig(name)

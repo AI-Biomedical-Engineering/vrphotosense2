@@ -68,8 +68,10 @@ button:active {
 	background: #eee;
 }
 button:disabled {
-	background: #eee;
-	cursor: default;
+	pointer-events: none;
+}
+button:disabled img {
+	opacity: 40%;
 }
 button.selected {
 	color: white;
