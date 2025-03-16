@@ -23,13 +23,19 @@ export class HideElemController {
 		this.elem = elem
 		this.transEndCallback = transEndCallback
 		this.hiding = false
+		this.remainingAnims = 0
+		this.elem.ontransitionstart = this.#animStart.bind(this)
 		this.elem.ontransitionend = this.#animEnd.bind(this)
 		
 		if (! this.elem.classList.contains("visible"))
 			this.elem.style.display = "none"
 	}
+	#animStart(e) {
+		if (e.srcElement === this.elem)
+			this.remainingAnims++
+	}
 	#animEnd(e) {
-		if (e.srcElement === this.elem) {
+		if (e.srcElement === this.elem && --this.remainingAnims === 0) {
 			if (this.hiding)
 				this.elem.style.display = "none"
 			
@@ -39,10 +45,13 @@ export class HideElemController {
 	
 	hide() {
 		this.hiding = true
+		this.remainingAnims = 0
 		this.elem.classList.remove("visible")
 	}
 	show() {
 		this.hiding = false
+		this.remainingAnims = 0
+		
 		this.elem.style.display = ""
 		requestAnimationFrame(() => requestAnimationFrame(() => {
 			if (! this.hiding)
