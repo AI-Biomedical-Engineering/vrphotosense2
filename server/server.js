@@ -54,10 +54,24 @@ class WSRedirectConnection {
 	}
 }
 
+class AppIDCounter {
+	static FILENAME = "lastAppID.txt"
+	
+	constructor() {
+		this.counter = 0
+		
+		if (fs.existsSync(AppIDCounter.FILENAME))
+			this.counter = parseInt(fs.readFileSync(AppIDCounter.FILENAME))
+	}
+	incCounter() {
+		fs.writeFileSync(AppIDCounter.FILENAME, String(++this.counter))
+		return this.counter
+	}
+}
 class WSServer {
 	constructor(app) {
 		this.appConnections = new Map()
-		this.newConnectionID = 1
+		this.appIDCounter = new AppIDCounter()
 		this.lastConnectedID = -1
 		
 		this.server = new WebSocket.Server({noServer: true, clientTracking: true})
@@ -104,7 +118,7 @@ class WSServer {
 		req.isStream = queryParams.stream !== undefined
 		
 		if (req.isApp) {
-			req.id = req.autoID ? this.newConnectionID++ : parseInt(queryParams.id)
+			req.id = req.autoID ? this.appIDCounter.incCounter() : parseInt(queryParams.id)
 			if (this.getAppWS(req.id) !== null) {
 				this.#rejectConection(socket)
 				return
