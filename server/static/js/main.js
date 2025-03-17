@@ -198,10 +198,20 @@ class App {
 	}
 }
 
+function checkFSApi() {
+	if (window.showDirectoryPicker === undefined) {
+		if (location.protocol === "http:")
+			location.replace(`https://${location.hostname}:${parseInt(location.port) + 1}${location.pathname}`)
+		else
+			location.replace("/pages/fsapi_error.html")
+	}
+}
+
 window.onload = () => {
-	let wsProtocol = window.location.protocol === "http:" ? "ws" : "wss"
-	let wsURL = `${wsProtocol}://${window.location.host}`
+	checkFSApi()
+	let wsProtocol = location.protocol === "http:" ? "ws" : "wss"
+	let wsURL = `${wsProtocol}://${location.host}`
 	
-	let autoappid = new URL(window.location.href).searchParams.get("autoappid") !== null
+	let autoappid = new URL(location.href).searchParams.get("autoappid") !== null
 	initFS(() => new App(autoappid, wsURL))
 }

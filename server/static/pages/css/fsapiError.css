@@ -1,0 +1,19 @@
+body {
+	font-size: min(1em, min(2vw, 3.5vh));
+}
+p {
+	margin: 0px 0px 0.5em;
+}
+
+#errorText {
+	font-size: 1.4em;
+	width: min(33.5em);
+	margin: auto;
+}
+#errorImg {
+	display: block;
+	height: 14em;
+	margin: 3em auto 1.5em;
+	
+	filter: drop-shadow(0px 0px 5px #00000022);
+}
