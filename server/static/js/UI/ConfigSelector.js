@@ -39,6 +39,10 @@ export class ConfigSelector {
 			})
 		this.configGroupsSelector.select("0")
 	}
+	getConfigsCenterY() {
+		let bounding = this.configsContainer.getBoundingClientRect()
+		return bounding.y + bounding.height / 2
+	}
 	
 	setEnabled(enabled) {
 		this.configGroupsSelector.setEnabled(enabled)

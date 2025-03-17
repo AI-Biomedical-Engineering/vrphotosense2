@@ -39,6 +39,9 @@ export class StimScreen {
 		this.stream.src = url
 	}
 	
+	getEyeSize() {
+		return this.eyeRef.clientWidth
+	}
 	getMinWidth() {
 		return Math.max(this.stream.clientWidth, this.eyeRef.clientWidth * 2)
 	}

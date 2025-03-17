@@ -1,10 +1,12 @@
-import {ButtonsSelector, isTextInputActive} from "./UI.js"
+import {HideElemController, ButtonsSelector, isTextInputActive} from "./UI.js"
 import {ConfirmDialog} from "./Dialog.js"
 import {createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 
 export class ConfigScreen {
-	constructor(configStorage, uploadConfigCallback, savedConfigCallback, closedCallback) {
+	constructor(configStorage, uploadConfigCallback, savedConfigCallback, closedCallback,
+		getConfigsYPos, getConfigsYMov) {
+		
 		this.configUI = null
 		this.selectedConfigName = null
 		
@@ -12,6 +14,9 @@ export class ConfigScreen {
 		this.uploadConfigCallback = uploadConfigCallback
 		this.savedConfigCallback = savedConfigCallback
 		this.closedCallback = closedCallback
+		this.getConfigsYPos = getConfigsYPos
+		this.getConfigsYMov = getConfigsYMov
+		
 		this.configTypeSelector = new ConfigTypeSelector(type => {
 			this.#setConfigUIType(type)
 			this.#changedConfig()
@@ -26,11 +31,23 @@ export class ConfigScreen {
 		this.cancelBt.onclick = this.#cancel.bind(this)
 		
 		window.addEventListener("keydown", this.#keyPress.bind(this))
+		this.hideController = new HideElemController(this.screenDiv)
 		this.setEnabled(false)
 	}
 	setEnabled(enabled) {
 		this.enabled = enabled
-		this.screenDiv.style.display = enabled ? "flex" : "none"
+		this.screenDiv.style.setProperty("--showYPos",
+			((enabled ? 0 : this.getConfigsYMov()) + this.getConfigsYPos()) + "px")
+		
+		if (enabled)
+			this.hideController.show()
+		
+		else if (window.scrollY > 0) {
+			setTimeout(e => this.hideController.hide(), window.scrollY * 0.25)
+			window.scrollTo({top: 0, behavior: "smooth"})
+		}
+		else
+			this.hideController.hide()
 	}
 	
 	#setConfigUIType(type) {

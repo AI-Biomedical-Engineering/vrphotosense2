@@ -33,7 +33,9 @@ class AppController {
 		})
 		this.#reloadConfigNames(null)
 		this.configScreen = new ConfigScreen(this.configStorage, this.#sendConfig.bind(this),
-			this.#reloadConfigNames.bind(this), this.#closeEditConfig.bind(this))
+			this.#reloadConfigNames.bind(this), this.#closeEditConfig.bind(this),
+			this.configSelector.getConfigsCenterY.bind(this.configSelector),
+			this.stimScreen.getEyeSize.bind(this.stimScreen))
 	}
 	
 	#sendConfig(configType, config) {
