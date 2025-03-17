@@ -165,6 +165,7 @@ class Progress {
 				bars.push({value: freqStartPercent, text: freq})
 				bars.push({value: freqStartPercent + stimPercent, text: null})
 			}
+			bars.push({value: 1, text: "(Hz)"})
 		}
 		this.#setBars(bars)
 	}

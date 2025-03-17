@@ -65,6 +65,9 @@
 #stimScreen #progressContainer .bar:not(:has(span)) {
 	height: 20px;
 }
+#stimScreen #progressContainer .bar:last-child {
+	width: 3px;
+}
 #stimScreen #progressContainer span {
 	text-wrap: nowrap;
 	font-size: min(0.9em,
