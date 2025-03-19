@@ -1,7 +1,7 @@
 #configScreen {
 	display: flex;
 	flex-direction: column;
-	overflow-y: auto;
+	overflow-y: hidden;
 	
 	opacity: 0%;
 	transform: translateY(calc(-50vh + var(--showYPos))) translateX(-35px)
@@ -27,6 +27,9 @@
 #configControls > button:first-child {
 	margin-left: auto;
 }
+.vertical #configControls {
+	order: -1;
+}
 
 #configTypeSelector {
 	display: flex;
@@ -43,7 +46,7 @@
 
 
 #config {
-	flex-grow: 2;
+	overflow-y: auto;
 }
 
 .configElem {

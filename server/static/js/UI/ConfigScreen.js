@@ -87,7 +87,7 @@ export class ConfigScreen {
 		if (this.saveBt.disabled)
 			this.closedCallback()
 		else {
-			new ConfirmDialog(this.cancelBt, "cancelDialog", true,
+			new ConfirmDialog(this.cancelBt, "cancelDialog", false,
 				() => {}, this.closedCallback, "Discard changes?")
 		}
 	}
