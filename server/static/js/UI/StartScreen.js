@@ -3,9 +3,9 @@ import {closeAllDialogs} from "./Dialog.js"
 import {fs} from "../LocalFilesystem.js"
 
 export class StartScreen {
-	constructor(startCallback, configFolderCallback, idCallback, abortConnectCallback) {
+	constructor(startCallback, configFolderCallback, idCallback, abortConnectCallback, hiddenCallback) {
 		this.startScreen = document.getElementById("startScreen")
-		this.hideController = new HideElemController(this.startScreen)
+		this.hideController = new HideElemController(this.startScreen, hiddenCallback)
 		this.reconnectMode = false
 		
 		this.activeFrame = null
@@ -33,10 +33,14 @@ export class StartScreen {
 		}
 	}
 	
-	setReconnectMode() {
-		if (! this.reconnectMode) {
-			this.reconnectMode = true
-			this.startScreen.classList.add("transparent")
+	setReconnectMode(enabled) {
+		if (enabled !== this.reconnectMode) {
+			this.reconnectMode = enabled
+			
+			if (this.reconnectMode)
+				this.startScreen.classList.add("transparent")
+			else
+				this.startScreen.classList.remove("transparent")
 		}
 	}
 	hide() {

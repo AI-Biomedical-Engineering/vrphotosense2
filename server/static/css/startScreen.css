@@ -6,19 +6,19 @@
 	height: 100%;
 	
 	backdrop-filter: blur(3px) brightness(0.7) contrast(0.15);
-	transition: opacity 0.15s ease;
+	transition: opacity 0.15s ease, background 0.15s ease;
 	opacity: 0%;
 	z-index: 2;
 }
 #startScreen.transparent {
 	background: transparent;
 }
+#startScreen.visible {
+	opacity: 100%;
+}
 
 body:has(#startScreen.visible) {
 	overflow-y: hidden;
-}
-#startScreen.visible {
-	opacity: 100%;
 }
 
 #startScreen > div {

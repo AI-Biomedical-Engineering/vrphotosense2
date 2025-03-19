@@ -25,7 +25,7 @@ class Dialog {
 		document.body.appendChild(this.cancelArea)
 		
 		this.hideController = new HideElemController(this.dialogContainer,
-			this.#dialogTransEnd.bind(this))
+			this.#dialogHidden.bind(this))
 		this.hideController.show()
 		
 		this.updatePosCallback = this.#updatePos.bind(this)
@@ -37,13 +37,11 @@ class Dialog {
 		this.#updatePos()
 		openDialogs.push(this)
 	}
-	#dialogTransEnd(visible) {
-		if (! visible) {
-			this.dialogContainer.remove()
-			window.removeEventListener("resize", this.updatePosCallback)
-			window.removeEventListener("scroll", this.updatePosCallback)
-			window.removeEventListener("keydown", this.keyPressCallback, true)
-		}
+	#dialogHidden() {
+		this.dialogContainer.remove()
+		window.removeEventListener("resize", this.updatePosCallback)
+		window.removeEventListener("scroll", this.updatePosCallback)
+		window.removeEventListener("keydown", this.keyPressCallback, true)
 	}
 	#updatePos() {
 		let boundingContainer = this.container.getBoundingClientRect()

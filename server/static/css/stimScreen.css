@@ -18,6 +18,7 @@
 
 #topBar {
 	display: flex;
+	column-gap: 0.7em;
 	
 	padding: 0px;
 	margin: 0px 0px 1em;

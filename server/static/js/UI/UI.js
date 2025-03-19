@@ -19,9 +19,9 @@ export function setCSSVar(varName, value) {
 }
 
 export class HideElemController {
-	constructor(elem, transEndCallback = visible => {}) {
+	constructor(elem, hiddenCallback = () => {}) {
 		this.elem = elem
-		this.transEndCallback = transEndCallback
+		this.hiddenCallback = hiddenCallback
 		this.hiding = false
 		this.remainingAnims = 0
 		this.elem.ontransitionstart = this.#animStart.bind(this)
@@ -36,10 +36,11 @@ export class HideElemController {
 	}
 	#animEnd(e) {
 		if (e.srcElement === this.elem && --this.remainingAnims === 0) {
-			if (this.hiding)
-				this.elem.style.display = "none"
 			
-			this.transEndCallback(! this.hiding)
+			if (this.hiding) {
+				this.elem.style.display = "none"
+				this.hiddenCallback()
+			}
 		}
 	}
 	

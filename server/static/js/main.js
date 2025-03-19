@@ -101,11 +101,14 @@ class App {
 			this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
 		this.startScreen = new StartScreen(() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
-			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this))
+			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this),
+			() => this.startScreen.setReconnectMode(true))
+		
 		this.stimScreen = new StimScreen(this.api)
 		this.appController = null
 		this.firstConnection = true
 		new ConfigScreenLayout(this.stimScreen)
+		document.getElementById("disconnectBt").onclick = this.disconnect.bind(this)
 		
 		let savedAppId = localStorage.getItem("appId")
 		if (autoappid) {
@@ -143,8 +146,6 @@ class App {
 	}
 	#wsClosed() {
 		console.log("WS closed")
-		if (! this.firstConnection)
-			this.startScreen.setReconnectMode()
 		
 		this.stimScreen.paused()
 		this.stimScreen.setLoopMode(false)
@@ -183,6 +184,7 @@ class App {
 	}
 	disconnect() {
 		this.connectMode = AppMode.MANUAL_APPID
+		this.startScreen.setReconnectMode(false)
 		this.autoConnectApp.disable()
 	}
 	#configuredAppFolder() {
