@@ -47,7 +47,6 @@ class AppController {
 	}
 	#setSelectedConfig(name) {
 		this.selectedConfig = this.configStorage.get(name)
-		this.selectedConfig.name = name
 	}
 	
 	#selectedConfig(name) {

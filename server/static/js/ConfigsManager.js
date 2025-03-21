@@ -3,7 +3,7 @@ export class ConfigsManager {
 	constructor(configStorage) {
 		this.configStorage = configStorage
 		
-		fetch("/stimApp/defaultConfigs.json").then(resp => resp.json()
+		fetch("/stimApp/defaultConfigs_new.json").then(resp => resp.json()
 			.then(json => this.defaultConfigs = json))
 	}
 	

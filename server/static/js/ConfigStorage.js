@@ -5,8 +5,11 @@ export class ConfigStorage {
 	
 	constructor(callback) {
 		if (fs.filenames.indexOf(ConfigStorage.CONFIGS_FILE) < 0) {
-			this.configs = {}
-			setTimeout(callback, 0)
+			fetch("/stimApp/defaultConfigs.json").then(resp => resp.json().then(json => {
+				this.configs = json
+				this.#saveToDisk()
+				callback()
+			}))
 		}
 		else {
 			fs.readFile(ConfigStorage.CONFIGS_FILE, (fileData, fileType) => {
@@ -27,11 +30,15 @@ export class ConfigStorage {
 		return configNames
 	}
 	get(name) {
-		return this.configs[name]
+		let config = structuredClone(this.configs[name])
+		config.name = name
+		return config
 	}
 	save(name, type, config) {
-		let uiType = type === 1 && config.freq > 0 ? 10 : type
+		config = structuredClone(config)
+		delete config.name
 		
+		let uiType = type === 1 && config.freq > 0 ? 10 : type
 		this.configs[name] = {uiType, type, config}
 		this.#saveToDisk()
 	}
