@@ -1,39 +1,37 @@
-import {HideElemController, ButtonsSelector, isTextInputActive} from "./UI.js"
+import {HideElemController, isTextInputActive} from "./UI.js"
 import {ConfirmDialog} from "./Dialog.js"
-import {createConfigUI} from "./ConfigUI.js"
+import {StringVar, createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 
 export class ConfigScreen {
-	constructor(configStorage, uploadConfigCallback, savedConfigCallback, closedCallback,
+	constructor(uploadConfigCallback, saveConfigCallback, closedCallback,
 		getConfigsYPos, getConfigsYMov) {
 		
 		this.configUI = null
-		this.selectedConfigName = null
+		this.configType = null
 		
-		this.configStorage = configStorage
 		this.uploadConfigCallback = uploadConfigCallback
-		this.savedConfigCallback = savedConfigCallback
+		this.saveConfigCallback = saveConfigCallback
 		this.closedCallback = closedCallback
 		this.getConfigsYPos = getConfigsYPos
 		this.getConfigsYMov = getConfigsYMov
-		
-		this.configTypeSelector = new ConfigTypeSelector(type => {
-			this.#setConfigUIType(type)
-			this.#changedConfig()
-		})
 		
 		this.screenDiv = document.getElementById("configScreen")
 		this.configContainer = document.getElementById("config")
 		this.saveBt = document.getElementById("saveBt")
 		this.cancelBt = document.getElementById("cancelBt")
 		
-		this.saveBt.onclick = e => this.#saveConfig(this.selectedConfigName)
+		this.saveBt.onclick = this.#saveConfig.bind(this)
 		this.cancelBt.onclick = this.#cancel.bind(this)
+		
+		let configNameDiv = document.getElementById("configNameEdit")
+		this.configNameVar = new StringVar(configNameDiv, this.#changedConfig.bind(this))
 		
 		window.addEventListener("keydown", this.#keyPress.bind(this))
 		this.hideController = new HideElemController(this.screenDiv)
 		this.setEnabled(false)
 	}
+	
 	setEnabled(enabled) {
 		this.enabled = enabled
 		this.screenDiv.style.setProperty("--showYPos",
@@ -46,8 +44,14 @@ export class ConfigScreen {
 			setTimeout(e => this.hideController.hide(), window.scrollY * 0.25)
 			window.scrollTo({top: 0, behavior: "smooth"})
 		}
-		else
+		else {
+			this.configContainer.scrollTo({top: 0, behavior: "instant"})
 			this.hideController.hide()
+		}
+	}
+	#changedConfig() {
+		this.saveBt.disabled = false
+		this.uploadConfigCallback(configs[this.configUI.type.id][2], this.configUI.getValue())
 	}
 	
 	#setConfigUIType(type) {
@@ -57,30 +61,22 @@ export class ConfigScreen {
 		this.configUI = createConfigUI(this.configContainer,
 			this.#changedConfig.bind(this), configs[type])
 	}
-	#setConfigType(type) {
-		this.configTypeSelector.setConfigType(type)
-		this.#setConfigUIType(type)
-	}
-	#changedConfig() {
-		this.saveBt.disabled = this.selectedConfigName === null
-		this.uploadConfigCallback(configs[this.configUI.type.id][2], this.configUI.getValue())
-	}
 	setConfig(config) {
-		if (this.configTypeSelector.getConfigType() !== config.type)
-			this.#setConfigType(config.type)
-		
+		if (this.configType !== config.type) {
+			this.configType = config.type
+			
+			this.#setConfigUIType(this.configType)
+		}
 		this.configUI.setValue(config.config)
-		this.selectedConfigName = config.name
+		this.configNameVar.setValue(config.name)
 		
 		this.saveBt.disabled = true
 	}
 	
-	#saveConfig(name) {
-		this.configStorage.save(name, this.configUI.type.id, this.configUI.getValue())
-		this.selectedConfigName = name
+	#saveConfig() {
 		this.saveBt.disabled = true
 		
-		this.savedConfigCallback(name)
+		this.saveConfigCallback(this.configNameVar.getValue(), this.configUI.getValue())
 		this.closedCallback()
 	}
 	#cancel() {
@@ -105,21 +101,6 @@ export class ConfigScreen {
 				document.activeElement.blur()
 			break
 		}
-	}
-}
-
-class ConfigTypeSelector {
-	constructor(selectedCallback) {
-		this.selector = new ButtonsSelector(document.getElementById("configTypeSelector"),
-			id => selectedCallback(parseInt(id)),
-			configs.map(config => config[2].id.toString()),
-			(bt, id) => bt.innerText = configs[parseInt(id)][0])
-	}
-	setConfigType(type) {
-		this.selector.setSelected(type.toString())
-	}
-	getConfigType() {
-		return parseInt(this.selector.getSelected())
 	}
 }
 

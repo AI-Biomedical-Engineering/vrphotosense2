@@ -23,17 +23,17 @@ class AppController {
 			edit: this.#editConfig.bind(this),
 			clone: name => {
 				this.configsManager.cloneConfig(name)
-				this.#reloadConfigNames(null)
+				this.#reloadConfigNames()
 			},
 			delete: this.#deleteConfig.bind(this),
 			add: uiType => {
 				this.configsManager.addConfig(uiType)
-				this.#reloadConfigNames(null)
+				this.#reloadConfigNames()
 			}
 		})
-		this.#reloadConfigNames(null)
-		this.configScreen = new ConfigScreen(this.configStorage, this.#sendConfig.bind(this),
-			this.#reloadConfigNames.bind(this), this.#closeEditConfig.bind(this),
+		this.#reloadConfigNames()
+		this.configScreen = new ConfigScreen(this.#sendConfig.bind(this),
+			this.#saveConfig.bind(this), this.#closeEditConfig.bind(this),
 			this.configSelector.getConfigsCenterY.bind(this.configSelector),
 			this.stimScreen.getEyeSize.bind(this.stimScreen))
 	}
@@ -54,16 +54,21 @@ class AppController {
 		this.#setSelectedConfig(name)
 		this.#sendSelectedConfig()
 	}
-	
-	#reloadConfigNames(selectedConfigName) {
+	#reloadConfigNames() {
 		this.configSelector.loadConfigs(this.configStorage.getConfigNames(true))
-		
-		if (selectedConfigName !== null) {
-			this.#setSelectedConfig(selectedConfigName)
-			this.configSelector.setSelectedConfig(selectedConfigName)
-		}
 	}
 	
+	#saveConfig(name, config) {
+		this.configStorage.save(name, this.selectedConfig.type, config)
+		
+		if (name !== this.selectedConfig.name) {
+			this.configStorage.delete(this.selectedConfig.name)
+			
+			this.#reloadConfigNames()
+			this.configSelector.setSelectedConfig(name)
+		}
+		this.#setSelectedConfig(name)
+	}
 	#closeEditConfig() {
 		this.stimScreen.setPreviewEnabled(false)
 		this.configSelector.setEnabled(true)
@@ -85,7 +90,7 @@ class AppController {
 			this.selectedConfig = null
 		
 		this.configStorage.delete(name)
-		this.#reloadConfigNames(null)
+		this.#reloadConfigNames()
 	}
 }
 

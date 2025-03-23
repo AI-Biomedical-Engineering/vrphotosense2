@@ -19,29 +19,32 @@
 	transform: translateY(-50%) scale(1) translateY(50%);
 }
 
+#configNameEdit {
+	display: flex;
+	align-items: center;
+	column-gap: 0.6em;
+	
+	box-shadow: 0px 11px 11px -15px black;
+	padding-bottom: 0.5em;
+	z-index: 0;
+}
+#configNameEdit input {
+	font-size: 1.2em;
+	padding: 0.3em 0.5em;
+}
+
 #configControls {
 	display: flex;
 	column-gap: 0.3em;
-	margin-bottom: 1em;
+	
+	box-shadow: 0px -11px 11px -15px black;
+	padding-top: 0.5em;
 }
 #configControls > button:first-child {
 	margin-left: auto;
 }
 .vertical #configControls {
 	order: -1;
-}
-
-#configTypeSelector {
-	display: flex;
-}
-#configTypeSelector button {
-	padding: 1em 1.8em;
-	border-radius: 0px;
-}
-#configTypeSelector button:not(:last-child) {
-	border-style: solid;
-	border-color: var(--selectorLinesColor);
-	border-width: 0px 1px 0px 0px;
 }
 
 
