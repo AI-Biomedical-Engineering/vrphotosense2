@@ -5,7 +5,7 @@ import configs from "../configs.js"
 
 export class ConfigScreen {
 	constructor(uploadConfigCallback, saveConfigCallback, closedCallback,
-		getConfigsYPos, getConfigsYMov) {
+		getConfigsYPos, getConfigsYMov, imgCache) {
 		
 		this.configUI = null
 		this.configType = null
@@ -15,6 +15,7 @@ export class ConfigScreen {
 		this.closedCallback = closedCallback
 		this.getConfigsYPos = getConfigsYPos
 		this.getConfigsYMov = getConfigsYMov
+		this.imgCache = imgCache
 		
 		this.screenDiv = document.getElementById("configScreen")
 		this.configContainer = document.getElementById("config")
@@ -69,7 +70,8 @@ export class ConfigScreen {
 			
 			this.#setConfigUIType(this.configType)
 			this.configTypeImg.alt = configs[this.configType].name + " icon"
-			this.configTypeImg.src = "img/modeIcons/" + configs[this.configType].icon
+			this.imgCache.getImage(`img/modeIcons/${configs[this.configType].icon}`,
+				data => this.configTypeImg.src = data)
 		}
 		this.configUI.setValue(config.config)
 		this.configNameVar.setValue(config.name)

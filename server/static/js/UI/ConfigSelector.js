@@ -1,11 +1,11 @@
-import {ImgCache, ButtonsSelector} from "./UI.js"
+import {ButtonsSelector} from "./UI.js"
 import {ConfirmDialog} from "./Dialog.js"
 import configs from "../configs.js"
 
 export class ConfigSelector {
-	constructor(callbacks) {
+	constructor(callbacks, imgCache) {
 		this.callbacks = callbacks
-		this.imgCache = new ImgCache()
+		this.imgCache = imgCache
 		this.configsContainer = document.getElementById("configNames")
 		this.configsDef = []
 		this.configSelector = null
@@ -21,9 +21,9 @@ export class ConfigSelector {
 			
 			Array.from(Array(configs.length).keys()), (bt, id) => {
 				let img = document.createElement("img")
-				img.alt = configs[id].name + " icon"
-				img.src = "img/modeIcons/" + configs[id].icon
 				img.classList.add("invertOnSelected")
+				img.alt = configs[id].name + " icon"
+				this.imgCache.getImage(`img/modeIcons/${configs[id].icon}`, data => img.src = data)
 				
 				let tooltipSpan = document.createElement("span")
 				tooltipSpan.innerText = configs[id].name

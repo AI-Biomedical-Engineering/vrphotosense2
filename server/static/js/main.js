@@ -3,6 +3,7 @@ import {initFS, fs} from "./LocalFilesystem.js"
 import {ConfigStorage} from "./ConfigStorage.js"
 import {ConfigsManager} from "./ConfigsManager.js"
 
+import {ImgCache} from "./UI/UI.js"
 import {StartScreen} from "./UI/StartScreen.js"
 import {StimScreen} from "./UI/StimScreen.js"
 import {ConfigScreen, ConfigScreenLayout} from "./UI/ConfigScreen.js"
@@ -16,6 +17,7 @@ class AppController {
 		this.selectedConfig = null
 		this.configStorage = configStorage
 		this.configsManager = new ConfigsManager(this.configStorage)
+		this.imgCache = new ImgCache()
 		
 		this.configSelector = new ConfigSelector({
 			selected: this.#selectedConfig.bind(this),
@@ -29,12 +31,12 @@ class AppController {
 				this.configsManager.addConfig(type)
 				this.#reloadConfigNames()
 			}
-		})
+		}, this.imgCache)
 		this.#reloadConfigNames()
 		this.configScreen = new ConfigScreen(this.#sendConfig.bind(this),
 			this.#saveConfig.bind(this), this.#closeEditConfig.bind(this),
 			this.configSelector.getConfigsCenterY.bind(this.configSelector),
-			this.stimScreen.getEyeSize.bind(this.stimScreen))
+			this.stimScreen.getEyeSize.bind(this.stimScreen), this.imgCache)
 	}
 	
 	#sendConfig(configType, config) {
