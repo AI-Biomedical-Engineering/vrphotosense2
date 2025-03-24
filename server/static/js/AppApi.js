@@ -1,4 +1,5 @@
 import {fs} from "./LocalFilesystem.js"
+import configs from "./configs.js"
 
 function createWSClient(addr, id, msgCallback, connectedCallback, closedCallback) {
 	let ws = new WebSocket(addr + `?id=${id}`)
@@ -108,10 +109,11 @@ export class AppApi {
 		config.url = url
 	}
 	#sendConfig(configType, config) {
-		let configSerialized = new Uint8Array(configType.size(config) + 1) //Extra byte for command type
+		let configDef = configs[configType].vars
+		let configSerialized = new Uint8Array(configDef.size(config) + 1) //Extra byte for command type
 		configSerialized[0] = Command.SET_CONFIG
-		configType.toBytes(new DataView(configSerialized.buffer, 1), config)
 		
+		configDef.toBytes(new DataView(configSerialized.buffer, 1), config)
 		this.ws.send(configSerialized)
 	}
 	

@@ -51,7 +51,7 @@ export class ConfigScreen {
 	}
 	#changedConfig() {
 		this.saveBt.disabled = false
-		this.uploadConfigCallback(configs[this.configUI.type.id][2], this.configUI.getValue())
+		this.uploadConfigCallback(this.configType, this.configUI.getValue())
 	}
 	
 	#setConfigUIType(type) {

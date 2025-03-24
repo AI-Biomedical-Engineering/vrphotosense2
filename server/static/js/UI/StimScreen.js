@@ -153,7 +153,7 @@ class Progress {
 	setConfig(configType, config) {
 		let bars = []
 		
-		if (configType.id === 0) { //Flashing config
+		if (configType === 0) { //Flashing config
 			let freqTime = config.stimTime + config.restTime
 			let totalTime = freqTime * config.freqs.length
 			let freqPercent = freqTime / totalTime

@@ -22,7 +22,7 @@ export class ConfigStorage {
 	getConfigNames(sorted = false) {
 		let configNames = []
 		for (let configName in this.configs)
-			configNames.push({name: configName, uiType: this.configs[configName].uiType})
+			configNames.push({name: configName, type: this.configs[configName].type})
 		
 		if (sorted)
 			configNames.sort((c1, c2) => c1.name.localeCompare(c2.name))
@@ -38,8 +38,7 @@ export class ConfigStorage {
 		config = structuredClone(config)
 		delete config.name
 		
-		let uiType = type === 1 && config.freq > 0 ? 10 : type
-		this.configs[name] = {uiType, type, config}
+		this.configs[name] = {type, config}
 		this.#saveToDisk()
 	}
 	delete(name) {

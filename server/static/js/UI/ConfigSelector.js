@@ -1,5 +1,6 @@
 import {ImgCache, ButtonsSelector} from "./UI.js"
 import {ConfirmDialog} from "./Dialog.js"
+import configs from "../configs.js"
 
 export class ConfigSelector {
 	constructor(callbacks) {
@@ -14,24 +15,18 @@ export class ConfigSelector {
 		this.addConfigBt = document.getElementById("addConfigBt")
 		this.addConfigBt.onclick = e => this.callbacks.add(this.selectedType)
 		
-		let configTypes = {
-			"0": {name: "Flashing", icon: "flash.svg"},
-			"1": {name: "Static Pattern", icon: "image.svg"},
-			"10": {name: "Dynamic Pattern", icon: "imageMov.svg"},
-			"2": {name: "Video", icon: "video.svg"},
-			"3": {name: "Real life scenario", icon: "skateboarding.svg"}
-		}
 		let nthChild = 0
 		this.configGroupsSelector = new ButtonsSelector(
 			document.getElementById("configGroups"), this.#selectedConfigType.bind(this),
-			["0", "1", "10", "2", "3"], (bt, id) => {
+			
+			Array.from(Array(configs.length).keys()), (bt, id) => {
 				let img = document.createElement("img")
-				img.alt = configTypes[id].name + " icon"
-				img.src = "img/modeIcons/" + configTypes[id].icon
+				img.alt = configs[id].name + " icon"
+				img.src = "img/modeIcons/" + configs[id].icon
 				img.classList.add("invertOnSelected")
 				
 				let tooltipSpan = document.createElement("span")
-				tooltipSpan.innerText = configTypes[id].name
+				tooltipSpan.innerText = configs[id].name
 				
 				bt.style.setProperty("--nthChild", nthChild++)
 				bt.appendChild(img)
@@ -64,7 +59,7 @@ export class ConfigSelector {
 			delete: this.#deleteConfig.bind(this)
 		}
 		this.configSelector = new ButtonsSelector(this.configsContainer, this.#selectedConfig.bind(this),
-			this.configsDef.filter(config => config.uiType === this.selectedType).map(config => config.name),
+			this.configsDef.filter(config => config.type === this.selectedType).map(config => config.name),
 			(bt, id) => {
 				let iconsDiv = document.createElement("div")
 				let nameSpan = document.createElement("span")
@@ -99,8 +94,8 @@ export class ConfigSelector {
 		let config = this.configsDef.find(conf => conf.name === configName)
 		this.selectedConfig = configName
 		
-		if (config.uiType !== this.selectedType)
-			this.configGroupsSelector.select(config.uiType.toString())
+		if (config.type !== this.selectedType)
+			this.configGroupsSelector.select(config.type.toString())
 		else
 			this.configSelector.setSelected(configName)
 	}

@@ -4,7 +4,18 @@ function createUI(container, updateCallback, def) {
 	return new def[0](container, updateCallback, ...def.slice(1))
 }
 export function createConfigUI(container, updateCallback, def) {
-	return createUI(container, updateCallback, [ConfigUI, ...def.slice(1)])
+	return createUI(container, updateCallback, [ConfigUI, def.uiVars])
+}
+
+export class ConstVar {
+	constructor(container, updateCallback, val) {
+		this.val = val
+	}
+	deleteUI() {}
+	getValue() {
+		return this.val
+	}
+	setValue(val) {}
 }
 
 export class LabeledVar {
@@ -293,8 +304,7 @@ export class MultiModeVar {
 }
 
 export class ConfigUI {
-	constructor(container, updateCallback, config, type) {
-		this.type = type
+	constructor(container, updateCallback, config) {
 		this.vars = {}
 		
 		for (let varName in config)

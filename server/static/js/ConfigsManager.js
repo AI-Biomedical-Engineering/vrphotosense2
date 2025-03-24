@@ -24,11 +24,11 @@ export class ConfigsManager {
 		let config = this.configStorage.get(name)
 		this.configStorage.save(this.#getCloneName(name), config.type, config.config)
 	}
-	addConfig(uiType) {
+	addConfig(type) {
 		let name = "New"
 		if (this.configStorage.getConfigNames().some(c => c.name === name))
 			name = this.#getCloneName(name)
 		
-		this.configStorage.save(name, uiType === 10 ? 1 : uiType, this.defaultConfigs[String(uiType)])
+		this.configStorage.save(name, type, this.defaultConfigs[String(type)])
 	}
 }

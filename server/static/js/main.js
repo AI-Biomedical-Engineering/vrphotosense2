@@ -7,7 +7,6 @@ import {StartScreen} from "./UI/StartScreen.js"
 import {StimScreen} from "./UI/StimScreen.js"
 import {ConfigScreen, ConfigScreenLayout} from "./UI/ConfigScreen.js"
 import {ConfigSelector} from "./UI/ConfigSelector.js"
-import configs from "./configs.js"
 
 class AppController {
 	constructor(api, configStorage, stimScreen) {
@@ -26,8 +25,8 @@ class AppController {
 				this.#reloadConfigNames()
 			},
 			delete: this.#deleteConfig.bind(this),
-			add: uiType => {
-				this.configsManager.addConfig(uiType)
+			add: type => {
+				this.configsManager.addConfig(type)
 				this.#reloadConfigNames()
 			}
 		})
@@ -43,7 +42,7 @@ class AppController {
 		this.stimScreen.setConfig(configType, config)
 	}
 	#sendSelectedConfig() {
-		this.#sendConfig(configs[this.selectedConfig.type][2], this.selectedConfig.config)
+		this.#sendConfig(this.selectedConfig.type, this.selectedConfig.config)
 	}
 	#setSelectedConfig(name) {
 		this.selectedConfig = this.configStorage.get(name)
