@@ -1,4 +1,6 @@
 #configScreen {
+	--boxShadowTrans: box-shadow 0.1s ease;
+	
 	display: flex;
 	flex-direction: column;
 	overflow-y: hidden;
@@ -24,9 +26,13 @@
 	align-items: center;
 	column-gap: 0.6em;
 	
-	box-shadow: 0px 11px 11px -15px black;
+	box-shadow: 0px 9px 9px -11px black;
 	padding-bottom: 0.5em;
 	z-index: 0;
+	transition: var(--boxShadowTrans);
+}
+#configNameEdit:has(~#config.scrollTop) {
+	box-shadow: 0px 3px 3px -5px black;
 }
 #configNameEdit > img {
 	height: 2.4em;
@@ -38,16 +44,21 @@
 
 #configControls {
 	display: flex;
+	justify-content: flex-end;
 	column-gap: 0.3em;
 	
-	box-shadow: 0px -11px 11px -15px black;
-	padding-top: 0.5em;
+	box-shadow: none;
+	padding-bottom: 0.5em;
+	transition: var(--boxShadowTrans);
 }
-#configControls > button:first-child {
-	margin-left: auto;
+body:not(.vertical) #configControls {
+	order: 1;
+	
+	box-shadow: 0px -9px 9px -11px black;
+	padding: 0.5em 0px 0px;
 }
-.vertical #configControls {
-	order: -1;
+body:not(.vertical) #configControls:has(~#config.scrollBottom) {
+	box-shadow: 0px -3px 3px -5px black;
 }
 
 

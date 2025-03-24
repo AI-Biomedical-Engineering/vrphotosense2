@@ -61,6 +61,25 @@ export class HideElemController {
 	}
 }
 
+export class ScrollTopBottomController {
+	constructor(elem) {
+		this.elem = elem
+		elem.onscroll = this.#update.bind(this)
+		new ResizeObserver(this.elem.onscroll).observe(this.elem)
+	}
+	#update() {
+		if (this.elem.scrollTop === 0)
+			this.elem.classList.add("scrollTop")
+		else
+			this.elem.classList.remove("scrollTop")
+		
+		if (this.elem.scrollTop + this.elem.clientHeight === this.elem.scrollHeight)
+			this.elem.classList.add("scrollBottom")
+		else
+			this.elem.classList.remove("scrollBottom")
+	}
+}
+
 export class ImgCache {
 	constructor() {
 		this.images = new Map()
