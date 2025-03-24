@@ -25,6 +25,7 @@ export class ConfigScreen {
 		this.cancelBt.onclick = this.#cancel.bind(this)
 		
 		let configNameDiv = document.getElementById("configNameEdit")
+		this.configTypeImg = configNameDiv.querySelector("img")
 		this.configNameVar = new StringVar(configNameDiv, this.#changedConfig.bind(this))
 		
 		window.addEventListener("keydown", this.#keyPress.bind(this))
@@ -66,6 +67,8 @@ export class ConfigScreen {
 			this.configType = config.type
 			
 			this.#setConfigUIType(this.configType)
+			this.configTypeImg.alt = configs[this.configType].name + " icon"
+			this.configTypeImg.src = "img/modeIcons/" + configs[this.configType].icon
 		}
 		this.configUI.setValue(config.config)
 		this.configNameVar.setValue(config.name)
