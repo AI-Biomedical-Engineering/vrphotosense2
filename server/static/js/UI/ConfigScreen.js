@@ -9,6 +9,7 @@ export class ConfigScreen {
 		
 		this.configUI = null
 		this.configType = null
+		this.changedConfig = true
 		
 		this.uploadConfigCallback = uploadConfigCallback
 		this.saveConfigCallback = saveConfigCallback
@@ -53,8 +54,13 @@ export class ConfigScreen {
 		}
 	}
 	#changedConfig() {
-		this.saveBt.disabled = false
+		this.changedConfig = true
+		this.saveBt.disabled = ! this.#validConfig()
 		this.uploadConfigCallback(this.configType, this.configUI.getValue())
+	}
+	
+	#validConfig() {
+		return this.configNameVar.getValue().trim().length > 0
 	}
 	
 	#setConfigUIType(type) {
@@ -76,17 +82,18 @@ export class ConfigScreen {
 		this.configUI.setValue(config.config)
 		this.configNameVar.setValue(config.name)
 		
+		this.changedConfig = false
 		this.saveBt.disabled = true
 	}
 	
 	#saveConfig() {
 		this.saveBt.disabled = true
 		
-		this.saveConfigCallback(this.configNameVar.getValue(), this.configUI.getValue())
+		this.saveConfigCallback(this.configNameVar.getValue().trim(), this.configUI.getValue())
 		this.closedCallback()
 	}
 	#cancel() {
-		if (this.saveBt.disabled)
+		if (! this.changedConfig)
 			this.closedCallback()
 		else {
 			new ConfirmDialog(this.cancelBt, "cancelDialog", false,
