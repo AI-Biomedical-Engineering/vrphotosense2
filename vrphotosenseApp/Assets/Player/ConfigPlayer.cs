@@ -3,9 +3,9 @@ using UnityEngine.SpatialTracking;
 
 public class ConfigPlayer : BaseConfigPlayer {
 	#if UNITY_ANDROID && ! UNITY_EDITOR
-		public override float TextureScaling { get {return 0.28f;} }
+		public override float TextureScaling { get {return 0.2611f;} }
 	#else
-		public override float TextureScaling { get {return 0.41f;} }
+		public override float TextureScaling { get {return 0.2306f;} }
 	#endif
 	
 	public GameObject fpsCounter;

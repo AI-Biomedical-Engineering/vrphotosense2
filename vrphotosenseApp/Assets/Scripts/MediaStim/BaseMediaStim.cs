@@ -75,12 +75,17 @@ public abstract class BaseMediaStim<T> : AbstractScene<T> where T : BaseMediaSti
 	}
 	
 	protected void ShowTexture(Texture tex) {
+		float imgRatio = tex.width / (float) tex.height;
+		
 		if (tex.height > tex.width)
-			this.correctedScale = new Vector2(tex.width / (float) tex.height, 1);
+			this.correctedScale = new Vector2(imgRatio, 1);
 		else
-			this.correctedScale = new Vector2(1, tex.height / (float) tex.width);
+			this.correctedScale = new Vector2(1, 1 / imgRatio);
 		
 		this.correctedScale *= BaseConfigPlayer.config.TextureScaling;
+		this.correctedScale *= imgRatio > Camera.main.aspect ?
+			Camera.main.aspect / Math.Min(imgRatio, 1) : Math.Max(imgRatio, 1);
+		
 		SetTextureParams(tex);
 		this.mat.SetTexture("_MainTex", tex);
 	}
