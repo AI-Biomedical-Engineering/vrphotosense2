@@ -40,8 +40,10 @@ public class SVGRenderer : MonoBehaviour {
 		yield return new WaitForEndOfFrame();
 		this.texture.Reinitialize(this.renderTexture.width, this.renderTexture.height, TextureFormat.ARGB32, true);
 		
+		RenderTexture activeTexture = RenderTexture.active;
 		RenderTexture.active = this.renderTexture;
 		this.texture.ReadPixels(new Rect(0, 0, this.texture.width, this.texture.height), 0, 0);
+		RenderTexture.active = activeTexture;
 		
 		gameObject.SetActive(false);
 		this.callback();
