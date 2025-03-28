@@ -31,11 +31,13 @@ public class VideoStream : MonoBehaviour {
 
 	private IEnumerator CaptureLoop() {
 		this.frameSender = new FrameSender(this.renderTexture);
-		#if ! (UNITY_WEBGL && ! UNITY_EDITOR)
-			this.frameSender = new AsyncFrameSender(this.frameSender);
+		#if ! UNITY_STANDALONE_LINUX
+			#if ! (UNITY_WEBGL && ! UNITY_EDITOR)
+				this.frameSender = new AsyncFrameSender(this.frameSender);
+			#endif
+			if (this.Framerate > 0)
+				this.frameSender = new LimitFramerateSender(this.frameSender, this.Framerate);
 		#endif
-		if (this.Framerate > 0)
-			this.frameSender = new LimitFramerateSender(this.frameSender, this.Framerate);
 		
 		while (true) {
 			yield return new WaitForEndOfFrame();
