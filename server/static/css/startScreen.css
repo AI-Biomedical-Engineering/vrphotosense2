@@ -22,9 +22,10 @@ body:has(#startScreen.visible) {
 }
 
 #startScreen > div {
+	--smallWindowFontSize: 1em;
 	--startScreenTransform: translateX(50%) translateY(-50%);
 	
-	font-size: min(1em, min(2.5vw, 4vh));
+	font-size: min(1em, var(--smallWindowFontSize));
 	background: white;
 	
 	position: absolute;
@@ -43,15 +44,21 @@ body:has(#startScreen.visible) {
 	box-shadow: 0px 0px 25px -11px black;
 }
 
+#startScreen > div#askForIdFrame {
+	--smallWindowFontSize: min(6vw, 7vh);
+}
 #startScreen > div#askForIdFrame > div {
 	display: flex;
+}
+#startScreen > div#connectFrame {
+	--smallWindowFontSize: min(2.8vw, 5.2vh);
 }
 #startScreen > div#connectFrame > div {
 	display: flex;
 }
 #startScreen > div#connectFrame img {
 	height: 2.88em;
-	margin-left: 7em;
+	margin: auto;
 	filter: invert(60%);
 	animation: rotateLoading 0.6s linear infinite;
 }
@@ -61,14 +68,19 @@ body:has(#startScreen.visible) {
 	}
 }
 
-#startScreen > div#configFolderFrame {
-	font-size: min(0.7em, min(1.6vw, 3.5vh));
+#startScreen > div#startBtFrame {
+	--smallWindowFontSize: min(15vw, 10vh);
 }
-#startScreen > div#configFolderFrame button {
-	font-size: 1.72em;
+#startScreen > div#configFolderFrame {
+	--smallWindowFontSize: min(2.6vw, 7vh);
+}
+#startScreen > div#configFolderFrame > span {
+	font-size: 1.4em;
 }
 
 #startScreen > div#splashFrame {
+	--smallWindowFontSize: min(2.5vw, 2.5vh);
+	
 	align-items: center;
 	row-gap: 2em;
 	width: 30em;
@@ -123,7 +135,6 @@ body:has(#startScreen.visible) {
 }
 #startScreen button {
 	font-size: 1.2em;
-	margin-left: auto;
 }
 
 
