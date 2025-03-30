@@ -18,40 +18,61 @@ export function setCSSVar(varName, value) {
 	root.style.setProperty(varName, value)
 }
 
-export class HideElemController {
-	constructor(elem, hiddenCallback = () => {}) {
+export class AnimsEndController {
+	constructor(elem, animType, callback) {
 		this.elem = elem
-		this.hiddenCallback = hiddenCallback
-		this.hiding = false
+		this.callback = callback
 		this.remainingAnims = 0
-		this.elem.ontransitionstart = this.#animStart.bind(this)
-		this.elem.ontransitionend = this.#animEnd.bind(this)
 		
-		if (! this.elem.classList.contains("visible"))
-			this.elem.style.display = "none"
+		if (animType === "animation") {
+			this.elem.onanimationstart = this.#animStart.bind(this)
+			this.elem.onanimationend = this.#animEnd.bind(this)
+		}
+		else if (animType === "transition") {
+			this.elem.ontransitionstart = this.#animStart.bind(this)
+			this.elem.ontransitionend = this.#animEnd.bind(this)
+		}
+		else
+			throw new Error("Invalid animType")
 	}
 	#animStart(e) {
 		if (e.srcElement === this.elem)
 			this.remainingAnims++
 	}
 	#animEnd(e) {
-		if (e.srcElement === this.elem && --this.remainingAnims === 0) {
-			
-			if (this.hiding) {
-				this.elem.style.display = "none"
-				this.hiddenCallback()
-			}
+		if (e.srcElement === this.elem && --this.remainingAnims === 0)
+			this.callback()
+	}
+	reset() {
+		this.remainingAnims = 0
+	}
+}
+
+export class HideElemController {
+	constructor(elem, hiddenCallback = () => {}) {
+		this.elem = elem
+		this.hiddenCallback = hiddenCallback
+		this.hiding = false
+		this.animsEndController = new AnimsEndController(this.elem, "transition", this.#animEnd.bind(this))
+		
+		if (! this.elem.classList.contains("visible"))
+			this.elem.style.display = "none"
+	}
+	#animEnd(e) {
+		if (this.hiding) {
+			this.elem.style.display = "none"
+			this.hiddenCallback()
 		}
 	}
 	
 	hide() {
 		this.hiding = true
-		this.remainingAnims = 0
+		this.animsEndController.reset()
 		this.elem.classList.remove("visible")
 	}
 	show() {
 		this.hiding = false
-		this.remainingAnims = 0
+		this.animsEndController.reset()
 		
 		this.elem.style.display = ""
 		requestAnimationFrame(() => requestAnimationFrame(() => {

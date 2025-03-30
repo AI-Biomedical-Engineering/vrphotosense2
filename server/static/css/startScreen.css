@@ -22,13 +22,15 @@ body:has(#startScreen.visible) {
 }
 
 #startScreen > div {
+	--startScreenTransform: translateX(50%) translateY(-50%);
+	
 	font-size: min(1em, min(2.5vw, 4vh));
 	background: white;
 	
 	position: absolute;
 	top: 50%;
 	right: 50%;
-	transform: translateX(50%) translateY(-50%);
+	transform: var(--startScreenTransform);
 	
 	display: none;
 	flex-direction: column;
@@ -53,11 +55,60 @@ body:has(#startScreen.visible) {
 	filter: invert(60%);
 	animation: rotateLoading 0.6s linear infinite;
 }
+@keyframes rotateLoading {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
 #startScreen > div#configFolderFrame {
 	font-size: min(0.7em, min(1.6vw, 3.5vh));
 }
 #startScreen > div#configFolderFrame button {
 	font-size: 1.72em;
+}
+
+#startScreen > div#splashFrame {
+	align-items: center;
+	row-gap: 2em;
+	width: 30em;
+	
+	animation: splashAnimOpacity 2.5s ease-out forwards, splashAnimScale 2.5s linear;
+}
+#startScreen > div#splashFrame h1 {
+	font-size: 3.3em;
+	font-weight: 300;
+	margin: 0px 0px 0.3em;
+}
+#startScreen > div#splashFrame > img {
+	width: 100%;
+}
+#startScreen > div#splashFrame > div {
+	display: flex;
+	align-items: center;
+	column-gap: 1em;
+}
+#startScreen > div#splashFrame > div > img {
+	width: calc(50% - 0.5em);
+}
+@keyframes splashAnimOpacity {
+	0% {
+		opacity: 0%;
+	}
+	5% {
+		opacity: 100%;
+	}
+	90% {
+		opacity: 100%;
+	}
+	100% {
+		opacity: 0%;
+	}
+}
+@keyframes splashAnimScale {
+	from {
+		transform: var(--startScreenTransform) scale(0.92);
+	}
 }
 
 #startScreen > div span {
@@ -75,11 +126,6 @@ body:has(#startScreen.visible) {
 	margin-left: auto;
 }
 
-@keyframes rotateLoading {
-	to {
-		transform: rotate(360deg);
-	}
-}
 
 #stimAppLink {
 	text-decoration: none;

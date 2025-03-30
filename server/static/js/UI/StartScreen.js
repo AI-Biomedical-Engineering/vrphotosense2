@@ -1,9 +1,11 @@
-import {HideElemController} from "./UI.js"
+import {AnimsEndController, HideElemController} from "./UI.js"
 import {closeAllDialogs} from "./Dialog.js"
 import {fs} from "../LocalFilesystem.js"
 
 export class StartScreen {
-	constructor(startCallback, configFolderCallback, idCallback, abortConnectCallback, hiddenCallback) {
+	constructor(splashCallback, startCallback, configFolderCallback,
+		idCallback, abortConnectCallback, hiddenCallback) {
+		
 		this.startScreen = document.getElementById("startScreen")
 		this.hideController = new HideElemController(this.startScreen, hiddenCallback)
 		this.reconnectMode = false
@@ -22,6 +24,7 @@ export class StartScreen {
 		document.getElementById("connectBt").onclick = e => idCallback(this.inputID.value)
 		document.getElementById("cancelConnectBt").onclick = abortConnectCallback
 		
+		new AnimsEndController(this.frames.splashFrame, "animation", splashCallback)
 		document.addEventListener("keydown", this.#keyPress.bind(this))
 	}
 	#keyPress(e) {
@@ -57,6 +60,9 @@ export class StartScreen {
 		this.activeFrame.style.display = "flex"
 	}
 	
+	showSplash() {
+		this.#show("splashFrame")
+	}
 	startBt() {
 		this.#show("startBtFrame")
 	}

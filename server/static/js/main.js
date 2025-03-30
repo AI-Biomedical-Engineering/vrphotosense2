@@ -105,7 +105,8 @@ class App {
 		this.api = new AppApi(wsURL, this.#appMessage.bind(this),
 			this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
-		this.startScreen = new StartScreen(() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
+		this.startScreen = new StartScreen(this.#configuredAppFolder.bind(this),
+			() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
 			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this),
 			() => this.startScreen.setReconnectMode(true))
 		
@@ -124,7 +125,7 @@ class App {
 			this.connectMode = savedAppId !== null ? AppMode.SAVED_APPID : AppMode.MANUAL_APPID
 		
 		this.autoConnectApp = new AutoConnectAppApi(this.api, savedAppId)
-		this.#configuredAppFolder()
+		this.startScreen.showSplash()
 		
 		this.messageActions = {
 			[AppMessage.STATUS]: this.stimScreen.setProgress.bind(this.stimScreen),
