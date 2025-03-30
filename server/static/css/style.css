@@ -6,6 +6,7 @@
 }
 
 :root {
+	--selectedColor: #366ede;
 	--selectorLinesColor: #d6d6d6;
 	--btBorderRad: 0.4em;
 	--btColorTrans: background 0.1s ease;
@@ -49,7 +50,7 @@ button:disabled img {
 }
 button.selected {
 	color: white;
-	background: #366ede !important;
+	background: var(--selectedColor) !important;
 }
 .selected img.invertOnSelected {
 	filter: brightness(10);
@@ -108,6 +109,39 @@ input[type="color"]::-webkit-color-swatch {
 }
 input[type="color"]::-moz-color-swatch {
 	border-style: none;
+}
+
+input[type="checkbox"] {
+	--checkboxWidth: 4em;
+	
+	appearance: none;
+	background: #afafaf;
+	position: relative;
+	width: var(--checkboxWidth);
+	height: 2em;
+	border-radius: 1em;
+}
+input[type="checkbox"]:checked {
+	background: var(--selectedColor);
+}
+input[type="checkbox"]::before {
+	--circleMargin: 0.4em;
+	
+	content: "";
+	background: white;
+	
+	position: absolute;
+	left: 0px;
+	top: 50%;
+	height: calc(100% - var(--circleMargin) * 2);
+	aspect-ratio: 1 / 1;
+	border-radius: 50%;
+	
+	transform: translateX(var(--circleMargin)) translateY(-50%);
+	transition: transform 0.1s ease-out;
+}
+input[type="checkbox"]:checked::before {
+	transform: translateX(calc(var(--checkboxWidth) - var(--circleMargin) - 100%)) translateY(-50%);
 }
 
 input::placeholder {
