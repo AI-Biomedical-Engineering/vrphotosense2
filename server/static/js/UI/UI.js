@@ -122,8 +122,9 @@ export class ImgCache {
 
 export class ButtonsSelector {
 	constructor(container, selectedCallback, selectValues, configBtCallback,
-			selectOnSelected = false) {
+			selectOnSelected = false, enableStyle = false) {
 		
+		this.container = container
 		this.selectedCallback = selectedCallback
 		this.selectOnSelected = selectOnSelected
 		this.selected = null
@@ -136,12 +137,16 @@ export class ButtonsSelector {
 			configBtCallback(bt, selectVal)
 			
 			this.buttons[selectVal] = bt
-			container.appendChild(bt)
+			this.container.appendChild(bt)
 		}
+		if (enableStyle)
+			this.container.classList.add("buttonsSelector")
 	}
 	deleteUI() {
 		for (let btName in this.buttons)
 			this.buttons[btName].remove()
+		
+		this.container.classList.remove("buttonsSelector")
 	}
 	setEnabled(enabled) {
 		for (let btName in this.buttons)

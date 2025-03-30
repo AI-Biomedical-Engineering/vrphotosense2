@@ -116,11 +116,3 @@ button:has(~ .configElemArray) {
 .configElemSelectorMultimode {
 	margin-bottom: 1em;
 }
-.configElemSelectorMultimode button {
-	border-radius: 0px;
-}
-.configElemSelectorMultimode button:not(:last-child) {
-	border-style: solid;
-	border-color: var(--selectorLinesColor);
-	border-width: 0px 1px 0px 0px;
-}

@@ -7,6 +7,7 @@
 
 :root {
 	--selectorLinesColor: #d6d6d6;
+	--btBorderRad: 0.4em;
 	--btColorTrans: background 0.1s ease;
 }
 
@@ -27,7 +28,7 @@ button {
 	
 	padding: 0.5em 1em;
 	border: none;
-	border-radius: 0.3em;
+	border-radius: var(--btBorderRad);
 	margin: 0px;
 	
 	transition: var(--btColorTrans);
@@ -72,7 +73,7 @@ input {
 	
 	background: #eee;
 	padding: 0.6em 0.9em;
-	border-radius: 0.3em;
+	border-radius: var(--btBorderRad);
 	margin: 0px;
 	outline: none;
 	
@@ -120,6 +121,21 @@ input:focus::placeholder {
 
 img.xflipped {
 	transform: scaleX(-1);
+}
+
+.buttonsSelector button {
+	border-radius: 0px;
+}
+.buttonsSelector button:first-child {
+	border-radius: var(--btBorderRad) 0px 0px var(--btBorderRad);
+}
+.buttonsSelector button:last-child {
+	border-radius: 0px var(--btBorderRad) var(--btBorderRad) 0px;
+}
+.buttonsSelector button:not(:last-child) {
+	border-style: solid;
+	border-color: var(--selectorLinesColor);
+	border-width: 0px 1px 0px 0px;
 }
 
 ::-webkit-scrollbar {

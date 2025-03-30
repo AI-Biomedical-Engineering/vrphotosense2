@@ -175,6 +175,24 @@ export class EnumVar {
 		this.select.value = val.toString()
 	}
 }
+export class EnumVarButtons {
+	constructor(container, updateCallback, optionNames, defaultVal = 0) {
+		this.selector = new ButtonsSelector(container, updateCallback,
+			Array.from(Array(optionNames.length).keys()), (bt, id) => bt.innerText = optionNames[id],
+			false, true)
+		
+		this.setValue(defaultVal)
+	}
+	deleteUI() {
+		this.selector.deleteUI()
+	}
+	getValue() {
+		return parseInt(this.selector.getSelected())
+	}
+	setValue(val) {
+		this.selector.setSelected(val.toString())
+	}
+}
 
 export class ArrayVar {
 	constructor(container, updateCallback, elemConfig, defaultVal = [], allowEmpty = true) {
@@ -272,7 +290,7 @@ export class MultiModeVar {
 		
 		this.typeSelector = new ButtonsSelector(this.selectorContainer, this.#updateUIType.bind(this),
 			Array.from(Array(varsModes.length).keys()).map(String),
-			(bt, id) => bt.innerText = varsModes[parseInt(id)].name)
+			(bt, id) => bt.innerText = varsModes[parseInt(id)].name, false, true)
 		
 		this.typeSelector.select("0")
 	}
