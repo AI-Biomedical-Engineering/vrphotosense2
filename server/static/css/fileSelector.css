@@ -7,10 +7,10 @@
 	
 	column-gap: 8px;
 	row-gap: 8px;
-	
-	height: 20em;
 	overflow-y: auto;
-	
+}
+.shadowScroll:has(> .fileSelector) {
+	height: 24em;
 	margin-right: 0.5em;
 }
 .fileSelector > button {

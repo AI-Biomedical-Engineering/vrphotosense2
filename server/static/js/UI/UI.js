@@ -82,22 +82,34 @@ export class HideElemController {
 	}
 }
 
-export class ScrollTopBottomController {
+export class ShadowScroll {
 	constructor(elem) {
 		this.elem = elem
-		elem.onscroll = this.#update.bind(this)
-		new ResizeObserver(this.elem.onscroll).observe(this.elem)
+		this.shadowDiv = document.createElement("div")
+		this.shadowDiv.classList.add("shadowScroll")
+		
+		this.elem.parentElement.replaceChild(this.shadowDiv, this.elem)
+		this.shadowDiv.appendChild(this.elem)
+		
+		this.elem.onscroll = this.#update.bind(this)
+		this.resizeObserver = new ResizeObserver(this.elem.onscroll)
+		this.resizeObserver.observe(this.elem)
 	}
 	#update() {
 		if (this.elem.scrollTop === 0)
-			this.elem.classList.add("scrollTop")
+			this.shadowDiv.classList.add("scrollTop")
 		else
-			this.elem.classList.remove("scrollTop")
+			this.shadowDiv.classList.remove("scrollTop")
 		
 		if (this.elem.scrollTop + this.elem.clientHeight === this.elem.scrollHeight)
-			this.elem.classList.add("scrollBottom")
+			this.shadowDiv.classList.add("scrollBottom")
 		else
-			this.elem.classList.remove("scrollBottom")
+			this.shadowDiv.classList.remove("scrollBottom")
+	}
+	delete() {
+		this.resizeObserver.unobserve(this.elem)
+		this.shadowDiv.parentElement.replaceChild(this.elem, this.shadowDiv)
+		this.shadowDiv.remove()
 	}
 }
 
@@ -206,10 +218,12 @@ export class FileSelector extends ButtonsSelector {
 		})
 		this.container = container
 		this.container.classList.add("fileSelector")
+		this.shadowScroll = new ShadowScroll(this.container)
 	}
 	
 	deleteUI() {
 		this.container.classList.remove("fileSelector")
+		this.shadowScroll.delete()
 		super.deleteUI()
 	}
 }

@@ -1,4 +1,4 @@
-import {HideElemController, ScrollTopBottomController, isTextInputActive} from "./UI.js"
+import {HideElemController, ShadowScroll, isTextInputActive} from "./UI.js"
 import {ConfirmDialog} from "./Dialog.js"
 import {StringVar, createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
@@ -30,7 +30,7 @@ export class ConfigScreen {
 		this.configTypeImg = configNameDiv.querySelector("img")
 		this.configNameVar = new StringVar(configNameDiv, this.#changedConfig.bind(this))
 		
-		new ScrollTopBottomController(this.configContainer)
+		new ShadowScroll(this.configContainer)
 		window.addEventListener("keydown", this.#keyPress.bind(this))
 		this.hideController = new HideElemController(this.screenDiv)
 		this.setEnabled(false)
