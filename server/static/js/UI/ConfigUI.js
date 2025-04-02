@@ -23,7 +23,6 @@ export class LabeledVar {
 		this.divLabel = document.createElement("div")
 		this.divValue = document.createElement("div")
 		this.divLabel.classList.add("configElem")
-		this.divValue.classList.add("configValue")
 		
 		this.label = document.createElement("span")
 		this.label.innerText = name
@@ -324,13 +323,23 @@ export class MultiModeVar {
 export class ConfigUI {
 	constructor(container, updateCallback, config) {
 		this.vars = {}
+		this.groupContainers = []
 		
-		for (let varName in config)
-			this.vars[varName] = createUI(container, updateCallback, config[varName])
+		for (let varsGroup of config) {
+			let groupContainer = document.createElement("div")
+			this.groupContainers.push(groupContainer)
+			container.appendChild(groupContainer)
+			
+			for (let varName in varsGroup)
+				this.vars[varName] = createUI(groupContainer, updateCallback, varsGroup[varName])
+		}
 	}
 	deleteUI() {
 		for (let varName in this.vars)
 			this.vars[varName].deleteUI()
+		
+		for (let groupContainer of this.groupContainers)
+			groupContainer.remove()
 	}
 	
 	getValue() {

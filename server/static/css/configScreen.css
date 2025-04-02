@@ -66,18 +66,23 @@ body:not(.vertical) #configControls:has(~#config.scrollBottom) {
 	overflow-y: auto;
 }
 
-.configElem {
+#config > div {
+	display: flex;
+	flex-direction: row;
+	column-gap: 3em;
+	position: relative;
+	
 	padding: 0.7em 0em;
 }
-.configElem:not(:last-child)::after {
+#config > div:not(:last-child)::after {
 	border-style: solid;
 	border-color: #aaa;
 	border-width: 1px 0px 0px;
 	
 	content: "";
-	position: relative;
+	position: absolute;
 	display: block;
-	top: 0.4em;
+	bottom: 0px;
 	left: 0px;
 	
 	width: 80%;
@@ -86,8 +91,8 @@ body:not(.vertical) #configControls:has(~#config.scrollBottom) {
 	margin-bottom: 0.5em;
 	display: block;
 }
-.configValue {
-	margin-left: 1em;
+.configElem:not(:has(.configElemArray)) input[type="number"] {
+	width: 3.5em;
 }
 
 input:has(~ .configElemArray) {
