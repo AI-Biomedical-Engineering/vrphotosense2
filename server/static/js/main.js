@@ -10,14 +10,13 @@ import {ConfigScreen, ConfigScreenLayout} from "./UI/ConfigScreen.js"
 import {ConfigSelector} from "./UI/ConfigSelector.js"
 
 class AppController {
-	constructor(api, configStorage, stimScreen) {
+	constructor(api, imgCache, configStorage, stimScreen) {
 		this.api = api
 		this.stimScreen = stimScreen
 		
 		this.selectedConfig = null
 		this.configStorage = configStorage
 		this.configsManager = new ConfigsManager(this.configStorage)
-		this.imgCache = new ImgCache()
 		
 		this.configSelector = new ConfigSelector({
 			selected: this.#selectedConfig.bind(this),
@@ -31,12 +30,12 @@ class AppController {
 				this.configsManager.addConfig(type)
 				this.#reloadConfigNames()
 			}
-		}, this.imgCache)
+		}, imgCache)
 		this.#reloadConfigNames()
 		this.configScreen = new ConfigScreen(this.#sendConfig.bind(this),
 			this.#saveConfig.bind(this), this.#closeEditConfig.bind(this),
 			this.configSelector.getConfigsCenterY.bind(this.configSelector),
-			this.stimScreen.getEyeSize.bind(this.stimScreen), this.imgCache)
+			this.stimScreen.getEyeSize.bind(this.stimScreen), imgCache)
 	}
 	
 	#sendConfig(configType, config) {
@@ -102,6 +101,7 @@ const AppMode = Object.freeze({
 })
 class App {
 	constructor(autoappid, wsURL) {
+		this.imgCache = new ImgCache()
 		this.api = new AppApi(wsURL, this.#appMessage.bind(this),
 			this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
@@ -110,7 +110,7 @@ class App {
 			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this),
 			() => this.startScreen.setReconnectMode(true))
 		
-		this.stimScreen = new StimScreen(this.api)
+		this.stimScreen = new StimScreen(this.api, this.imgCache)
 		this.appController = null
 		this.firstConnection = true
 		new ConfigScreenLayout(this.stimScreen)
@@ -146,6 +146,7 @@ class App {
 		console.log(`WS connected (${id})`)
 		this.firstConnection = false
 		
+		this.stimScreen.configEyesUrl("http://eye{}.local")
 		this.stimScreen.configStream("/appstream?id=" + id)
 		this.stimScreen.setEnabled(true)
 		this.startScreen.hide()
@@ -198,7 +199,7 @@ class App {
 		
 		if (fs.isConfigured() && fs.hasPermission() && this.appController === null) {
 			let configStorage = new ConfigStorage(() => {
-				this.appController = new AppController(this.api, configStorage, this.stimScreen)
+				this.appController = new AppController(this.api, this.imgCache, configStorage, this.stimScreen)
 			})
 			if (this.connectMode !== AppMode.MANUAL_APPID)
 				this.autoConnectApp.autoConnect()

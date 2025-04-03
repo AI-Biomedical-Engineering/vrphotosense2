@@ -1,29 +1,44 @@
-import {HideElemController, isTextInputActive, configImageError, setCSSVar} from "./UI.js"
+import {ImageReloader, HideElemController, isTextInputActive, configImageError, setCSSVar} from "./UI.js"
 import {Command} from "../AppApi.js"
 
 export class StimScreen {
-	constructor(api) {
+	constructor(api, imgCache) {
 		this.stimControl = new StimControl(api)
 		this.progress = new Progress()
 		
 		this.setProgress = this.progress.setProgress.bind(this.progress)
 		this.setConfig = this.progress.setConfig.bind(this.progress)
-		this.setEnabled = this.stimControl.setEnabled.bind(this.stimControl)
 		this.paused = this.stimControl.paused.bind(this.stimControl)
 		this.stop = this.stimControl.stop.bind(this.stimControl)
 		this.setLoopMode = this.stimControl.setLoopMode.bind(this.stimControl)
 		
 		this.hideEyeControllers = []
-		let eyes = document.getElementsByClassName("eye")
-		let i = 1
-		for (let eye of eyes) {
-			configImageError(eye, img => img.src = "/img/offlineCam.svg")
-			eye.src = `http://eye${i++}.local`
+		this.eyes = document.getElementsByClassName("eye")
+		this.eyeReloaders = Array(this.eyes.length).fill(null)
+		
+		imgCache.getImage("/img/offlineCam.svg", data => {
+			this.offlineCamImg = data
 			
-			this.hideEyeControllers.push(new HideElemController(eye))
-		}
-		this.eyeRef = eyes[0]
+			for (let eye of this.eyes) {
+				eye.src = data
+				this.hideEyeControllers.push(new HideElemController(eye))
+			}
+		})
+		
 		this.stream = document.getElementById("stream")
+		this.streamReloader = null
+		imgCache.getImage("/img/offlineStream.svg", data => {
+			this.offlineStreamImg = data
+			this.stream.src = data
+		})
+	}
+	setEnabled(enabled) {
+		this.stimControl.setEnabled(enabled)
+		
+		if (! enabled) {
+			this.#cancelImgReloaders(this.eyeReloaders)
+			this.#cancelImgReloaders([this.streamReloader])
+		}
 	}
 	setPreviewEnabled(enabled) {
 		for (let hideEyeController of this.hideEyeControllers) {
@@ -34,16 +49,41 @@ export class StimScreen {
 		}
 	}
 	
+	#cancelImgReloaders(reloaders) {
+		for (let reloader of reloaders) {
+			if (reloader !== null)
+				reloader.cancel()
+		}
+	}
+	configEyesUrl(url) {
+		this.#cancelImgReloaders(this.eyeReloaders)
+		
+		let i = 1
+		for (let eye of this.eyes) {
+			this.eyeReloaders[i - 1] = new ImageReloader(eye, {
+				url: url.replace("{}", i++),
+				fallbackUrl: this.offlineCamImg,
+				times: 10,
+				delay: 4000
+			})
+		}
+	}
 	configStream(url) {
-		configImageError(this.stream, img => img.src = "/img/offlineStream.svg")
-		this.stream.src = url
+		this.#cancelImgReloaders([this.streamReloader])
+		
+		this.streamReloader = new ImageReloader(this.stream, {
+			url: url,
+			fallbackUrl: this.offlineStreamImg,
+			times: 1,
+			delay: 3000
+		})
 	}
 	
 	getEyeSize() {
-		return this.eyeRef.clientWidth
+		return this.eyes[0].clientWidth
 	}
 	getMinWidth() {
-		return Math.max(this.stream.clientWidth, this.eyeRef.clientWidth * 2)
+		return Math.max(this.stream.clientWidth, this.eyes[0].clientWidth * 2)
 	}
 }
 

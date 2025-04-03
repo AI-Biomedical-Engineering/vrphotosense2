@@ -18,6 +18,31 @@ export function setCSSVar(varName, value) {
 	root.style.setProperty(varName, value)
 }
 
+export class ImageReloader {
+	constructor(img, reloadConfig) {
+		this.img = img
+		this.config = reloadConfig
+		this.retryCount = 0
+		this.timeoutID = null
+		
+		this.#retryLoad()
+	}
+	#loadError() {
+		this.img.src = this.config.fallbackUrl
+	
+		if (++this.retryCount <= this.config.times)
+			this.timeoutID = setTimeout(this.#retryLoad.bind(this), this.config.delay)
+	}
+	#retryLoad() {
+		this.img.src = this.config.url
+		configImageError(this.img, this.#loadError.bind(this))
+	}
+	cancel() {
+		this.retryCount = this.config.times
+		clearTimeout(this.timeoutID)
+	}
+}
+
 export class AnimsEndController {
 	constructor(elem, animType, callback) {
 		this.elem = elem
