@@ -213,11 +213,17 @@ function checkFSApi() {
 			location.replace(`https://${location.hostname}:${parseInt(location.port) + 1}${location.pathname}`)
 		else
 			location.replace("/pages/fsapi_error.html")
+		
+		return false
 	}
+	else
+		return true
 }
 
 window.onload = () => {
-	checkFSApi()
+	if (! checkFSApi())
+		return
+	
 	let wsProtocol = location.protocol === "http:" ? "ws" : "wss"
 	let wsURL = `${wsProtocol}://${location.host}`
 	
