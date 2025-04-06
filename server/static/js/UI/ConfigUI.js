@@ -19,10 +19,12 @@ export class ConstVar {
 }
 
 export class LabeledVar {
-	constructor(container, updateCallback, name, varConfig) {
+	constructor(container, updateCallback, name, horizontal, varConfig) {
 		this.divLabel = document.createElement("div")
 		this.divValue = document.createElement("div")
 		this.divLabel.classList.add("configElem")
+		if (horizontal)
+			this.divLabel.classList.add("horizontal")
 		
 		this.label = document.createElement("span")
 		this.label.innerText = name

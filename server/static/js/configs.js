@@ -7,15 +7,15 @@ export default [
 		name: "Flashing",
 		icon: "flash.svg",
 		uiVars: [{
-			freqs: [UI.LabeledVar, "Frequencies", [UI.ArrayVar, [UI.FloatVar, 1, {min: 0}], [1], false]]
+			freqs: [UI.LabeledVar, "Frequencies (Hz)", false, [UI.ArrayVar, [UI.FloatVar, 1, {min: 0}], [1], false]]
 		}, {
-			stimTime: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]],
-			restTime: [UI.LabeledVar, "Rest time", [UI.FloatVar]]
+			stimTime: [UI.LabeledVar, "Stimulation time (s)", true, [UI.FloatVar]],
+			restTime: [UI.LabeledVar, "Rest time (s)", true, [UI.FloatVar]]
 		}, {
-			color2Time: [UI.LabeledVar, "Color 2 time", [UI.FloatVar]]
+			color2Time: [UI.LabeledVar, "Flash color time (s)", true, [UI.FloatVar]]
 		}, {
-			color1: [UI.LabeledVar, "color1", [UI.ColorVar]],
-			color2: [UI.LabeledVar, "color2", [UI.ColorVar]]
+			color1: [UI.LabeledVar, "Background color", true, [UI.ColorVar]],
+			color2: [UI.LabeledVar, "Flash color", true, [UI.ColorVar]]
 		}],
 		vars: new C.Config(0, {
 			freqs: new C.ArrayVar(C.floatVar),
@@ -29,18 +29,18 @@ export default [
 		name: "Static Pattern",
 		icon: "image.svg",
 		uiVars: [{
-			duration: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]]
+			duration: [UI.LabeledVar, "Stimulation time (s)", true, [UI.FloatVar]]
 		}, {
-			url: [UI.LabeledVar, "File", [FILE_UI.MediaFileVar, "img"]]
+			url: [UI.LabeledVar, "File", false, [FILE_UI.MediaFileVar, "img"]]
 		}, {
-			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVarButtons, ["Plane", "Cylinder"], 0]],
-			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]]
+			projectShape: [UI.LabeledVar, "Projection shape", false, [UI.EnumVarButtons, ["Plane", "Cylinder"], 0]],
+			cylinderRad: [UI.LabeledVar, "Cylinder radius", true, [UI.FloatVar, 1]]
 		}, {
-			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVarButtons, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]]
+			wrapMode: [UI.LabeledVar, "Texture wrap mode", false, [UI.EnumVarButtons, ["Repeat", "Clamp", "Mirror"], 1]]
 		}, {
-			offsetPos: [UI.LabeledVar, "Offset pos", [UI.Vector2Var]],
-			scale: [UI.LabeledVar, "Scale", [UI.Vector2Var, [1, 1]]],
-			rot: [UI.LabeledVar, "Rotation", [UI.FloatVar]],
+			offsetPos: [UI.LabeledVar, "Offset pos", true, [UI.Vector2Var]],
+			scale: [UI.LabeledVar, "Scale", true, [UI.Vector2Var, [1, 1]]],
+			rot: [UI.LabeledVar, "Rotation (º)", true, [UI.FloatVar]],
 			freq: [UI.ConstVar, 0],
 			waveShape: [UI.ConstVar, 0],
 			oscilPos: [UI.ConstVar, [0, 0]],
@@ -68,26 +68,26 @@ export default [
 		name: "Dynamic Pattern",
 		icon: "imageMov.svg",
 		uiVars: [{
-			duration: [UI.LabeledVar, "Stimulation time", [UI.FloatVar]]
+			duration: [UI.LabeledVar, "Stimulation time (s)", true, [UI.FloatVar]]
 		}, {
-			url: [UI.LabeledVar, "File", [FILE_UI.MediaFileVar, "img"]]
+			url: [UI.LabeledVar, "File", false, [FILE_UI.MediaFileVar, "img"]]
 		}, {
-			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVarButtons, ["Plane", "Cylinder"], 0]],
-			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]]
+			projectShape: [UI.LabeledVar, "Projection shape", false, [UI.EnumVarButtons, ["Plane", "Cylinder"], 0]],
+			cylinderRad: [UI.LabeledVar, "Cylinder radius", true, [UI.FloatVar, 1]]
 		}, {
-			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVarButtons, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]]
+			wrapMode: [UI.LabeledVar, "Texture wrap mode", false, [UI.EnumVarButtons, ["Repeat", "Clamp", "Mirror"], 1]]
 		}, {
-			offsetPos: [UI.LabeledVar, "Offset pos", [UI.Vector2Var]],
-			scale: [UI.LabeledVar, "Scale", [UI.Vector2Var, [1, 1]]],
-			rot: [UI.LabeledVar, "Rotation", [UI.FloatVar]]
+			offsetPos: [UI.LabeledVar, "Offset pos", true, [UI.Vector2Var]],
+			scale: [UI.LabeledVar, "Scale", true, [UI.Vector2Var, [1, 1]]],
+			rot: [UI.LabeledVar, "Rotation (º)", true, [UI.FloatVar]]
 		}, {
-			freq: [UI.LabeledVar, "Freqency", [UI.FloatVar]]
+			freq: [UI.LabeledVar, "Freqency (Hz)", true, [UI.FloatVar]]
 		}, {
-			waveShape: [UI.LabeledVar, "Wave shape", [UI.EnumVarButtons, ["Square", "Linear", "Sin", "Sin inv"]]]
+			waveShape: [UI.LabeledVar, "Wave shape", false, [UI.EnumVarButtons, ["Square", "Linear", "SIN", "SIN inv"]]]
 		}, {
-			oscilPos: [UI.LabeledVar, "Oscilation pos", [UI.Vector2Var]],
-			oscilScale: [UI.LabeledVar, "Oscilation scale", [UI.Vector2Var, [1, 1]]],
-			oscilRot: [UI.LabeledVar, "Oscilation rot", [UI.FloatVar]]
+			oscilPos: [UI.LabeledVar, "Oscilation pos", true, [UI.Vector2Var]],
+			oscilScale: [UI.LabeledVar, "Oscilation scale", true, [UI.Vector2Var, [1, 1]]],
+			oscilRot: [UI.LabeledVar, "Oscilation rot (º)", true, [UI.FloatVar]]
 		}],
 		vars: new C.Config(1, {
 			duration: C.floatVar,
@@ -110,19 +110,19 @@ export default [
 		name: "Video",
 		icon: "video.svg",
 		uiVars: [{
-			playbackSpeed: [UI.LabeledVar, "Speed", [UI.FloatVar, 1]],
-			audioEnabled: [UI.LabeledVar, "Enable audio", [UI.BoolVar, false]]
+			playbackSpeed: [UI.LabeledVar, "Speed", true, [UI.FloatVar, 1]],
+			audioEnabled: [UI.LabeledVar, "Enable audio", true, [UI.BoolVar, false]]
 		}, {
-			url: [UI.LabeledVar, "File", [FILE_UI.MediaFileVar, "video"]]
+			url: [UI.LabeledVar, "File", false, [FILE_UI.MediaFileVar, "video"]]
 		}, {
-			projectShape: [UI.LabeledVar, "Projection shape", [UI.EnumVarButtons, ["Plane", "Cylinder"], 0]],
-			cylinderRad: [UI.LabeledVar, "Cylinder radius", [UI.FloatVar, 1]]
+			projectShape: [UI.LabeledVar, "Projection shape", false, [UI.EnumVarButtons, ["Plane", "Cylinder"], 0]],
+			cylinderRad: [UI.LabeledVar, "Cylinder radius", true, [UI.FloatVar, 1]]
 		}, {
-			wrapMode: [UI.LabeledVar, "Texture wrap mode", [UI.EnumVarButtons, ["Repeat", "Clamp", "Mirror", "Mirror once"], 1]]
+			wrapMode: [UI.LabeledVar, "Texture wrap mode", false, [UI.EnumVarButtons, ["Repeat", "Clamp", "Mirror"], 1]]
 		}, {
-			offsetPos: [UI.LabeledVar, "Offset pos", [UI.Vector2Var]],
-			scale: [UI.LabeledVar, "Scale", [UI.Vector2Var, [1, 1]]],
-			rot: [UI.LabeledVar, "Rotation", [UI.FloatVar]],
+			offsetPos: [UI.LabeledVar, "Offset pos", true, [UI.Vector2Var]],
+			scale: [UI.LabeledVar, "Scale", true, [UI.Vector2Var, [1, 1]]],
+			rot: [UI.LabeledVar, "Rotation (º)", true, [UI.FloatVar]],
 			freq: [UI.ConstVar, 0],
 			waveShape: [UI.ConstVar, 0],
 			oscilPos: [UI.ConstVar, [0, 0]],
