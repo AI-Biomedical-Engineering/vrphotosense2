@@ -14,7 +14,7 @@
 	
 	padding: 0.7em;
 	border-radius: 6px;
-	filter: drop-shadow(0px 0px 25px #33333325) drop-shadow(0px 0px 4px #00000022);
+	filter: drop-shadow(0px 0px 15px #33333325) drop-shadow(0px 0px 3px #00000099);
 	
 	transform: translateX(var(--xOffset)) translateY(calc((-8px + var(--yOffset)) * var(--yOffsetSign)));
 	transition: opacity 0.1s ease-out, transform 0.1s ease-out;

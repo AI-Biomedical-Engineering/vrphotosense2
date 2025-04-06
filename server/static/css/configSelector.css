@@ -26,9 +26,7 @@
 	font-size: 1em;
 	padding: 0.6em;
 	
-	border-style: solid;
-	border-color: var(--configSelectBorderColor);
-	border-width: 1px;
+	border: 1px solid var(--configSelectBorderColor);
 	border-radius: var(--tabBorderRad) var(--tabBorderRad) 0px 0px;
 	
 	transform: translateX(calc(-1px * var(--nthChild)));
@@ -62,9 +60,7 @@
 	transform: translateX(-50%) translateY(100%);
 	
 	padding: 0.07em 0.3em;
-	border-style: solid;
-	border-color: black;
-	border-width: 1px;
+	border: 1px solid black;
 	
 	opacity: 0;
 	transition: opacity 0.15s ease;
@@ -93,9 +89,7 @@
 	
 	background: var(--tabColor);
 	padding-top: 0.5em;
-	border-style: solid;
-	border-color: var(--configSelectBorderColor);
-	border-width: 1px;
+	border: 1px solid var(--configSelectBorderColor);
 	border-radius: 0px var(--tabBorderRad) var(--tabBorderRad) 0px;
 	overflow: hidden;
 }
@@ -108,8 +102,7 @@
 	align-items: center;
 	
 	padding: 0px;
-	border-style: solid;
-	border-color: var(--configSelectBorderColor);
+	border: solid var(--configSelectBorderColor);
 	border-width: 0px 0px 1px;
 	border-radius: 0px;
 }
@@ -184,8 +177,7 @@
 	box-shadow: 0px 0px 5px -3px black inset, 0px 8px 10px -10px black inset;
 	
 	padding: 0px 0px 0.18em;
-	border-style: solid;
-	border-color: var(--configSelectBorderColor);
+	border: solid var(--configSelectBorderColor);
 	border-width: 0px 1px 1px;
 	border-radius: 0px 0px var(--tabBorderRad) var(--tabBorderRad);
 	margin-bottom: 0.29em;

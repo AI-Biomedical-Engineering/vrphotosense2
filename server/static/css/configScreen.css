@@ -64,8 +64,7 @@
 	padding: 0.7em 0em;
 }
 #config > div:not(:last-child)::after {
-	border-style: solid;
-	border-color: #aaa;
+	border: solid #aaa;
 	border-width: 1px 0px 0px;
 	
 	content: "";
@@ -76,12 +75,21 @@
 	
 	width: 80%;
 }
+.configElem {
+	max-width: 100%;
+}
 .configElem > span {
 	margin-bottom: 0.5em;
 	display: block;
 }
 .configElem:not(:has(.configElemArray)) input[type="number"] {
 	width: 3.5em;
+}
+
+.configElem input[type="color"] {
+	width: 3.4em;
+	height: 3.4em;
+	border-radius: 50%;
 }
 
 input:has(~ .configElemArray) {

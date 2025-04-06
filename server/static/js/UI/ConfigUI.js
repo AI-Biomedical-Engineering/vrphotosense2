@@ -230,8 +230,8 @@ export class ArrayVar {
 			}
 		}
 		
-		this.container.appendChild(this.addBt)
 		this.container.appendChild(this.deleteBt)
+		this.container.appendChild(this.addBt)
 		this.container.appendChild(this.elemsDiv)
 		
 		this.setValue(defaultVal)

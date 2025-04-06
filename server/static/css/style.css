@@ -23,7 +23,7 @@ body {
 
 button {
 	font-size: 0.9em;
-	background: #eee;
+	background: #ebebeb;
 	outline: none;
 	cursor: pointer;
 	
@@ -36,11 +36,11 @@ button {
 }
 @media (hover: hover) {
 	button:hover {
-		background: #d2d2d2;
+		background: #d9d9d9;
 	}
 }
 button:active {
-	background: #eee;
+	background: #c7c7c7;
 }
 button:disabled {
 	pointer-events: none;
@@ -70,26 +70,30 @@ progress::-webkit-progress-value {
 
 
 input {
+	outline: none;
 	border: none;
-	
 	background: #eee;
+	
 	padding: 0.6em 0.9em;
 	border-radius: var(--btBorderRad);
 	margin: 0px;
-	outline: none;
 	
 	transition: background 0.15s ease;
-}
-input:focus {
-	background: #e2e2e2;
 }
 
 input::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
-input[type=number] {
+input[type="number"] {
 	-moz-appearance: textfield;
+}
+input[type="number"], input[type="text"] {
+	border: 1px solid #a1a1a1;
+}
+input:focus[type="number"], input:focus[type="text"] {
+	background: #e2e2e2;
+	border-color: #686868;
 }
 
 input[type="color"] {
@@ -97,9 +101,6 @@ input[type="color"] {
 	
 	box-shadow: 0px 0px 5px grey;
 	padding: 0px;
-	
-	width: 10em;
-	height: 5em;
 }
 input[type="color"]::-webkit-color-swatch-wrapper {
 	padding: 0px;
@@ -167,8 +168,7 @@ img.xflipped {
 	border-radius: 0px var(--btBorderRad) var(--btBorderRad) 0px;
 }
 .buttonsSelector button:not(:last-child) {
-	border-style: solid;
-	border-color: var(--selectorLinesColor);
+	border: solid var(--selectorLinesColor);
 	border-width: 0px 1px 0px 0px;
 }
 

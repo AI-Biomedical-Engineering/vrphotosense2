@@ -49,6 +49,8 @@ body:has(#startScreen.visible) {
 }
 #startScreen > div#askForIdFrame > div {
 	display: flex;
+	align-items: center;
+	column-gap: 0.5em;
 }
 #startScreen > div#connectFrame {
 	--smallWindowFontSize: min(2.8vw, 5.2vh);

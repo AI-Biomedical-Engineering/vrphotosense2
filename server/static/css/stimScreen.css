@@ -33,6 +33,7 @@
 	--size: min(var(--eyeWidth), calc((var(--maxStimWidth) - 6px - 1em) / 2));
 	width: var(--size);
 	height: 0px;
+	border-radius: 0.7em;
 	
 	transition: height 0.25s cubic-bezier(0.46, 0.03, 0.52, 0.96);
 }

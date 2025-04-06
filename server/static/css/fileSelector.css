@@ -18,14 +18,11 @@
 	width: 6.4em;
 	
 	padding: calc(0.5em + 1px);
-	border-radius: 0px;
-	border-width: 1px;
-	border-color: #959595;
 }
 @media (hover: hover) {
 	.fileSelector > button:hover:not(.selected) {
 		padding: 0.5em;
-		border-style: solid;
+		border: 1px solid #959595;
 	}
 }
 .fileSelector > button > div {
