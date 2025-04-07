@@ -3,8 +3,10 @@
 	flex-direction: column;
 	overflow-y: hidden;
 	
+	padding: var(--yMargin) var(--xMargin) var(--yMargin) 0px;
+	
 	opacity: 0%;
-	transform: translateY(calc(-50vh + var(--showYPos))) translateX(-35px)
+	transform: translateY(calc(-50vh + var(--showYPos))) translateX(-39px)
 		translateX(-50%) scale(0.05) translateX(50%);
 	transition: transform 0.25s ease-out, opacity 0.25s ease-out;
 }
@@ -13,6 +15,7 @@
 	transform: translateX(-50%) scale(1) translateX(50%);
 }
 .vertical #configScreen {
+	padding: 0px var(--xMargin) var(--yMargin) var(--xMargin);
 	transform: translateY(-80px) translateY(-50%) scale(0.2) translateY(50%);
 }
 .vertical #configScreen.visible {
@@ -43,7 +46,7 @@
 }
 .vertical #configControls {
 	position: absolute;
-	right: 0px;
+	right: var(--xMargin);
 	padding-top: 0px;
 }
 

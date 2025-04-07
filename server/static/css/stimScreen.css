@@ -1,7 +1,7 @@
 :root {
 	--eyeWidth: 150px;
 	--streamWidth: 400px;
-	--maxStimWidth: calc(100vw - var(--xMargin) * 2);
+	--maxStimWidth: calc(100vw - var(--xMargin) * 2 - var(--scrollbarWidth));
 	--stimWidth: var(--maxStimWidth);
 	--progressBarsCount: 1;
 }
@@ -11,9 +11,12 @@
 	flex-direction: column;
 	overflow-y: auto;
 	scrollbar-gutter: stable;
+	
+	padding: var(--yMargin) 4px var(--yMargin) var(--xMargin);
 }
 .vertical #stimScreen {
 	overflow-y: visible;
+	padding: var(--yMargin) var(--xMargin) 0px var(--xMargin);
 }
 
 #topBar {
@@ -30,7 +33,7 @@
 	column-gap: 1em;
 }
 .eye {
-	--size: min(var(--eyeWidth), calc((var(--maxStimWidth) - 6px - 1em) / 2));
+	--size: min(var(--eyeWidth), calc((var(--maxStimWidth) - 1em) / 2));
 	width: var(--size);
 	height: 0px;
 	border-radius: 0.7em;
@@ -41,7 +44,7 @@
 	height: var(--size);
 }
 #stream {
-	width: min(var(--streamWidth), calc(var(--maxStimWidth) - 6px));
+	width: min(var(--streamWidth), var(--maxStimWidth));
 	aspect-ratio: 16 / 9;
 	
 	margin: 0.5em auto 1em;

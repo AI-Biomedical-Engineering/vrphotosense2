@@ -1,5 +1,6 @@
 :root {
 	--xMargin: 1.1em;
+	--yMargin: 0.8em;
 }
 
 * {
@@ -20,8 +21,7 @@ main {
 	column-gap: 1.5em;
 	row-gap: 1.5em;
 	
-	padding: 0.8em var(--xMargin);
-	height: calc(100% - 1.6em);
+	height: 100%;
 }
 
 body.vertical main {

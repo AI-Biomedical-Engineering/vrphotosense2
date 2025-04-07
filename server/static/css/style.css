@@ -6,6 +6,7 @@
 }
 
 :root {
+	--scrollbarWidth: 6px;
 	--selectedColor: #366ede;
 	--selectorLinesColor: #d6d6d6;
 	--btBorderRad: 0.4em;
@@ -208,10 +209,15 @@ img.xflipped {
 
 
 ::-webkit-scrollbar {
-	background: #aaa;
-	width: 6px;
-	height: 6px;
+	width: var(--scrollbarWidth);
+	height: var(--scrollbarWidth);
+}
+::-webkit-scrollbar-track {
+	background: #bbb;
+	border-radius: calc(var(--scrollbarWidth) / 2);
+	margin-block: 7px;
 }
 ::-webkit-scrollbar-thumb {
-	background: #666;
+	background: #888;
+	border-radius: calc(var(--scrollbarWidth) / 2);
 }
