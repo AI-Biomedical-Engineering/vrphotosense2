@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ConfigPlayer : BaseConfigPlayer {
@@ -20,6 +21,17 @@ public class ConfigPlayer : BaseConfigPlayer {
 		if (Application.platform == RuntimePlatform.Android) //When running on headset
 			Unity.XR.Oculus.Performance.TrySetDisplayRefreshRate(120);
 	}
+	
+	#if ! UNITY_EDITOR && UNITY_ANDROID
+		private static FileCache fileCache = new FileCache(5);
+		
+		public override void MapUrl(String url, Action<String> callback) {
+			if (url.StartsWith("http://"))
+				ConfigPlayer.fileCache.Get(url, callback);
+			else
+				callback(url);
+		}
+	#endif
 	
 	protected override void SetEnabledDebug(bool enabled) {
 		this.fpsCounter.SetActive(enabled);

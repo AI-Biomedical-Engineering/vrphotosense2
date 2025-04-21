@@ -19,14 +19,16 @@ public class VideoStim : BaseMediaStim<VideoConfig> {
 	}
 	
 	protected override void LoadMedia(String url) {
-		bool resume = this.videoPlayer.isPlaying;
-		this.videoPlayer.sendFrameReadyEvents = true;
-		this.videoPlayer.url = url;
-		
-		if (resume)
-			this.videoPlayer.Play();
-		else
-			this.videoPlayer.Prepare();
+		BaseConfigPlayer.config.MapUrl(url, mappedUrl => {
+			bool resume = this.videoPlayer.isPlaying;
+			this.videoPlayer.sendFrameReadyEvents = true;
+			this.videoPlayer.url = mappedUrl;
+			
+			if (resume)
+				this.videoPlayer.Play();
+			else
+				this.videoPlayer.Prepare();
+		});
 	}
 	private void FrameReadyEvent(VideoPlayer vp, long frame) {
 		this.videoPlayer.sendFrameReadyEvents = false;

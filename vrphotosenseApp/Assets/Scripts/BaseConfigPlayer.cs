@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum TrackingMode : byte {
@@ -24,6 +25,10 @@ public abstract class BaseConfigPlayer : MonoBehaviour {
 	}
 	void OnDestroy() {
 		config = null;
+	}
+	
+	public virtual void MapUrl(String url, Action<String> callback) {
+		callback(url);
 	}
 	
 	public void ConfigStream(bool enabled, int framerate) {

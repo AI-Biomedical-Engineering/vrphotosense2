@@ -137,6 +137,7 @@ public static class Utils {
 				if (t.IsFaulted) {
 					errorCallback(url);
 					httpClient.Dispose();
+					msg.Dispose();
 				}
 				else {
 					String contentType = t.Result.Content.Headers.ContentType.ToString();
@@ -145,6 +146,7 @@ public static class Utils {
 					UpdateSyncer.AddSingleUpdate(() => {
 						responseCallback(url, (uint) t.Result.StatusCode, contentType, responseArray);
 						httpClient.Dispose();
+						msg.Dispose();
 					});
 				}
 			});
@@ -182,6 +184,13 @@ public static class Utils {
 			browserFetch.errorCallback(browserFetch.url);
 			((GCHandle) obj).Free();
 		}
+	}
+	
+	public static void SaveFile(String url, String filename, Action callback) {
+		Fetch(url, (url, status, contentType, data) => {
+			File.WriteAllBytes(filename, data);
+			callback();
+		}, url => UnityEngine.Debug.Log("Fetch error"));
 	}
 	
 	public static String LoadConfig() {
