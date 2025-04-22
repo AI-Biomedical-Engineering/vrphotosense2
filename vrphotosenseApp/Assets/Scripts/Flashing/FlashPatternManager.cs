@@ -79,12 +79,15 @@ public class FlashPatternManager : AbstractScene<FlashingConfig> {
 			Finished();
 	}
 	protected override void SkipPrevStim() {
-		
 		if ((this.freqPos > 0 || this.resting) && this.timer.ActiveTime < 0.4f) {
-			if (! this.resting)
+			if ((this.resting ? this.config.stimTime : this.config.restTime) < 0.5f && this.freqPos > 0)
 				this.freqPos--;
-			
-			this.resting = ! this.resting;
+			else {
+				if (! this.resting)
+					this.freqPos--;
+				
+				this.resting = ! this.resting;
+			}
 		}
 		this.timer.Reset();
 		RestartCoroutine();
