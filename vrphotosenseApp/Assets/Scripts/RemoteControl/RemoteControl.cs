@@ -12,6 +12,7 @@ public enum Command : byte {
 	SKIP_PREV,
 	ENABLE_LOOP,
 	DISABLE_LOOP,
+	RESET_VIEW,
 	SET_CONFIG,
 	CONTROL_CONNECTED
 }
@@ -45,6 +46,7 @@ public class RemoteControl {
 			{Command.SKIP_PREV, msg => SceneController.active.SkipPrev()},
 			{Command.ENABLE_LOOP, msg => SceneController.loopEnabled = true},
 			{Command.DISABLE_LOOP, msg => SceneController.loopEnabled = false},
+			{Command.RESET_VIEW, msg => BaseConfigPlayer.config.Recenter()},
 			{Command.SET_CONFIG, this.SetConfig},
 			{Command.CONTROL_CONNECTED, msg => this.ControlConnected()}
 		};

@@ -9,6 +9,7 @@ public class ConfigPlayer : BaseConfigPlayer {
 	#endif
 	
 	public GameObject fpsCounter;
+	private DebugCamera debugCamera;
 	
 	void Start() {
 		QualitySettings.vSyncCount = 0;
@@ -29,7 +30,11 @@ public class ConfigPlayer : BaseConfigPlayer {
 		this.fpsCounter.SetActive(enabled);
 	}
 	protected override void SetEnabledDebugCamera(bool enabled) {
-		GetComponent<DebugCamera>().enabled = enabled && Application.platform != RuntimePlatform.Android;
+		this.debugCamera = GetComponent<DebugCamera>();
+		this.debugCamera.enabled = enabled && Application.platform != RuntimePlatform.Android;
+		
+		if (! this.debugCamera.enabled)
+			this.debugCamera = null;
 	}
 	
 	protected override void SetTrackingModeVR(TrackingMode trackMode) {
@@ -43,6 +48,9 @@ public class ConfigPlayer : BaseConfigPlayer {
 	}
 	
 	public override void Recenter() {
-		Google.XR.Cardboard.Api.Recenter();
+		if (this.debugCamera != null)
+			this.debugCamera.ResetRotation();
+		else
+			Google.XR.Cardboard.Api.Recenter();
 	}
 }

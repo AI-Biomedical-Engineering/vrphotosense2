@@ -17,7 +17,15 @@ public class DebugCamera : MonoBehaviour {
 	public void Update() {
 		this.rotation += this.cameraAction.ReadValue<Vector2>() * new Vector2(this.lookSpeed, -this.lookSpeed);
 		this.rotation.y = Mathf.Clamp(this.rotation.y, -100f, 100f);
-		
+		UpdateRotation();
+	}
+	
+	public void ResetRotation() {
+		this.rotation.x = 0;
+		UpdateRotation();
+	}
+	
+	private void UpdateRotation() {
 		transform.localRotation = Quaternion.Euler(this.rotation.y, this.rotation.x, 0);
 	}
 }

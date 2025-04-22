@@ -1,4 +1,4 @@
-import {AppMessage, AppApi, AutoConnectAppApi} from "./AppApi.js"
+import {AppMessage, AppApi, AutoConnectAppApi, Command} from "./AppApi.js"
 import {initFS, fs} from "./LocalFilesystem.js"
 import {ConfigStorage} from "./ConfigStorage.js"
 import {ConfigsManager} from "./ConfigsManager.js"
@@ -115,6 +115,7 @@ class App {
 		this.firstConnection = true
 		new ConfigScreenLayout(this.stimScreen)
 		document.getElementById("disconnectBt").onclick = this.disconnect.bind(this)
+		document.getElementById("resetView").onclick = e => this.api.sendCommand(Command.RESET_VIEW)
 		
 		let savedAppId = localStorage.getItem("appId")
 		if (autoappid) {
