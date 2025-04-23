@@ -4,7 +4,7 @@ function createUI(container, updateCallback, def) {
 	return new def[0](container, updateCallback, ...def.slice(1))
 }
 export function createConfigUI(container, updateCallback, def) {
-	return createUI(container, updateCallback, [ConfigUI, def.uiVarGroups])
+	return createUI(container, updateCallback, [ConfigUI, def.uiVarGroups, def.uiVarSubs])
 }
 
 export class ConstVar {
@@ -340,17 +340,27 @@ class ConfigGroup {
 }
 
 export class ConfigUI {
-	constructor(container, updateCallback, varGroups) {
+	constructor(container, updateCallback, varGroups, varSubs) {
 		this.vars = {}
 		this.configGroups = []
+		this.varSubs = varSubs
 		
 		for (let varsGroup of varGroups) {
 			let configGroup = new ConfigGroup(container, varsGroup.horizontal, varsGroup.alignEnd)
 			this.configGroups.push(configGroup)
 			
-			for (let varName in varsGroup.vars)
-				this.vars[varName] = createUI(configGroup.groupContainer, updateCallback, varsGroup.vars[varName])
+			for (let varName in varsGroup.vars) {
+				let callback = this.varSubs[varName] === undefined ? updateCallback : () => {
+					this.#callVarSub(varName)
+					updateCallback()
+				}
+				this.vars[varName] = createUI(configGroup.groupContainer, callback, varsGroup.vars[varName])
+			}
 		}
+	}
+	#callVarSub(varName) {
+		let varSub = this.varSubs[varName]
+		varSub.callback(this.vars[varName], this.vars[varSub.varName])
 	}
 	deleteUI() {
 		for (let varName in this.vars)
@@ -370,5 +380,8 @@ export class ConfigUI {
 	setValue(val) {
 		for (let varName in this.vars)
 			this.vars[varName].setValue(val[varName])
+		
+		for (let varSubName in this.varSubs)
+			this.#callVarSub(varSubName)
 	}
 }

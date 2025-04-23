@@ -144,3 +144,7 @@ button:has(~ .configElemArray) {
 .configElemSelectorMultimode {
 	margin-bottom: 1em;
 }
+
+.disabledVar {
+	display: none;
+}

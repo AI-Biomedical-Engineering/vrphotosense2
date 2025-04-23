@@ -2,6 +2,16 @@ import * as C from "./configParser.js"
 import * as UI from "./UI/ConfigUI.js"
 import * as FILE_UI from "./UI/FileConfigUI.js"
 
+const projectShapeSub = {
+	varName: "cylinderRad",
+	callback: (updatedVar, subVar) => {
+		if (updatedVar.getValue() !== 1)
+			subVar.divLabel.classList.add("disabledVar")
+		else
+			subVar.divLabel.classList.remove("disabledVar")
+	}
+}
+
 export default [
 	{
 		name: "Flashing",
@@ -20,6 +30,7 @@ export default [
 			color1: [UI.LabeledVar, "Background color", true, [UI.ColorVar]],
 			color2: [UI.LabeledVar, "Flash color", true, [UI.ColorVar]]
 		}}],
+		uiVarSubs: {},
 		vars: new C.Config(0, {
 			freqs: new C.ArrayVar(C.floatVar),
 			stimTime: C.floatVar,
@@ -54,6 +65,7 @@ export default [
 			oscilScale: [UI.ConstVar, [1, 1]],
 			oscilRot: [UI.ConstVar, 0]
 		}}],
+		uiVarSubs: {projectShape: projectShapeSub},
 		vars: new C.Config(1, {
 			duration: C.floatVar,
 			
@@ -103,6 +115,7 @@ export default [
 			oscilScale: [UI.LabeledVar, "Oscilation scale", false, [UI.Vector2Var, [UI.LabeledVar, "W", true, [UI.FloatVar, 1]], [UI.LabeledVar, "H", true, [UI.FloatVar, 1]]]],
 			oscilRot: [UI.LabeledVar, "Oscilation rot (º)", true, [UI.FloatVar]]
 		}}],
+		uiVarSubs: {projectShape: projectShapeSub},
 		vars: new C.Config(1, {
 			duration: C.floatVar,
 			
@@ -147,6 +160,7 @@ export default [
 			oscilScale: [UI.ConstVar, [1, 1]],
 			oscilRot: [UI.ConstVar, 0]
 		}}],
+		uiVarSubs: {projectShape: projectShapeSub},
 		vars: new C.Config(2, {
 			playbackSpeed: C.floatVar,
 			audioEnabled: C.boolVar,
