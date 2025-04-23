@@ -58,11 +58,11 @@
 	overflow-y: auto;
 }
 
-#config > div {
+.configGroup {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
 	flex-wrap: wrap;
-	align-items: flex-end;
+	align-items: flex-start;
 	
 	row-gap: 0.8em;
 	column-gap: 2.5em;
@@ -70,7 +70,13 @@
 	position: relative;
 	padding: 1.1em 0px 0.6em;
 }
-#config > div:not(:last-child)::after {
+.configGroup.horizontal {
+	flex-direction: row;
+}
+.configGroup.alignEnd {
+	align-items: flex-end;
+}
+.configGroup:not(:last-child)::after {
 	border: solid #aaa;
 	border-width: 1px 0px 0px;
 	
@@ -85,6 +91,7 @@
 .configElem {
 	display: flex;
 	flex-direction: column;
+	align-items: flex-start;
 	row-gap: 0.5em;
 	column-gap: 0.5em;
 	
@@ -125,6 +132,13 @@ button:has(~ .configElemArray) {
 .configElemArray input {
 	width: 1.15em;
 	padding: 0.35em 0.5em;
+}
+
+.configElemVector {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	row-gap: 0.4em;
 }
 
 .configElemSelectorMultimode {

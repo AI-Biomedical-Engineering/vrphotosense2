@@ -4,7 +4,7 @@ function createUI(container, updateCallback, def) {
 	return new def[0](container, updateCallback, ...def.slice(1))
 }
 export function createConfigUI(container, updateCallback, def) {
-	return createUI(container, updateCallback, [ConfigUI, def.uiVars])
+	return createUI(container, updateCallback, [ConfigUI, def.uiVarGroups])
 }
 
 export class ConstVar {
@@ -102,11 +102,12 @@ export class StringVar extends InputVarUI {
 }
 
 export class Vector2Var {
-	constructor(container, updateCallback, defaultVal = [0, 0]) {
+	constructor(container, updateCallback, varConfigX, varConfigY) {
 		this.div = document.createElement("div")
+		this.div.classList.add("configElemVector")
 		
-		this.xVar = new FloatVar(this.div, updateCallback, defaultVal[0])
-		this.yVar = new FloatVar(this.div, updateCallback, defaultVal[1])
+		this.xVar = createUI(this.div, updateCallback, varConfigX)
+		this.yVar = createUI(this.div, updateCallback, varConfigY)
 		
 		container.appendChild(this.div)
 	}
@@ -322,26 +323,41 @@ export class MultiModeVar {
 	}
 }
 
-export class ConfigUI {
-	constructor(container, updateCallback, config) {
-		this.vars = {}
-		this.groupContainers = []
+class ConfigGroup {
+	constructor(container, horizontal, alignEnd) {
+		this.groupContainer = document.createElement("div")
+		this.groupContainer.classList.add("configGroup")
+		container.appendChild(this.groupContainer)
 		
-		for (let varsGroup of config) {
-			let groupContainer = document.createElement("div")
-			this.groupContainers.push(groupContainer)
-			container.appendChild(groupContainer)
+		if (horizontal)
+			this.groupContainer.classList.add("horizontal")
+		if (alignEnd)
+			this.groupContainer.classList.add("alignEnd")
+	}
+	deleteUI() {
+		this.groupContainer.remove()
+	}
+}
+
+export class ConfigUI {
+	constructor(container, updateCallback, varGroups) {
+		this.vars = {}
+		this.configGroups = []
+		
+		for (let varsGroup of varGroups) {
+			let configGroup = new ConfigGroup(container, varsGroup.horizontal, varsGroup.alignEnd)
+			this.configGroups.push(configGroup)
 			
-			for (let varName in varsGroup)
-				this.vars[varName] = createUI(groupContainer, updateCallback, varsGroup[varName])
+			for (let varName in varsGroup.vars)
+				this.vars[varName] = createUI(configGroup.groupContainer, updateCallback, varsGroup.vars[varName])
 		}
 	}
 	deleteUI() {
 		for (let varName in this.vars)
 			this.vars[varName].deleteUI()
 		
-		for (let groupContainer of this.groupContainers)
-			groupContainer.remove()
+		for (let configGroup of this.configGroups)
+			configGroup.deleteUI()
 	}
 	
 	getValue() {
