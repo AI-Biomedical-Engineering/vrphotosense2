@@ -19,7 +19,7 @@ export class ConstVar {
 }
 
 export class LabeledVar {
-	constructor(container, updateCallback, name, horizontal, varConfig) {
+	constructor(container, updateCallback, name, tooltip, horizontal, varConfig) {
 		this.divLabel = document.createElement("div")
 		this.divValue = document.createElement("div")
 		this.divLabel.classList.add("configElem")
@@ -28,6 +28,21 @@ export class LabeledVar {
 		
 		this.label = document.createElement("span")
 		this.label.innerText = name
+		
+		if (tooltip !== null) {
+			this.tooltip = document.createElement("span")
+			this.tooltip.innerHTML = tooltip.text
+			this.tooltip.classList.add("tooltip")
+			
+			if (tooltip.bottom)
+				this.tooltip.classList.add("bottom")
+			if (tooltip.left)
+				this.tooltip.classList.add("alignLeft")
+			
+			this.divLabel.appendChild(this.tooltip)
+		}
+		else
+			this.tooltip = null
 		
 		this.divLabel.appendChild(this.label)
 		this.divLabel.appendChild(this.divValue)
@@ -39,6 +54,10 @@ export class LabeledVar {
 	}
 	deleteUI() {
 		this.varUI.deleteUI()
+		
+		if (this.tooltip !== null)
+			this.tooltip.remove()
+		
 		this.label.remove()
 		this.divValue.remove()
 		this.divLabel.remove()
@@ -54,6 +73,7 @@ class InputVarUI {
 		this.setValue(defaultVal)
 		this.input.onchange = updateCallback
 		
+		this.input.setAttribute("autocomplete", "off")
 		for (let paramName in inputParams)
 			this.input.setAttribute(paramName, inputParams[paramName])
 		
@@ -91,7 +111,7 @@ export class IntVar extends InputVarUI {
 
 export class FloatVar extends InputVarUI {
 	constructor(container, updateCallback, defaultVal = 0, inputParams = {}) {
-		super(container, updateCallback, defaultVal, Object.assign({}, {type: "number"}, inputParams), parseFloat)
+		super(container, updateCallback, defaultVal, Object.assign({}, {type: "number", title: ""}, inputParams), parseFloat)
 	}
 }
 

@@ -27,6 +27,9 @@ export class ConfigSelector {
 				
 				let tooltipSpan = document.createElement("span")
 				tooltipSpan.innerText = configs[id].name
+				tooltipSpan.classList.add("tooltip", "bottom")
+				if (nthChild === 0)
+					tooltipSpan.classList.add("alignLeft")
 				
 				bt.style.setProperty("--nthChild", nthChild++)
 				bt.appendChild(img)
