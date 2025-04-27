@@ -64,7 +64,9 @@
 	padding-top: 0.5em;
 	border: 1px solid var(--configSelectBorderColor);
 	border-radius: 0px var(--tabBorderRad) var(--tabBorderRad) 0px;
+	
 	overflow: hidden;
+	transition: var(--btColorTrans);
 }
 #configNames > button {
 	font-size: 0.82em;

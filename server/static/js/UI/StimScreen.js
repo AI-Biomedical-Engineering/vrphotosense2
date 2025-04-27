@@ -8,6 +8,7 @@ export class StimScreen {
 		
 		this.setProgress = this.progress.setProgress.bind(this.progress)
 		this.setConfig = this.progress.setConfig.bind(this.progress)
+		this.setConfigSelector = this.stimControl.setConfigSelector.bind(this.stimControl)
 		this.paused = this.stimControl.paused.bind(this.stimControl)
 		this.stop = this.stimControl.stop.bind(this.stimControl)
 		this.setLoopMode = this.stimControl.setLoopMode.bind(this.stimControl)
@@ -90,6 +91,7 @@ export class StimScreen {
 class StimControl {
 	constructor(api) {
 		this.api = api
+		this.configSelector = null
 		this.enabled = false
 		this.playing = false
 		this.loopEnabled = false
@@ -111,6 +113,9 @@ class StimControl {
 	}
 	setEnabled(enabled) {
 		this.enabled = enabled
+	}
+	setConfigSelector(configSelector) {
+		this.configSelector = configSelector
 	}
 	paused() {
 		this.playing = false
@@ -147,6 +152,9 @@ class StimControl {
 	#updatePlayPauseBt() {
 		this.playImg.style.display = this.playing ? "none" : ""
 		this.pauseImg.style.display = this.playing ? "" : "none"
+		
+		if (this.configSelector !== null)
+			this.configSelector.setEnabled(! this.playing)
 	}
 	
 	#keyPress(e) {

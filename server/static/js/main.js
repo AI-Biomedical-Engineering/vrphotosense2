@@ -31,6 +31,8 @@ class AppController {
 				this.#reloadConfigNames()
 			}
 		}, imgCache)
+		this.stimScreen.setConfigSelector(this.configSelector)
+		
 		this.#reloadConfigNames()
 		this.configScreen = new ConfigScreen(this.#sendConfig.bind(this),
 			this.#saveConfig.bind(this), this.#closeEditConfig.bind(this),
@@ -74,13 +76,16 @@ class AppController {
 		this.configSelector.setEnabled(true)
 		this.configScreen.setEnabled(false)
 		
+		this.stimScreen.stop()
 		this.#sendSelectedConfig()
+		this.stimScreen.setConfigSelector(this.configSelector)
 	}
 	#editConfig(name) {
 		this.stimScreen.setPreviewEnabled(true)
 		this.configSelector.setEnabled(false)
 		this.configScreen.setEnabled(true)
 		
+		this.stimScreen.setConfigSelector(null)
 		this.configSelector.setSelectedConfig(name)
 		this.#selectedConfig(name)
 		this.configScreen.setConfig(this.selectedConfig)
