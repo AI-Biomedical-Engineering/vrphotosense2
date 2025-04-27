@@ -226,14 +226,10 @@ export class ArrayVar {
 		this.elemsDiv = document.createElement("div")
 		this.elemsDiv.classList.add("configElemArray")
 		
-		this.elemsCountVar = new IntVar(container, () => {
-			let newLength = this.elemsCountVar.getValue()
-			
-			if (newLength > 0 || (allowEmpty && newLength === 0)) {
-				this.#setArrayLength(newLength)
-				updateCallback()
-			}
-		}, 0, {min: allowEmpty ? 0 : 1})
+		this.elemsCountVar = createUI(container, () => {
+			this.#setArrayLength(this.elemsCountVar.getValue())
+			updateCallback()
+		}, [ValidatedRangeVar, [allowEmpty ? 0 : 1, null], [IntVar]])
 		
 		this.addBt = document.createElement("button")
 		this.addBt.innerText = "+"
@@ -340,6 +336,44 @@ export class MultiModeVar {
 	}
 	setValue(val) {
 		this.activeVar.setValue(val)
+	}
+}
+
+export class ValidatedVar {
+	constructor(container, updateCallback, validationFunc, varConfig) {
+		this.validatedVar = createUI(container, this.#updateCallback.bind(this), varConfig)
+		this.updateCallback = updateCallback
+		this.validationFunc = validationFunc
+	}
+	#updateCallback() {
+		this.validationFunc(this.validatedVar)
+		this.updateCallback()
+	}
+	getValue() {
+		return this.validatedVar.getValue()
+	}
+	setValue(val) {
+		this.validatedVar.setValue(val)
+	}
+	deleteUI() {
+		this.validatedVar.deleteUI()
+	}
+}
+
+export class ValidatedRangeVar extends ValidatedVar {
+	constructor(container, updateCallback, range, varConfig) {
+		if (range[0] !== null && range[1] !== null && range[0] > range[1])
+			throw new Error("Min range value greater than max range value")
+		
+		super(container, updateCallback, (validatedVar) => {
+			let newVal = validatedVar.getValue()
+			
+			if (range[0] !== null && newVal < range[0])
+				validatedVar.setValue(range[0])
+			
+			else if (range[1] !== null && newVal > range[1])
+				validatedVar.setValue(range[1])
+		}, varConfig)
 	}
 }
 
