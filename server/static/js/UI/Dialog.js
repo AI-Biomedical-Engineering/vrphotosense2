@@ -25,7 +25,7 @@ class Dialog {
 		document.body.appendChild(this.cancelArea)
 		
 		this.hideController = new HideElemController(this.dialogContainer,
-			this.#dialogHidden.bind(this))
+			{hidden: this.#dialogHidden.bind(this)})
 		this.hideController.show()
 		
 		this.updatePosCallback = this.#updatePos.bind(this)

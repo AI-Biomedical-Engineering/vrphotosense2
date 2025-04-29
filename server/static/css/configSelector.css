@@ -9,7 +9,19 @@
 	display: flex;
 	flex-direction: column;
 	
-	margin-top: 1em;
+	margin: var(--yMargin) 0px;
+	opacity: 0%;
+	
+	transform: translateX(-200px);
+	transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+#configSelector.visible {
+	opacity: 100%;
+	transform: translateX(0px);
+}
+.vertical #configSelector.noSize {
+	position: fixed;
+	width: calc(100% - var(--xMargin) * 2 - var(--scrollbarWidth));
 }
 #configSelector:has(:disabled) {
 	--tabColor: #979797;

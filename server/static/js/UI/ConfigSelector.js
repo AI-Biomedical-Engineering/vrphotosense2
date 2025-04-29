@@ -1,4 +1,4 @@
-import {ButtonsSelector} from "./UI.js"
+import {HideElemController, ButtonsSelector} from "./UI.js"
 import {ConfirmDialog} from "./Dialog.js"
 import configs from "../configs.js"
 
@@ -6,6 +6,7 @@ export class ConfigSelector {
 	constructor(callbacks, imgCache) {
 		this.callbacks = callbacks
 		this.imgCache = imgCache
+		this.configSelectorContainer = document.getElementById("configSelector")
 		this.configsContainer = document.getElementById("configNames")
 		this.configsDef = []
 		this.configSelector = null
@@ -36,12 +37,23 @@ export class ConfigSelector {
 				bt.appendChild(tooltipSpan)
 			})
 		this.configGroupsSelector.select("0")
+		
+		this.hideController = new HideElemController(this.configSelectorContainer,
+			{shown: () => this.configSelectorContainer.classList.remove("noSize")})
 	}
 	getConfigsCenterY() {
 		let bounding = this.configsContainer.getBoundingClientRect()
 		return bounding.y + bounding.height / 2
 	}
 	
+	setVisible(visible) {
+		if (visible)
+			this.hideController.show()
+		else {
+			this.hideController.hide()
+			this.configSelectorContainer.classList.add("noSize")
+		}
+	}
 	setEnabled(enabled) {
 		this.configGroupsSelector.setEnabled(enabled)
 		this.configSelector.setEnabled(enabled)

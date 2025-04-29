@@ -74,9 +74,10 @@ export class AnimsEndController {
 }
 
 export class HideElemController {
-	constructor(elem, hiddenCallback = () => {}) {
+	constructor(elem, callbacks = {}) {
 		this.elem = elem
-		this.hiddenCallback = hiddenCallback
+		this.shownCallback = callbacks.shown !== undefined ? callbacks.shown : () => {}
+		this.hiddenCallback = callbacks.hidden !== undefined ? callbacks.hidden : () => {}
 		this.hiding = false
 		this.animsEndController = new AnimsEndController(this.elem, "transition", this.#animEnd.bind(this))
 		
@@ -88,6 +89,8 @@ export class HideElemController {
 			this.elem.style.display = "none"
 			this.hiddenCallback()
 		}
+		else
+			this.shownCallback()
 	}
 	
 	hide() {
@@ -126,7 +129,7 @@ export class ShadowScroll {
 		else
 			this.shadowDiv.classList.remove("scrollTop")
 		
-		if (this.elem.scrollTop + this.elem.clientHeight === this.elem.scrollHeight)
+		if (this.elem.scrollTop + this.elem.clientHeight >= this.elem.scrollHeight - 1)
 			this.shadowDiv.classList.add("scrollBottom")
 		else
 			this.shadowDiv.classList.remove("scrollBottom")

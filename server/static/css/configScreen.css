@@ -1,9 +1,8 @@
 #configScreen {
+	background: var(--appBgColor);
 	display: flex;
 	flex-direction: column;
 	overflow-y: hidden;
-	
-	padding: var(--yMargin) var(--xMargin) var(--yMargin) 0px;
 	
 	opacity: 0%;
 	transform: translateY(calc(-50vh + var(--showYPos))) translateX(-39px)
@@ -15,11 +14,11 @@
 	transform: translateX(-50%) scale(1) translateX(50%);
 }
 .vertical #configScreen {
-	padding: 0px var(--xMargin) var(--yMargin) var(--xMargin);
-	transform: translateY(-80px) translateY(-50%) scale(0.2) translateY(50%);
+	transform: translateX(200px);
+	transition: transform 0.2s ease-out, opacity 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .vertical #configScreen.visible {
-	transform: translateY(-50%) scale(1) translateY(50%);
+	transform: translateX(0px);
 }
 
 #configNameEdit {
@@ -43,11 +42,6 @@
 	column-gap: 0.3em;
 	
 	padding-top: 0.5em;
-}
-.vertical #configControls {
-	position: absolute;
-	right: var(--xMargin);
-	padding-top: 0px;
 }
 
 
@@ -92,7 +86,7 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
+	align-items: stretch;
 	row-gap: 0.5em;
 	column-gap: 0.5em;
 	
@@ -101,6 +95,9 @@
 .configElem.horizontal {
 	flex-direction: row;
 	align-items: center;
+}
+.configElem:has(.configElemVector) {
+	align-items: flex-start;
 }
 .configElem:not(:has(.configElemArray)) input[type="number"] {
 	width: 3.5em;

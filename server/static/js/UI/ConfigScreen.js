@@ -44,10 +44,6 @@ export class ConfigScreen {
 		if (enabled)
 			this.hideController.show()
 		
-		else if (window.scrollY > 0) {
-			setTimeout(e => this.hideController.hide(), window.scrollY * 0.25)
-			window.scrollTo({top: 0, behavior: "smooth"})
-		}
 		else {
 			this.configContainer.scrollTo({top: 0, behavior: "instant"})
 			this.hideController.hide()

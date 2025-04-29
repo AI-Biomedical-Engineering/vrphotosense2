@@ -7,7 +7,7 @@ export class StartScreen {
 		idCallback, abortConnectCallback, hiddenCallback) {
 		
 		this.startScreen = document.getElementById("startScreen")
-		this.hideController = new HideElemController(this.startScreen, hiddenCallback)
+		this.hideController = new HideElemController(this.startScreen, {hidden: hiddenCallback})
 		this.reconnectMode = false
 		
 		this.activeFrame = null

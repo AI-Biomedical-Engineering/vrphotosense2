@@ -73,7 +73,7 @@ class AppController {
 	}
 	#closeEditConfig() {
 		this.stimScreen.setPreviewEnabled(false)
-		this.configSelector.setEnabled(true)
+		this.configSelector.setVisible(true)
 		this.configScreen.setEnabled(false)
 		
 		this.stimScreen.stop()
@@ -82,7 +82,7 @@ class AppController {
 	}
 	#editConfig(name) {
 		this.stimScreen.setPreviewEnabled(true)
-		this.configSelector.setEnabled(false)
+		this.configSelector.setVisible(false)
 		this.configScreen.setEnabled(true)
 		
 		this.stimScreen.setConfigSelector(null)

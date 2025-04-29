@@ -11,12 +11,6 @@
 	flex-direction: column;
 	overflow-y: auto;
 	scrollbar-gutter: stable;
-	
-	padding: var(--yMargin) 4px var(--yMargin) var(--xMargin);
-}
-.vertical #stimScreen {
-	overflow-y: visible;
-	padding: var(--yMargin) var(--xMargin) 0px var(--xMargin);
 }
 
 #topBar {

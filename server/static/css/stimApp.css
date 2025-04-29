@@ -1,4 +1,5 @@
 :root {
+	--appBgColor: white;
 	--xMargin: 1.1em;
 	--yMargin: 0.8em;
 }
@@ -9,24 +10,33 @@
 }
 
 body {
-	height: 100vh;
-}
-body.vertical {
-	height: 100%;
+	background: var(--appBgColor);
+	height: 100dvh;
 }
 
 main {
-	display: grid;
-	grid-template-columns: max-content auto;
-	column-gap: 1.5em;
-	row-gap: 1.5em;
+	display: flex;
+	flex-direction: row;
 	
+	overflow: hidden;
 	height: 100%;
 }
 
 body.vertical main {
-	height: auto;
+	flex-direction: column;
+}
+
+#stimScreen {
+	padding: var(--yMargin) 4px var(--yMargin) var(--xMargin);
+}
+.vertical #stimScreen {
+	padding: var(--yMargin) var(--xMargin) 0px var(--xMargin);
+}
+
+#configScreen {
+	flex-grow: 1;
+	flex-shrink: 0.5;
+	flex-basis: 300px;
 	
-	grid-template-columns: auto;
-	grid-template-rows: auto auto;
+	padding: var(--yMargin) var(--xMargin);
 }
