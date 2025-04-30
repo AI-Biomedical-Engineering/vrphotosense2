@@ -2,7 +2,7 @@
 	--eyeWidth: 150px;
 	--streamWidth: 400px;
 	--maxStimWidth: calc(100vw - var(--xMargin) * 2 - var(--scrollbarWidth));
-	--stimWidth: var(--maxStimWidth);
+	--progressWidth: 0px;
 	--progressBarsCount: 1;
 }
 
@@ -70,7 +70,7 @@
 #stimScreen #progressContainer span {
 	text-wrap: nowrap;
 	font-size: min(0.9em,
-		(var(--stimWidth) * 0.028) / (var(--progressBarsCount) * 0.026));
+		(var(--progressWidth) * 0.028) / (var(--progressBarsCount) * 0.026));
 	
 	position: absolute;
 	top: calc(100% + 2px);

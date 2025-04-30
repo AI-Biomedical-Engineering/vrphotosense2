@@ -5,13 +5,10 @@
 	overflow-y: hidden;
 	
 	opacity: 0%;
-	transform: translateY(calc(-50vh + var(--showYPos))) translateX(-39px)
-		translateX(-50%) scale(0.05) translateX(50%);
-	transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+	transition: opacity 0.25s ease-out;
 }
 #configScreen.visible {
 	opacity: 100%;
-	transform: translateX(-50%) scale(1) translateX(50%);
 }
 .vertical #configScreen {
 	transform: translateX(200px);

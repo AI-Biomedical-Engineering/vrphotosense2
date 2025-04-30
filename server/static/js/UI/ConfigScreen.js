@@ -4,8 +4,7 @@ import {StringVar, createConfigUI} from "./ConfigUI.js"
 import configs from "../configs.js"
 
 export class ConfigScreen {
-	constructor(uploadConfigCallback, saveConfigCallback, closedCallback,
-		getConfigsYPos, getConfigsYMov, imgCache) {
+	constructor(uploadConfigCallback, saveConfigCallback, closedCallback, imgCache) {
 		
 		this.configUI = null
 		this.configType = null
@@ -14,11 +13,8 @@ export class ConfigScreen {
 		this.uploadConfigCallback = uploadConfigCallback
 		this.saveConfigCallback = saveConfigCallback
 		this.closedCallback = closedCallback
-		this.getConfigsYPos = getConfigsYPos
-		this.getConfigsYMov = getConfigsYMov
 		this.imgCache = imgCache
 		
-		this.screenDiv = document.getElementById("configScreen")
 		this.configContainer = document.getElementById("config")
 		this.saveBt = document.getElementById("saveBt")
 		this.cancelBt = document.getElementById("cancelBt")
@@ -32,18 +28,15 @@ export class ConfigScreen {
 		
 		new ShadowScroll(this.configContainer)
 		window.addEventListener("keydown", this.#keyPress.bind(this))
-		this.hideController = new HideElemController(this.screenDiv)
+		this.hideController = new HideElemController(document.getElementById("configScreen"))
 		this.setEnabled(false)
 	}
 	
 	setEnabled(enabled) {
 		this.enabled = enabled
-		this.screenDiv.style.setProperty("--showYPos",
-			((enabled ? 0 : this.getConfigsYMov()) + this.getConfigsYPos()) + "px")
 		
 		if (enabled)
 			this.hideController.show()
-		
 		else {
 			this.configContainer.scrollTo({top: 0, behavior: "instant"})
 			this.hideController.hide()
@@ -114,15 +107,14 @@ export class ConfigScreen {
 }
 
 export class ConfigScreenLayout {
-	constructor(stimScreen) {
-		this.stimScreen = stimScreen
+	constructor() {
 		this.verticalEnabled = false
 		
-		window.onresize = this.#updateVerticalMode.bind(this)
+		window.addEventListener("resize", this.#updateVerticalMode.bind(this))
 		this.#updateVerticalMode()
 	}
 	#updateVerticalMode() {
-		if (this.verticalEnabled !== (window.innerWidth - this.stimScreen.getMinWidth()) < 600) {
+		if (this.verticalEnabled !== window.innerWidth < 1000) {
 			this.verticalEnabled = ! this.verticalEnabled
 			
 			if (this.verticalEnabled)

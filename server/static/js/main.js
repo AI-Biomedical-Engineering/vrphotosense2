@@ -35,9 +35,7 @@ class AppController {
 		
 		this.#reloadConfigNames()
 		this.configScreen = new ConfigScreen(this.#sendConfig.bind(this),
-			this.#saveConfig.bind(this), this.#closeEditConfig.bind(this),
-			this.configSelector.getConfigsCenterY.bind(this.configSelector),
-			this.stimScreen.getEyeSize.bind(this.stimScreen), imgCache)
+			this.#saveConfig.bind(this), this.#closeEditConfig.bind(this), imgCache)
 	}
 	
 	#sendConfig(configType, config) {
@@ -118,7 +116,7 @@ class App {
 		this.stimScreen = new StimScreen(this.api, this.imgCache)
 		this.appController = null
 		this.firstConnection = true
-		new ConfigScreenLayout(this.stimScreen)
+		new ConfigScreenLayout()
 		document.getElementById("disconnectBt").onclick = this.disconnect.bind(this)
 		document.getElementById("resetView").onclick = e => this.api.sendCommand(Command.RESET_VIEW)
 		

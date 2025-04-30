@@ -41,10 +41,6 @@ export class ConfigSelector {
 		this.hideController = new HideElemController(this.configSelectorContainer,
 			{shown: () => this.configSelectorContainer.classList.remove("noSize")})
 	}
-	getConfigsCenterY() {
-		let bounding = this.configsContainer.getBoundingClientRect()
-		return bounding.y + bounding.height / 2
-	}
 	
 	setVisible(visible) {
 		if (visible)

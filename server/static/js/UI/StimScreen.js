@@ -32,6 +32,10 @@ export class StimScreen {
 			this.offlineStreamImg = data
 			this.stream.src = data
 		})
+		
+		this.screenDiv = document.getElementById("stimScreen")
+		window.addEventListener("resize", this.#updateStimSize.bind(this))
+		this.#updateStimSize()
 	}
 	setEnabled(enabled) {
 		this.stimControl.setEnabled(enabled)
@@ -48,6 +52,15 @@ export class StimScreen {
 			else
 				hideEyeController.show()
 		}
+	}
+	#updateStimSize() {
+		this.screenDiv.style.transition = "none"
+		
+		let stimWidth = Math.min(1000, window.innerWidth)
+		setCSSVar("--stimWidth", stimWidth + "px")
+		setCSSVar("--centerStimMargin", ((window.innerWidth - stimWidth) / 2) + "px")
+		
+		requestAnimationFrame(() => requestAnimationFrame(() => this.screenDiv.style.transition = ""))
 	}
 	
 	#cancelImgReloaders(reloaders) {
@@ -78,13 +91,6 @@ export class StimScreen {
 			times: 1,
 			delay: 3000
 		})
-	}
-	
-	getEyeSize() {
-		return this.eyes[0].clientWidth
-	}
-	getMinWidth() {
-		return Math.max(this.stream.clientWidth, this.eyes[0].clientWidth * 2)
 	}
 }
 
@@ -191,7 +197,7 @@ class Progress {
 		this.progress = document.getElementsByTagName("progress")[0]
 		this.bars = []
 		
-		new ResizeObserver(e => setCSSVar("--stimWidth", e[0].target.clientWidth + "px"))
+		new ResizeObserver(e => setCSSVar("--progressWidth", e[0].target.clientWidth + "px"))
 			.observe(this.progressContainer)
 	}
 	setProgress(percent) {

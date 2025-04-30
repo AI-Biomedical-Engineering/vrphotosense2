@@ -2,6 +2,9 @@
 	--appBgColor: white;
 	--xMargin: 1.1em;
 	--yMargin: 0.8em;
+	--stimWidth: 0px;
+	--stimWidthLeft: 450px;
+	--centerStimMargin: 0px;
 }
 
 * {
@@ -27,16 +30,37 @@ body.vertical main {
 }
 
 #stimScreen {
-	padding: var(--yMargin) 4px var(--yMargin) var(--xMargin);
+	box-sizing: border-box;
+	width: var(--stimWidth);
+	flex-shrink: 0;
+	
+	padding: var(--yMargin) var(--xMargin);
+	margin-left: var(--centerStimMargin);
+	transition: width 0.25s ease-out, margin 0.25s ease-out;
+}
+body:not(.vertical):has(#configScreen.visible) #stimScreen {
+	width: var(--stimWidthLeft);
+	margin-left: 0px;
 }
 .vertical #stimScreen {
-	padding: var(--yMargin) var(--xMargin) 0px var(--xMargin);
+	flex-grow: 0;
+	flex-shrink: 1;
+	padding-bottom: 0px;
+	
+	transition: none;
 }
 
 #configScreen {
+	box-sizing: border-box;
+	width: calc(100% - var(--stimWidthLeft));
+	flex-shrink: 0;
+	
+	padding: var(--yMargin) var(--xMargin);
+}
+.vertical #configScreen {
+	width: auto;
+	
 	flex-grow: 1;
 	flex-shrink: 0.5;
 	flex-basis: 300px;
-	
-	padding: var(--yMargin) var(--xMargin);
 }
