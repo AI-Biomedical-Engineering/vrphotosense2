@@ -56,6 +56,9 @@ public abstract class AbstractScene<ConfigT> : SceneController {
 	protected abstract void RunEstim();
 	public override void Run() {
 		if (this.stimState != StimState.RUNNING) {
+			if (this.stimState == StimState.NONE)
+				ResetEstim();
+			
 			this.stimState = StimState.RUNNING;
 			
 			MsgPanel.active.Disable();
@@ -81,7 +84,7 @@ public abstract class AbstractScene<ConfigT> : SceneController {
 	
 	protected void Finished() {
 		StimState prevState = this.stimState;
-		Reset();
+		Stop();
 		this.stimState = StimState.NONE;
 		
 		if (SceneController.loopEnabled) {
