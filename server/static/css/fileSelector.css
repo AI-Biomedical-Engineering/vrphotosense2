@@ -10,7 +10,7 @@
 	overflow-y: auto;
 }
 .shadowScroll:has(> .fileSelector) {
-	height: 24em;
+	height: 14em;
 	margin-right: 0.5em;
 }
 .fileSelector > button {

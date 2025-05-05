@@ -27,6 +27,9 @@ export class ConfigScreen {
 		this.configNameVar = new StringVar(configNameDiv, this.#changedConfig.bind(this))
 		
 		new ShadowScroll(this.configContainer)
+		this.scrollContainer = this.configContainer.parentElement
+		new ResizeObserver(this.#updateScrollEnabled.bind(this)).observe(this.scrollContainer)
+		
 		window.addEventListener("keydown", this.#keyPress.bind(this))
 		this.hideController = new HideElemController(document.getElementById("configScreen"))
 		this.setEnabled(false)
@@ -41,6 +44,12 @@ export class ConfigScreen {
 			this.configContainer.scrollTo({top: 0, behavior: "instant"})
 			this.hideController.hide()
 		}
+	}
+	#updateScrollEnabled() {
+		if (this.configContainer.scrollHeight > this.scrollContainer.clientHeight)
+			this.configContainer.classList.add("scrollEnabled")
+		else
+			this.configContainer.classList.remove("scrollEnabled")
 	}
 	#changedConfig() {
 		this.changedConfig = true

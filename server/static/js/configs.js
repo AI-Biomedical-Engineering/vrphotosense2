@@ -27,7 +27,7 @@ export default [
 		name: "Flashing",
 		icon: "flash.svg",
 		uiVarGroups: [{horizontal: true, alignEnd: false, vars: {
-			freqs: [UI.LabeledVar, "Frequencies (Hz)", null, false, [UI.ArrayVar, [UI.ValidatedRangeVar, [0.001, null], [UI.FloatVar, 1]], [1], false]]
+			freqs: [UI.LabeledVar, "Frequencies (Hz)", null, false, [UI.ArrayVar, [UI.ValidatedRangeVar, [0.1, null], [UI.FloatVar, 1]], [1], false]]
 		}},
 		{horizontal: true, alignEnd: false, vars: {
 			stimTime: [UI.LabeledVar, "Stimulation time (s)", null, true, [UI.ValidatedRangeVar, [0, null], [UI.FloatVar]]],

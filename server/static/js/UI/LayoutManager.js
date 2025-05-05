@@ -24,7 +24,7 @@ export class LayoutManager {
 		}, 150)
 	}
 	#updateVerticalMode() {
-		if (this.verticalEnabled !== window.innerWidth < 1000) {
+		if (this.verticalEnabled !== window.innerWidth < 1080) {
 			this.verticalEnabled = ! this.verticalEnabled
 			
 			if (this.verticalEnabled)
@@ -34,7 +34,7 @@ export class LayoutManager {
 		}
 	}
 	#updateStimSize() {
-		let stimWidth = Math.min(1000, window.innerWidth)
+		let stimWidth = Math.min(950, window.innerWidth)
 		setCSSVar("--stimWidth", stimWidth + "px")
 		setCSSVar("--centerStimMargin", ((window.innerWidth - stimWidth) / 2) + "px")
 	}

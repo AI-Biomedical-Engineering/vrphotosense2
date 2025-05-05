@@ -9,7 +9,7 @@
 	display: flex;
 	flex-direction: column;
 	
-	margin: var(--yMargin) 0px;
+	margin-top: 0.8em;
 	opacity: 0%;
 	transition: opacity 0.25s ease-out;
 }
@@ -17,11 +17,7 @@
 	opacity: 100%;
 }
 .vertical #configSelector {
-	transform: translateX(-200px);
-	transition: transform 0.2s ease-out, opacity 0.2s ease-out;
-}
-.vertical #configSelector.visible {
-	transform: translateX(0px);
+	transition-duration: 0.2s;
 }
 .vertical #configSelector.noSize {
 	position: fixed;
