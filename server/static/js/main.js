@@ -4,9 +4,10 @@ import {ConfigStorage} from "./ConfigStorage.js"
 import {ConfigsManager} from "./ConfigsManager.js"
 
 import {ImgCache} from "./UI/UI.js"
+import {LayoutManager} from "./UI/LayoutManager.js"
 import {StartScreen} from "./UI/StartScreen.js"
 import {StimScreen} from "./UI/StimScreen.js"
-import {ConfigScreen, ConfigScreenLayout} from "./UI/ConfigScreen.js"
+import {ConfigScreen} from "./UI/ConfigScreen.js"
 import {ConfigSelector} from "./UI/ConfigSelector.js"
 
 class AppController {
@@ -116,7 +117,7 @@ class App {
 		this.stimScreen = new StimScreen(this.api, this.imgCache)
 		this.appController = null
 		this.firstConnection = true
-		new ConfigScreenLayout()
+		new LayoutManager()
 		document.getElementById("disconnectBt").onclick = this.disconnect.bind(this)
 		document.getElementById("resetView").onclick = e => this.api.sendCommand(Command.RESET_VIEW)
 		

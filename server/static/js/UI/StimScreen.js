@@ -1,4 +1,4 @@
-import {ImageReloader, HideElemController, isTextInputActive, configImageError, setCSSVar} from "./UI.js"
+import {ImageReloader, HideElemController, isTextInputActive, setCSSVar} from "./UI.js"
 import {Command} from "../AppApi.js"
 
 export class StimScreen {
@@ -32,10 +32,6 @@ export class StimScreen {
 			this.offlineStreamImg = data
 			this.stream.src = data
 		})
-		
-		this.screenDiv = document.getElementById("stimScreen")
-		window.addEventListener("resize", this.#updateStimSize.bind(this))
-		this.#updateStimSize()
 	}
 	setEnabled(enabled) {
 		this.stimControl.setEnabled(enabled)
@@ -52,15 +48,6 @@ export class StimScreen {
 			else
 				hideEyeController.show()
 		}
-	}
-	#updateStimSize() {
-		this.screenDiv.style.transition = "none"
-		
-		let stimWidth = Math.min(1000, window.innerWidth)
-		setCSSVar("--stimWidth", stimWidth + "px")
-		setCSSVar("--centerStimMargin", ((window.innerWidth - stimWidth) / 2) + "px")
-		
-		requestAnimationFrame(() => requestAnimationFrame(() => this.screenDiv.style.transition = ""))
 	}
 	
 	#cancelImgReloaders(reloaders) {

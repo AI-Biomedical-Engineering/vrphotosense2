@@ -105,22 +105,3 @@ export class ConfigScreen {
 		}
 	}
 }
-
-export class ConfigScreenLayout {
-	constructor() {
-		this.verticalEnabled = false
-		
-		window.addEventListener("resize", this.#updateVerticalMode.bind(this))
-		this.#updateVerticalMode()
-	}
-	#updateVerticalMode() {
-		if (this.verticalEnabled !== window.innerWidth < 1000) {
-			this.verticalEnabled = ! this.verticalEnabled
-			
-			if (this.verticalEnabled)
-				document.body.classList.add("vertical")
-			else
-				document.body.classList.remove("vertical")
-		}
-	}
-}

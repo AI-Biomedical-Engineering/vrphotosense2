@@ -3,6 +3,7 @@
 		text {
 			font: 600 120px sans-serif;
 			text-anchor: middle;
+			transform: rotate(0.03deg);
 		}
 	</style>
 	<rect x="0" y="-950" width="950" height="950" fill="#666666" />

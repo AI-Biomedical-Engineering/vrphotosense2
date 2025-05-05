@@ -1,7 +1,6 @@
 :root {
-	--eyeWidth: 150px;
+	--eyeWidth: 190px;
 	--streamWidth: 400px;
-	--maxStimWidth: calc(100vw - var(--xMargin) * 2 - var(--scrollbarWidth));
 	--progressWidth: 0px;
 	--progressBarsCount: 1;
 }
@@ -18,16 +17,16 @@
 	column-gap: 0.7em;
 	
 	padding: 0px;
-	margin: 0px 0px 1em;
+	margin-bottom: 0.7em;
 }
 
 #eyes {
 	display: flex;
 	justify-content: center;
-	column-gap: 1em;
+	column-gap: 0.6em;
 }
 .eye {
-	--size: min(var(--eyeWidth), calc((var(--maxStimWidth) - 1em) / 2));
+	--size: min(var(--eyeWidth), calc((var(--stimWidth) - 2 * var(--xMargin) - var(--scrollbarWidth) - 0.6em) / 2));
 	width: var(--size);
 	height: 0px;
 	border-radius: 0.7em;
@@ -37,8 +36,14 @@
 .eye.visible {
 	height: var(--size);
 }
+.vertical .eye {
+	transition-duration: 0.2s;
+}
+.resizing .eye {
+	transition: none;
+}
 #stream {
-	width: min(var(--streamWidth), var(--maxStimWidth));
+	width: min(var(--streamWidth), 100%);
 	aspect-ratio: 16 / 9;
 	
 	margin: 0.5em auto 1em;
@@ -83,7 +88,7 @@
 	justify-content: center;
 	column-gap: 0.5em;
 	
-	margin: 0.8em 0px;
+	margin: 0.5em 0px 0.8em;
 }
 
 #stimControls > button {

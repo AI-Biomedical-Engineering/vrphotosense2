@@ -49,6 +49,9 @@ body:not(.vertical):has(#configScreen.visible) #stimScreen {
 	
 	transition: none;
 }
+.resizing #stimScreen {
+	transition: none;
+}
 
 #configScreen {
 	box-sizing: border-box;
