@@ -3,28 +3,18 @@ import {Command} from "../AppApi.js"
 
 export class StimScreen {
 	constructor(api, imgCache) {
+		this.eyes = new Eyes(imgCache)
 		this.stimControl = new StimControl(api)
 		this.progress = new Progress()
 		
 		this.setProgress = this.progress.setProgress.bind(this.progress)
 		this.setConfig = this.progress.setConfig.bind(this.progress)
+		this.setEnabled = this.stimControl.setEnabled.bind(this.stimControl)
 		this.setConfigSelector = this.stimControl.setConfigSelector.bind(this.stimControl)
 		this.paused = this.stimControl.paused.bind(this.stimControl)
 		this.stop = this.stimControl.stop.bind(this.stimControl)
 		this.setLoopMode = this.stimControl.setLoopMode.bind(this.stimControl)
-		
-		this.hideEyeControllers = []
-		this.eyes = document.getElementsByClassName("eye")
-		this.eyeReloaders = Array(this.eyes.length).fill(null)
-		
-		imgCache.getImage("/img/offlineCam.svg", data => {
-			this.offlineCamImg = data
-			
-			for (let eye of this.eyes) {
-				eye.src = data
-				this.hideEyeControllers.push(new HideElemController(eye))
-			}
-		})
+		this.setEyesVisible = this.eyes.setVisible.bind(this.eyes)
 		
 		this.stream = document.getElementById("stream")
 		this.streamReloader = null
@@ -33,44 +23,9 @@ export class StimScreen {
 			this.stream.src = data
 		})
 	}
-	setEnabled(enabled) {
-		this.stimControl.setEnabled(enabled)
-		
-		if (! enabled) {
-			this.#cancelImgReloaders(this.eyeReloaders)
-			this.#cancelImgReloaders([this.streamReloader])
-		}
-	}
-	setPreviewEnabled(enabled) {
-		for (let hideEyeController of this.hideEyeControllers) {
-			if (enabled)
-				hideEyeController.hide()
-			else
-				hideEyeController.show()
-		}
-	}
-	
-	#cancelImgReloaders(reloaders) {
-		for (let reloader of reloaders) {
-			if (reloader !== null)
-				reloader.cancel()
-		}
-	}
-	configEyesUrl(url) {
-		this.#cancelImgReloaders(this.eyeReloaders)
-		
-		let i = 1
-		for (let eye of this.eyes) {
-			this.eyeReloaders[i - 1] = new ImageReloader(eye, {
-				url: url.replace("{}", i++),
-				fallbackUrl: this.offlineCamImg,
-				times: 10,
-				delay: 4000
-			})
-		}
-	}
 	configStream(url) {
-		this.#cancelImgReloaders([this.streamReloader])
+		if (this.streamReloader !== null)
+			this.streamReloader.cancel()
 		
 		this.streamReloader = new ImageReloader(this.stream, {
 			url: url,
@@ -78,6 +33,79 @@ export class StimScreen {
 			times: 1,
 			delay: 3000
 		})
+		this.streamReloader.start()
+	}
+}
+
+class Eyes {
+	constructor(imgCache) {
+		this.eyesVisible = true
+		this.eyesEnabled = localStorage.getItem("eyesEnabled") === "true"
+		
+		this.eyes = document.getElementsByClassName("eye")
+		this.toggleEyesBt = document.getElementById("toggleEyesBt")
+		this.toggleEyesBt.onclick = e => {
+			this.setEnabled(! this.eyesEnabled)
+			localStorage.setItem("eyesEnabled", this.eyesEnabled)
+		}
+		
+		let eyesUrl = localStorage.getItem("eyesUrl")
+		if (eyesUrl === null) {
+			eyesUrl = "http://eye{}.local"
+			localStorage.setItem("eyesUrl", eyesUrl)
+		}
+		this.hideEyeControllers = []
+		this.eyeReloaders = []
+		
+		imgCache.getImage("/img/offlineCam.svg", data => {
+			this.offlineCamImg = data
+			
+			let i = 1
+			for (let eye of this.eyes) {
+				this.hideEyeControllers.push(new HideElemController(eye))
+				
+				this.eyeReloaders.push(new ImageReloader(eye, {
+					url: eyesUrl.replace("{}", i++),
+					fallbackUrl: this.offlineCamImg,
+					times: -1,
+					delay: 4000
+				}))
+			}
+			this.setEnabled(this.eyesEnabled)
+		})
+	}
+	
+	#updateEyesVisible() {
+		let visible = this.eyesEnabled && this.eyesVisible
+		
+		for (let hideEyeController of this.hideEyeControllers) {
+			if (visible)
+				hideEyeController.show()
+			else
+				hideEyeController.hide()
+		}
+	}
+	setVisible(enabled) {
+		this.eyesVisible = enabled
+		this.#updateEyesVisible()
+	}
+	setEnabled(enabled) {
+		this.eyesEnabled = enabled
+		this.#updateEyesVisible()
+		
+		if (this.eyesEnabled)
+			this.toggleEyesBt.classList.add("selected")
+		else
+			this.toggleEyesBt.classList.remove("selected")
+		
+		for (let i = 0; i < this.eyes.length; i++) {
+			if (enabled) {
+				this.eyes[i].src = this.offlineCamImg
+				requestAnimationFrame(() => this.eyeReloaders[i].start())
+			}
+			else
+				this.eyeReloaders[i].cancel()
+		}
 	}
 }
 

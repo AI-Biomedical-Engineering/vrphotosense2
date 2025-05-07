@@ -22,23 +22,25 @@ export class ImageReloader {
 	constructor(img, reloadConfig) {
 		this.img = img
 		this.config = reloadConfig
-		this.retryCount = 0
 		this.timeoutID = null
-		
-		this.#retryLoad()
 	}
 	#loadError() {
 		this.img.src = this.config.fallbackUrl
-	
-		if (++this.retryCount <= this.config.times)
+		
+		if (this.remainingRetries-- !== 0) //If negative, retries are unlimited
 			this.timeoutID = setTimeout(this.#retryLoad.bind(this), this.config.delay)
 	}
 	#retryLoad() {
 		this.img.src = this.config.url
 		configImageError(this.img, this.#loadError.bind(this))
 	}
+	start() {
+		this.cancel()
+		this.remainingRetries = this.config.times
+		this.#retryLoad()
+	}
 	cancel() {
-		this.retryCount = this.config.times
+		this.remainingRetries = 0
 		clearTimeout(this.timeoutID)
 	}
 }

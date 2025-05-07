@@ -71,7 +71,7 @@ class AppController {
 		this.#setSelectedConfig(name)
 	}
 	#closeEditConfig() {
-		this.stimScreen.setPreviewEnabled(false)
+		this.stimScreen.setEyesVisible(true)
 		this.configSelector.setVisible(true)
 		this.configScreen.setEnabled(false)
 		
@@ -80,7 +80,7 @@ class AppController {
 		this.stimScreen.setConfigSelector(this.configSelector)
 	}
 	#editConfig(name) {
-		this.stimScreen.setPreviewEnabled(true)
+		this.stimScreen.setEyesVisible(false)
 		this.configSelector.setVisible(false)
 		this.configScreen.setEnabled(true)
 		
@@ -119,7 +119,7 @@ class App {
 		this.firstConnection = true
 		new LayoutManager()
 		document.getElementById("disconnectBt").onclick = this.disconnect.bind(this)
-		document.getElementById("resetView").onclick = e => this.api.sendCommand(Command.RESET_VIEW)
+		document.getElementById("resetViewBt").onclick = e => this.api.sendCommand(Command.RESET_VIEW)
 		
 		let savedAppId = localStorage.getItem("appId")
 		if (autoappid) {
@@ -151,7 +151,6 @@ class App {
 		console.log(`WS connected (${id})`)
 		this.firstConnection = false
 		
-		this.stimScreen.configEyesUrl("http://eye{}.local")
 		this.stimScreen.configStream("/appstream?id=" + id)
 		this.stimScreen.setEnabled(true)
 		this.startScreen.hide()
