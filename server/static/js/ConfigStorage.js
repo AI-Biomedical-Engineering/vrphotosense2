@@ -5,7 +5,7 @@ export class ConfigStorage {
 	
 	constructor(callback) {
 		if (fs.filenames.indexOf(ConfigStorage.CONFIGS_FILE) < 0) {
-			fetch("/stimApp/defaultConfigs.json").then(resp => resp.json().then(json => {
+			fetch("/configs/defaultConfigs.json").then(resp => resp.json().then(json => {
 				this.configs = json
 				this.#saveToDisk()
 				callback()
