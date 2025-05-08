@@ -146,6 +146,7 @@ export class ShadowScroll {
 export class ImgCache {
 	constructor() {
 		this.images = new Map()
+		this.callbacks = new Map()
 	}
 	getImage(url, callback) {
 		let img = this.images.get(url)
@@ -153,11 +154,24 @@ export class ImgCache {
 		if (img !== undefined)
 			callback(img)
 		else {
-			fetch(url).then(resp => resp.blob().then(blob => {
-				let dataURL = URL.createObjectURL(blob)
-				this.images.set(url, dataURL)
-				callback(dataURL)
-			}))
+			let imgCallbacks = this.callbacks.get(url)
+			
+			if (imgCallbacks === undefined) {
+				imgCallbacks = [callback]
+				this.callbacks.set(url, imgCallbacks)
+			
+				fetch(url).then(resp => resp.blob().then(blob => {
+					let dataURL = URL.createObjectURL(blob)
+					this.images.set(url, dataURL)
+					
+					for (let imgCallback of imgCallbacks)
+						imgCallback(dataURL)
+					
+					this.callbacks.delete(url)
+				}))
+			}
+			else
+				imgCallbacks.push(callback)
 		}
 	}
 }
