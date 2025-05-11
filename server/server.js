@@ -164,15 +164,13 @@ const DEFAULT_IP = "127.0.0.1"
 const DEFAULT_PORT = 5000
 
 function getAddr(args) {
-	if (args.length === 0)
-		return [DEFAULT_IP, DEFAULT_PORT]
-	else if (args.length === 1)
-		return [DEFAULT_IP, parseInt(args[0])]
-	else
+	if (args.length === 2)
 		return [args[0], parseInt(args[1])]
+	else
+		return [DEFAULT_IP, DEFAULT_PORT]
 }
 if (process.argv[2] === "-h") {
-	console.log("usage:\tserver.js ip port\n\tserver.js port\n\tserver.js")
+	console.log("usage:\tserver.js [--production] [--noautoappid] [ip] [port]")
 	process.exit()
 }
 const params = process.argv.splice(2)
@@ -185,7 +183,7 @@ const httpsServer = https.createServer({
 }, app)
 
 app.use(express.raw({type: "*/*", limit: "700MB"}))
-app.use("/", express.static("static"))
+
 if (params.indexOf("--noautoappid") === -1) {
 	app.get("/autoappid", (req, res) => {
 		res.type("text/plain").send(String(wsServer.getAutoAppID()))
@@ -306,6 +304,14 @@ app.get("/appstream", (req, res) => {
 var wsServer = new WSServer(app)
 wsServer.configureHttpServer(httpServer)
 wsServer.configureHttpServer(httpsServer)
+
+if (params.indexOf("--production") !== -1) {
+	app.use("/", (req, res, next) => {
+		res.setHeader("Cache-Control", "public, max-age=3600")
+		next()
+	})
+}
+app.use("/", express.static("static"))
 
 httpServer.listen(addr[1], addr[0], () => console.log(`http server: ${addr[0]}:${addr[1]}`))
 httpsServer.listen(addr[1] + 1, addr[0], () => console.log(`https server: ${addr[0]}:${addr[1] + 1}`))
