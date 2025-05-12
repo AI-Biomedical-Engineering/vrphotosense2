@@ -74,7 +74,7 @@ export class ConfigScreen {
 			
 			this.#setConfigUIType(this.configType)
 			this.configTypeImg.alt = configs[this.configType].name + " icon"
-			this.imgCache.getImage(`img/modeIcons/${configs[this.configType].icon}`,
+			this.imgCache.getImage(`/img/modeIcons/${configs[this.configType].icon}`,
 				data => this.configTypeImg.src = data)
 		}
 		this.configUI.setValue(config.config)

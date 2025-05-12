@@ -24,7 +24,7 @@ export class ConfigSelector {
 				let img = document.createElement("img")
 				img.classList.add("invertOnSelected")
 				img.alt = configs[id].name + " icon"
-				this.imgCache.getImage(`img/modeIcons/${configs[id].icon}`, data => img.src = data)
+				this.imgCache.getImage(`/img/modeIcons/${configs[id].icon}`, data => img.src = data)
 				
 				let tooltipSpan = document.createElement("span")
 				tooltipSpan.innerText = configs[id].name
@@ -84,7 +84,7 @@ export class ConfigSelector {
 					iconBt.onclick = e => iconCallbacks[iconName](id, e)
 					let img = document.createElement("img")
 					img.alt = iconName
-					this.imgCache.getImage(`img/fileIcons/${iconName}.svg`, data => img.src = data)
+					this.imgCache.getImage(`/img/fileIcons/${iconName}.svg`, data => img.src = data)
 					
 					iconBt.appendChild(img)
 					iconsDiv.appendChild(iconBt)
