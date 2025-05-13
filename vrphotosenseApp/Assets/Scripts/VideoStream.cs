@@ -65,7 +65,7 @@ public class VideoStream : MonoBehaviour {
 		public void Destroy() {}
 		public void SendFrame(byte[] frame) {
 			ConfigApp.remoteControl.SendStreamFrame(
-				ImageConversion.EncodeArrayToPNG(frame, this.graphicsFormat, this.textureWidth, this.textureHeight));
+				ImageConversion.EncodeArrayToJPG(frame, this.graphicsFormat, this.textureWidth, this.textureHeight));
 		}
 	}
 	private class LimitFramerateSender : IFrameSender {

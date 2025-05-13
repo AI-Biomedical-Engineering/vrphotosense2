@@ -61,7 +61,7 @@ class AppIDCounter {
 		this.counter = 0
 		
 		if (fs.existsSync(AppIDCounter.FILENAME))
-			this.counter = parseInt(fs.readFileSync(AppIDCounter.FILENAME))
+			this.counter = parseInt(fs.readFileSync(AppIDCounter.FILENAME), "utf-8")
 	}
 	incCounter() {
 		fs.writeFileSync(AppIDCounter.FILENAME, String(++this.counter))
@@ -283,7 +283,7 @@ class ImgSeqStream {
 		this.res.end()
 	}
 	sendFrame(frame) {
-		this.res.write(`\r\n--${ImgSeqStream.BOUNDARY}\r\nContent-Type: image/png\r\nContent-Length: ${frame.length}\r\nX-Timestamp: 0.0\r\n\r\n`)
+		this.res.write(`\r\n--${ImgSeqStream.BOUNDARY}\r\nContent-Type: image/jpeg\r\nContent-Length: ${frame.length}\r\nX-Timestamp: 0.0\r\n\r\n`)
 		this.res.write(frame)
 	}
 }
@@ -294,10 +294,22 @@ app.get("/appstream", (req, res) => {
 	if (appWS === null || appWS.streamWS === null)
 		sendError(res, 400, "Invalid ID")
 	
+	else if (appWS.streamWS.configured)
+		sendError(res, 400, "Stream already connected")
+	
 	else {
+		let streamWS = appWS.streamWS
+		
+		req.on("close", () => {
+			streamWS.removeAllListeners("message")
+			streamWS.removeAllListeners("close")
+			streamWS.configured = false
+		})
+		streamWS.configured = true
+		
 		let stream = new ImgSeqStream(0, res)
-		appWS.streamWS.on("message", (msg, isBinary) => stream.sendFrame(msg))
-		appWS.streamWS.on("close", code => stream.close())
+		streamWS.on("message", (msg, isBinary) => stream.sendFrame(msg))
+		streamWS.on("close", code => stream.close())
 	}
 })
 
