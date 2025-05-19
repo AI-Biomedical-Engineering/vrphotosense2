@@ -101,7 +101,7 @@ class Eyes {
 		for (let i = 0; i < this.eyes.length; i++) {
 			if (enabled) {
 				this.eyes[i].src = this.offlineCamImg
-				requestAnimationFrame(() => this.eyeReloaders[i].start())
+				requestAnimationFrame(() => requestAnimationFrame(() => this.eyeReloaders[i].start()))
 			}
 			else
 				this.eyeReloaders[i].cancel()

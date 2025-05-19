@@ -223,8 +223,9 @@ class TempFilesManager {
 				this.#sendRange(res, file.file, req.headers.range, req.params.tempId)
 		})
 		app.post("/tempFile", (req, res) => {
+			let fileExt = "." + req.get("Content-Type").match(/\/[a-zA-Z0-9]+/)[0].slice(1)
 			do {
-				var tempId = crypto.randomBytes(20).toString("hex")
+				var tempId = crypto.randomBytes(20).toString("hex") + fileExt
 			} while (this.tempFilesMap.get(tempId) !== undefined)
 			
 			let prevTempFileId = setTempFileIdCallback(req.query.id, tempId)
@@ -280,7 +281,7 @@ class ImgSeqStream {
 		})
 	}
 	close() {
-		this.res.end()
+		this.res.connection.destroy()
 	}
 	sendFrame(frame) {
 		this.res.write(`\r\n--${ImgSeqStream.BOUNDARY}\r\nContent-Type: image/jpeg\r\nContent-Length: ${frame.length}\r\nX-Timestamp: 0.0\r\n\r\n`)
