@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SpatialTracking;
 
 public class ConfigPlayer : BaseConfigPlayer {
@@ -24,6 +25,19 @@ public class ConfigPlayer : BaseConfigPlayer {
 			Cursor.visible = false;
 		#endif
 		Screen.sleepTimeout = SleepTimeout.NeverSleep;
+	}
+	
+	public void ToggleFullscreen(InputAction.CallbackContext context) {
+		#if ! UNITY_ANDROID
+			if (context.performed) {
+				if (Screen.fullScreen)
+					Screen.SetResolution(1280, 720, false);
+				else {
+					Resolution screenRes = Screen.currentResolution;
+					Screen.SetResolution(screenRes.width, screenRes.height, true);
+				}
+			}
+		#endif
 	}
 	
 	protected override void SetEnabledDebug(bool enabled) {
