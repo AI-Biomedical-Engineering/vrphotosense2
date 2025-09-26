@@ -161,13 +161,14 @@ class WSServer {
 }
 
 const DEFAULT_IP = "127.0.0.1"
-const DEFAULT_PORT = 5000
+const DEFAULT_PORT_HTTP = 5000
+const DEFAULT_PORT_HTTPS = 5001
 
 function getAddr(args) {
-	if (args.length === 2)
-		return [args[0], parseInt(args[1])]
+	if (args.length === 3)
+		return [args[0], parseInt(args[1]), parseInt(args[2])]
 	else
-		return [DEFAULT_IP, DEFAULT_PORT]
+		return [DEFAULT_IP, DEFAULT_PORT_HTTP, DEFAULT_PORT_HTTPS]
 }
 if (process.argv[2] === "-h") {
 	console.log("usage:\tserver.js [--production] [--noautoappid] [ip] [port]")
@@ -314,6 +315,8 @@ app.get("/appstream", (req, res) => {
 	}
 })
 
+app.get("/https", (req, res) => res.redirect(302, `https://${req.hostname}:${addr[2]}`))
+
 var wsServer = new WSServer(app)
 wsServer.configureHttpServer(httpServer)
 wsServer.configureHttpServer(httpsServer)
@@ -327,4 +330,4 @@ if (params.indexOf("--production") !== -1) {
 app.use("/", express.static("static"))
 
 httpServer.listen(addr[1], addr[0], () => console.log(`http server: ${addr[0]}:${addr[1]}`))
-httpsServer.listen(addr[1] + 1, addr[0], () => console.log(`https server: ${addr[0]}:${addr[1] + 1}`))
+httpsServer.listen(addr[2], addr[0], () => console.log(`https server: ${addr[0]}:${addr[2]}`))

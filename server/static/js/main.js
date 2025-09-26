@@ -214,7 +214,7 @@ class App {
 function checkFSApi() {
 	if (window.showDirectoryPicker === undefined) {
 		if (location.protocol === "http:")
-			location.replace(`https://${location.hostname}:${parseInt(location.port) + 1}${location.pathname}`)
+			location.replace("/https")
 		else
 			location.replace("/pages/fsapi_error.html")
 		
