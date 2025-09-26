@@ -46,7 +46,7 @@ class WSRedirectConnection {
 		this.closeCallback(this)
 	}
 	#logMessage(msgTitle) {
-		console.log(`${msgTitle}: ${this.ws._socket.remoteAddress} (${this.id}) ${this.isApp ? "app" : "control"}`)
+		log(this.ws._socket.remoteAddress, `${msgTitle}: ${this.id} ${this.isApp ? "app" : "control"}`)
 	}
 	
 	sendText(msg) {
@@ -239,7 +239,7 @@ class TempFilesManager {
 			this.tempFilesMap.set(tempId, {type: req.get("Content-Type"), file: req.body})
 			res.type("text/plain").send(tempId)
 			
-			console.log("Temp file uploaded: " + tempId)
+			log(req.ip, "Temp file uploaded: " + tempId)
 		})
 	}
 	
@@ -314,6 +314,11 @@ app.get("/appstream", (req, res) => {
 		streamWS.on("close", code => stream.close())
 	}
 })
+
+function log(ip, msg) {
+	let date = new Date()
+	console.log(`${date.toLocaleDateString("en-UK")}:${date.toLocaleTimeString("en-UK")} (${ip}) - ${msg}`)
+}
 
 app.get("/https", (req, res) => res.redirect(302, `https://${req.hostname}:${addr[2]}`))
 
