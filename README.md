@@ -2,6 +2,9 @@
 Clinical visual stimulation tool to provide richer photic stimulation for photosensitivity diagnosis.
 This application offers configurable color stimuli, static and fast-moving patterns, and photoprovocative video segments to be played on both VR- and monitor-based devices. 
 
+## License
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](LICENSE) file for details.
+
 ## Main features
 - Clinically relevant visual stimuli:
 	- Flashing lights:
@@ -49,6 +52,7 @@ VRPhotosense2/
 │   ├── Assets/
 │   ├── Packages/
 │   └── ProjectSettings/
+├── LICENSE
 └── README.md
 ```
 
