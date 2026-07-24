@@ -72,6 +72,7 @@ Both modules synchronize through a Server: the Control Module sends the Stimulat
 The Server is privately hosted but publicly available for client access through the following link: https://visir.edv.uniovi.es. 
 All communications are secured using HTTPS with valid TLS/SSL certificates.
 
+![Application architecture](server/system_diagram.jpg)
 
 ## Installation
 Both modules are accessible through the link above. 
