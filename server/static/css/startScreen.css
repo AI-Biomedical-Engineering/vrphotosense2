@@ -125,6 +125,39 @@ body:has(#startScreen.visible) {
 	}
 }
 
+#startScreen > div#disclaimerFrame > div {
+	display: flex;
+	flex-direction: column;
+	
+	padding-right: 1em;
+	width: min(40em, 87vw);
+	max-height: 85dvh;
+	overflow: auto;
+}
+#startScreen > div#disclaimerFrame > div div {
+	display: flex;
+	align-items: center;
+	column-gap: 0.6em;
+	
+	margin-bottom: 0.8em;
+}
+#startScreen > div#disclaimerFrame > div img {
+	width: 4.5em;
+	filter: drop-shadow(0px 0px 5px #00000015);
+}
+#startScreen > div#disclaimerFrame > div h1 {
+	margin: 0px;
+}
+#startScreen > div#disclaimerFrame > div p {
+	text-align: justify;
+	margin: 0px 0px 1em;
+}
+#startScreen > div#disclaimerFrame > div button {
+	width: 10em;
+	margin-top: 0.6em;
+	align-self: flex-end;
+}
+
 #startScreen > div span {
 	font-size: 2em;
 	text-wrap: nowrap;

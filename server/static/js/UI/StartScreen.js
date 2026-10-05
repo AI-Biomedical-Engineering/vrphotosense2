@@ -3,7 +3,7 @@ import {closeAllDialogs} from "./Dialog.js"
 import {fs} from "../LocalFilesystem.js"
 
 export class StartScreen {
-	constructor(splashCallback, startCallback, configFolderCallback,
+	constructor(splashCallback, accpetDisclaimerCallback, startCallback, configFolderCallback,
 		idCallback, abortConnectCallback, hiddenCallback) {
 		
 		this.startScreen = document.getElementById("startScreen")
@@ -19,6 +19,7 @@ export class StartScreen {
 		this.inputID = document.getElementsByName("clientID")[0]
 		this.connectLb = document.getElementById("connectMsg")
 		
+		document.getElementById("acceptDisclaimerBt").onclick = accpetDisclaimerCallback
 		document.getElementById("startBt").onclick = startCallback
 		document.getElementById("configFolderBt").onclick = e => fs.configAppFolder(configFolderCallback)
 		document.getElementById("connectBt").onclick = e => idCallback(this.inputID.value)
@@ -62,6 +63,9 @@ export class StartScreen {
 	
 	showSplash() {
 		this.#show("splashFrame")
+	}
+	showDisclaimer() {
+		this.#show("disclaimerFrame")
 	}
 	startBt() {
 		this.#show("startBtFrame")

@@ -109,12 +109,14 @@ class App {
 		this.api = new AppApi(wsURL, this.#appMessage.bind(this),
 			this.#wsConnected.bind(this), this.#wsClosed.bind(this))
 		
-		this.startScreen = new StartScreen(this.#configuredAppFolder.bind(this),
-			() => fs.reqPermission(this.#configuredAppFolder.bind(this)),
-			this.#configuredAppFolder.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this),
+		this.startScreen = new StartScreen(this.#enableStartScreen.bind(this),
+			this.#disclaimerAccepted.bind(this),
+			() => fs.reqPermission(this.#enableStartScreen.bind(this)),
+			this.#enableStartScreen.bind(this), this.#setSavedId.bind(this), this.disconnect.bind(this),
 			() => this.startScreen.setReconnectMode(true))
 		
 		this.stimScreen = new StimScreen(this.api, this.imgCache)
+		this.disclaimerAccepted = localStorage.getItem("disclaimerAccepted") === "true"
 		this.appController = null
 		this.firstConnection = true
 		new LayoutManager()
@@ -165,25 +167,37 @@ class App {
 	#enableStartScreen() {
 		this.stimScreen.setEnabled(false)
 		
-		if (! fs.isConfigured()) {
+		if (! this.disclaimerAccepted)
+			this.startScreen.showDisclaimer()
+		
+		else if (! fs.isConfigured())
 			this.startScreen.askConfigFolder()
-			return
-		}
-		else if (! fs.hasPermission()) {
+		
+		else if (! fs.hasPermission())
 			this.startScreen.startBt()
-			return
+		
+		else {
+			if (this.appController === null)
+				this.#createAppController()
+			
+			switch (this.connectMode) {
+			case AppMode.AUTO_APPID:
+				this.startScreen.setConnectMessage("Auto connecting")
+				break
+			case AppMode.SAVED_APPID:
+				this.startScreen.connectingTo(this.autoConnectApp.id)
+				break
+			case AppMode.MANUAL_APPID:
+				this.startScreen.askForId()
+				break
+			}
 		}
-		switch (this.connectMode) {
-		case AppMode.AUTO_APPID:
-			this.startScreen.setConnectMessage("Auto connecting")
-			break
-		case AppMode.SAVED_APPID:
-			this.startScreen.connectingTo(this.autoConnectApp.id)
-			break
-		case AppMode.MANUAL_APPID:
-			this.startScreen.askForId()
-			break
-		}
+	}
+	#disclaimerAccepted() {
+		this.disclaimerAccepted = true
+		localStorage.setItem("disclaimerAccepted", "true")
+		
+		this.#enableStartScreen()
 	}
 	#setSavedId(id) {
 		this.connectMode = AppMode.SAVED_APPID
@@ -198,16 +212,12 @@ class App {
 		this.startScreen.setReconnectMode(false)
 		this.autoConnectApp.disable()
 	}
-	#configuredAppFolder() {
-		this.#enableStartScreen()
-		
-		if (fs.isConfigured() && fs.hasPermission() && this.appController === null) {
-			let configStorage = new ConfigStorage(() => {
-				this.appController = new AppController(this.api, this.imgCache, configStorage, this.stimScreen)
-			})
-			if (this.connectMode !== AppMode.MANUAL_APPID)
-				this.autoConnectApp.autoConnect()
-		}
+	#createAppController() {
+		let configStorage = new ConfigStorage(() => {
+			this.appController = new AppController(this.api, this.imgCache, configStorage, this.stimScreen)
+		})
+		if (this.connectMode !== AppMode.MANUAL_APPID)
+			this.autoConnectApp.autoConnect()
 	}
 }
 
