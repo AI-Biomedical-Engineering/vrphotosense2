@@ -18,6 +18,7 @@ export class StartScreen {
 		this.actionButtons = this.startScreen.querySelectorAll("button.action")
 		this.inputID = document.getElementsByName("clientID")[0]
 		this.connectLb = document.getElementById("connectMsg")
+		this.stimAppLink = document.getElementById("stimAppLink")
 		
 		document.getElementById("acceptDisclaimerBt").onclick = accpetDisclaimerCallback
 		document.getElementById("startBt").onclick = startCallback
@@ -50,7 +51,7 @@ export class StartScreen {
 	hide() {
 		this.hideController.hide()
 	}
-	#show(frameID) {
+	#show(frameID, showStimAppLink) {
 		closeAllDialogs()
 		
 		this.hideController.show()
@@ -59,23 +60,28 @@ export class StartScreen {
 		
 		this.activeFrame = this.frames[frameID]
 		this.activeFrame.style.display = "flex"
+		
+		if (showStimAppLink)
+			this.stimAppLink.classList.add("visible")
+		else
+			this.stimAppLink.classList.remove("visible")
 	}
 	
 	showSplash() {
-		this.#show("splashFrame")
+		this.#show("splashFrame", false)
 	}
 	showDisclaimer() {
-		this.#show("disclaimerFrame")
+		this.#show("disclaimerFrame", false)
 	}
 	startBt() {
-		this.#show("startBtFrame")
+		this.#show("startBtFrame", true)
 	}
 	askConfigFolder() {
-		this.#show("configFolderFrame")
+		this.#show("configFolderFrame", true)
 	}
 	setConnectMessage(msg) {
 		this.connectLb.innerText = msg
-		this.#show("connectFrame")
+		this.#show("connectFrame", true)
 	}
 	connectingTo(id) {
 		this.setConnectMessage(`${this.reconnectMode ? "Reconnecting" : "Connecting"} to: App #${id}`)
@@ -84,6 +90,6 @@ export class StartScreen {
 		this.inputID.value = ""
 		requestAnimationFrame(() => this.inputID.focus())
 		
-		this.#show("askForIdFrame")
+		this.#show("askForIdFrame", true)
 	}
 }

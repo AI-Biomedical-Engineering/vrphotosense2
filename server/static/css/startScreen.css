@@ -179,7 +179,7 @@ body:has(#startScreen.visible) {
 	background: #6e6e6e;
 	box-shadow: 4px 4px 20px -9px #383838;
 	
-	display: flex;
+	display: none;
 	align-items: center;
 	position: absolute;
 	right: 0px;
@@ -191,6 +191,9 @@ body:has(#startScreen.visible) {
 	
 	transform: scale(1);
 	transition: transform 0.15s ease, background 0.15s ease;
+}
+#stimAppLink.visible {
+	display: flex;
 }
 #stimAppLink:hover {
 	background: #626262;
