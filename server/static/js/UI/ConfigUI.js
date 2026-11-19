@@ -93,7 +93,7 @@ class InputVarUI {
 
 export class BoolVar extends InputVarUI {
 	constructor(container, updateCallback, defaultVal = false) {
-		super(container, updateCallback, defaultVal, {type: "checkbox"})
+		super(container, updateCallback, defaultVal, {class: "customStyle", type: "checkbox"})
 	}
 	getValue() {
 		return this.input.checked

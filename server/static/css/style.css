@@ -114,7 +114,7 @@ input[type="color"]::-moz-color-swatch {
 	border-style: none;
 }
 
-input[type="checkbox"] {
+input.customStyle[type="checkbox"] {
 	--checkboxWidth: 4em;
 	
 	cursor: pointer;
@@ -127,10 +127,10 @@ input[type="checkbox"] {
 	height: 2em;
 	border-radius: 1em;
 }
-input[type="checkbox"]:checked {
+input.customStyle[type="checkbox"]:checked {
 	background: var(--selectedColor);
 }
-input[type="checkbox"]::before {
+input.customStyle[type="checkbox"]::before {
 	--circleMargin: 0.4em;
 	
 	content: "";
@@ -146,7 +146,7 @@ input[type="checkbox"]::before {
 	transform: translateX(var(--circleMargin)) translateY(-50%);
 	transition: transform 0.1s ease-out;
 }
-input[type="checkbox"]:checked::before {
+input.customStyle[type="checkbox"]:checked::before {
 	transform: translateX(calc(var(--checkboxWidth) - var(--circleMargin) - 100%)) translateY(-50%);
 }
 

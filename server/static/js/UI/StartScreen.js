@@ -20,7 +20,11 @@ export class StartScreen {
 		this.connectLb = document.getElementById("connectMsg")
 		this.stimAppLink = document.getElementById("stimAppLink")
 		
-		document.getElementById("acceptDisclaimerBt").onclick = accpetDisclaimerCallback
+		this.accpetDisclaimerBt = document.getElementById("acceptDisclaimerBt")
+		this.accpetDisclaimerCb = document.getElementById("acceptCb").getElementsByTagName("input")[0]
+		this.accpetDisclaimerCb.onchange = this.#updateDisclaimerBt.bind(this)
+		
+		this.accpetDisclaimerBt.onclick = accpetDisclaimerCallback
 		document.getElementById("startBt").onclick = startCallback
 		document.getElementById("configFolderBt").onclick = e => fs.configAppFolder(configFolderCallback)
 		document.getElementById("connectBt").onclick = e => idCallback(this.inputID.value)
@@ -66,12 +70,17 @@ export class StartScreen {
 		else
 			this.stimAppLink.classList.remove("visible")
 	}
+	#updateDisclaimerBt() {
+		this.accpetDisclaimerBt.disabled = ! this.accpetDisclaimerCb.checked
+	}
 	
 	showSplash() {
 		this.#show("splashFrame", false)
 	}
 	showDisclaimer() {
 		this.#show("disclaimerFrame", false)
+		this.accpetDisclaimerCb.checked = false
+		this.#updateDisclaimerBt()
 	}
 	startBt() {
 		this.#show("startBtFrame", true)

@@ -152,9 +152,21 @@ body:has(#startScreen.visible) {
 	text-align: justify;
 	margin: 0px 0px 1em;
 }
+#startScreen > div#disclaimerFrame > div div#acceptCb {
+	justify-content: flex-end;
+	margin: 0.5em 0px 1em;
+}
+#startScreen > div#disclaimerFrame > div span {
+	font-size: 1em;
+	font-weight: 600;
+	text-wrap: wrap;
+}
+#startScreen > div#disclaimerFrame > div input[type="checkbox"] {
+	width: 1.4em;
+	aspect-ratio: 1;
+}
 #startScreen > div#disclaimerFrame > div button {
 	width: 10em;
-	margin-top: 0.6em;
 	align-self: flex-end;
 }
 
@@ -162,7 +174,7 @@ body:has(#startScreen.visible) {
 	font-size: 2em;
 	text-wrap: nowrap;
 }
-#startScreen input {
+#startScreen input[type="number"] {
 	font-size: 2em;
 	width: 3em;
 	padding: 0.15em 0.2em;
