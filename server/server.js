@@ -176,17 +176,25 @@ const DEFAULT_IP = "127.0.0.1"
 const DEFAULT_PORT_HTTP = 5000
 const DEFAULT_PORT_HTTPS = 5001
 
+function showHelp() {
+	console.error("usage:\tserver.js [--production] [--noautoappid] [<ip> <http port> <https port>]")
+	process.exit(1)
+}
 function getAddr(args) {
-	if (args.length === 3)
+	if (args.length === 0)
+		return [DEFAULT_IP, DEFAULT_PORT_HTTP, DEFAULT_PORT_HTTPS]
+	
+	else if (args.length === 3)
 		return [args[0], parseInt(args[1]), parseInt(args[2])]
 	else
-		return [DEFAULT_IP, DEFAULT_PORT_HTTP, DEFAULT_PORT_HTTPS]
+		showHelp()
 }
-if (process.argv[2] === "-h") {
-	console.log("usage:\tserver.js [--production] [--noautoappid] [ip] [port]")
-	process.exit()
-}
+
 const params = process.argv.splice(2)
+
+if (params.indexOf("-h") !== -1)
+	showHelp()
+
 const addr = getAddr(params.filter(p => p.indexOf("--") === -1))
 const app = express()
 const httpServer = http.createServer(app)
