@@ -205,6 +205,11 @@ const httpsServer = https.createServer({
 
 app.use(express.raw({type: "*/*", limit: "700MB"}))
 
+app.all(["/", "/index.html"], (req, res, next) => {
+	res.on("finish", () => log(req.ip, `${res.statusCode} ${req.method} ${req.originalUrl}`))
+	next()
+})
+
 if (params.indexOf("--noautoappid") === -1) {
 	app.get("/autoappid", (req, res) => {
 		res.type("text/plain").send(String(wsServer.getAutoAppID()))
